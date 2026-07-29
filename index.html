@@ -309,6 +309,14 @@ img{display:block;max-width:100%;height:auto}
   text-shadow:0 1px 8px rgba(10,6,2,.95)}
 .rail button i{display:block;width:26px;height:1px;background:rgba(246,236,216,.35);transition:all .25s;flex:none}
 .rail button:hover,.rail button[aria-current="true"]{color:#F6ECD8}
+/* the contact entry is a real link, not a scroll target — same shape as the buttons */
+.rail a.nav{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:10px 0;
+  text-decoration:none;color:rgba(246,236,216,.62);font-family:'IBM Plex Mono',monospace;
+  font-size:10px;letter-spacing:.15em;text-transform:uppercase;transition:color .25s;
+  text-shadow:0 1px 8px rgba(10,6,2,.95)}
+.rail a.nav i{display:block;width:26px;height:1px;background:rgba(246,236,216,.35);transition:all .25s;flex:none}
+.rail a.nav:hover{color:#F6ECD8}
+.rail a.nav:hover i{width:44px;background:var(--saddle);height:2px}
 .rail button:hover i,.rail button[aria-current="true"] i{width:44px;background:var(--saddle);height:2px}
 .rail .lbl{opacity:.72;transition:opacity .25s;white-space:nowrap}
 .rail .contact .lbl{opacity:.8}
@@ -615,6 +623,7 @@ img{display:block;max-width:100%;height:auto}
       <p>If you saw something you want, or something you want made, I'm the one who answers.</p>
       <div class="endacts">
         <a class="p" href="tel:+18597492814">Call me &mdash; (859) 749-2814</a>
+        <a class="s" href="contact">Tell me what you want made</a>
         <a class="s" href="shop">Go to the shop</a>
       </div>
       <div class="social">
@@ -635,6 +644,8 @@ img{display:block;max-width:100%;height:auto}
   <button data-p="55"><span class="lbl">Process</span><i></i></button>
   <button data-p="72"><span class="lbl">The Shop</span><i></i></button>
   <button data-p="89"><span class="lbl">Custom Work</span><i></i></button>
+  <!-- a link, not a scroll target: there is no station on the board for this one -->
+  <a class="nav" href="contact"><span class="lbl">Get in Touch</span><i></i></a>
   <div class="sep"></div>
   <div class="contact">
     <a href="tel:+18597492814" aria-label="Call Harley on 859 749 2814">
