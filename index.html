@@ -172,7 +172,9 @@ img{display:block;max-width:100%}
 .card p{color:rgba(32,20,7,.88);font-size:clamp(15px,1.55vw,17.5px);max-width:58ch}
 .card p+p{margin-top:10px}
 .card b{color:#1D1207}
-.act{pointer-events:auto;display:inline-block;margin-top:20px;font-family:'IBM Plex Mono',monospace;font-size:11px;
+.cardlink{position:absolute;inset:0;z-index:3;pointer-events:auto;text-indent:-9999px;overflow:hidden}
+.card:hover{box-shadow:0 34px 50px rgba(8,4,1,.68),0 8px 14px rgba(8,4,1,.5),inset 0 1px 0 rgba(255,255,255,.6)}
+.act{position:relative;z-index:4;pointer-events:auto;display:inline-block;margin-top:20px;font-family:'IBM Plex Mono',monospace;font-size:11px;
   letter-spacing:.14em;text-transform:uppercase;color:#F4E9D2;background:#241708;
   padding:13px 22px;text-decoration:none}
 .row{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
@@ -198,15 +200,10 @@ img{display:block;max-width:100%}
   .open {animation:fadeOut linear both;animation-timeline:scroll(root);animation-range:0 9%}
   .cue  {animation:fadeOut linear both;animation-timeline:scroll(root);animation-range:0 6%}
   #s1{animation:pop linear both;animation-timeline:scroll(root);animation-range:14% 29%}
-  #s1 .card{animation:cardLift linear both;animation-timeline:scroll(root);animation-range:14% 29%}
   #s2{animation:pop linear both;animation-timeline:scroll(root);animation-range:31% 46%}
-  #s2 .card{animation:cardLift linear both;animation-timeline:scroll(root);animation-range:31% 46%}
   #s3{animation:pop linear both;animation-timeline:scroll(root);animation-range:48% 63%}
-  #s3 .card{animation:cardLift linear both;animation-timeline:scroll(root);animation-range:48% 63%}
   #s4{animation:pop linear both;animation-timeline:scroll(root);animation-range:65% 80%}
-  #s4 .card{animation:cardLift linear both;animation-timeline:scroll(root);animation-range:65% 80%}
   #s5{animation:pop linear both;animation-timeline:scroll(root);animation-range:80% 93%}
-  #s5 .card{animation:cardLift linear both;animation-timeline:scroll(root);animation-range:80% 93%}
   #end{animation:endIn linear both;animation-timeline:scroll(root);animation-range:93% 100%}
  }
 }
@@ -229,13 +226,7 @@ img{display:block;max-width:100%}
   84%{opacity:1}
   100%{opacity:0}
 }
-/* the card drifts on its own axis, translate only, no scaling of type */
-@keyframes cardLift{
-  0%{transform:translateY(26px)}
-  16%{transform:translateY(0)}
-  84%{transform:translateY(0)}
-  100%{transform:translateY(-30px)}
-}
+
 
 
 /* the far end of the board — the walk arrives somewhere */
@@ -406,6 +397,7 @@ img{display:block;max-width:100%}
     <div class="cue mono"><span>Scroll to walk the board ↓</span></div>
 
     <section class="station" id="s1"><div class="card">
+      <a class="cardlink" href="story.html">Read the whole story</a>
       <span class="plate">PL. 01</span>
       <div class="eyebrow">The knot · who's making it</div>
       <h2>I'm Harley. I build it myself.</h2>
@@ -415,6 +407,7 @@ img{display:block;max-width:100%}
     </div></section>
 
     <section class="station" id="s2"><div class="card">
+      <a class="cardlink" href="material.html">Where the wood comes from</a>
       <span class="plate">PL. 02</span>
       <div class="eyebrow">The wormhole · material</div>
       <h2>I don't build things nobody ordered.</h2>
@@ -424,6 +417,7 @@ img{display:block;max-width:100%}
     </div></section>
 
     <section class="station" id="s3"><div class="card">
+      <a class="cardlink" href="process.html">See how a piece gets built</a>
       <span class="plate">PL. 03</span>
       <div class="eyebrow">Saw marks · process</div>
       <h2>I draw it first.</h2>
@@ -433,6 +427,7 @@ img{display:block;max-width:100%}
     </div></section>
 
     <section class="station" id="s4"><div class="card">
+      <a class="cardlink" href="shop.html">See the whole shop</a>
       <span class="plate">PL. 04</span>
       <div class="eyebrow">The bench · on the shelf</div>
       <h2>Ready to go out.</h2>
@@ -446,6 +441,7 @@ img{display:block;max-width:100%}
     </div></section>
 
     <section class="station" id="s5"><div class="card">
+      <a class="cardlink" href="custom.html">Start a custom order</a>
       <span class="plate">PL. 05</span>
       <div class="eyebrow">The far end · custom work</div>
       <h2>Any name. Any design. Any size.</h2>
