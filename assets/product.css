@@ -28,7 +28,7 @@
 
 /* ---------- the buy column ---------- */
 .pmeta{min-width:0}
-.pmeta .eyebrow{margin-bottom:14px}
+.pmeta .eyebrow{margin-bottom:14px;color:var(--walnut)}
 .pmeta h1{font-size:clamp(30px,4.2vw,50px);line-height:1.06;margin-bottom:16px}
 .pmeta .lede{font-size:clamp(16px,1.7vw,18.5px);line-height:1.7;color:rgba(45,31,18,.86);max-width:52ch}
 .pmeta .price{font-family:Fraunces,Georgia,serif;font-weight:800;font-size:clamp(34px,4vw,46px);
