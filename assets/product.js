@@ -66,6 +66,14 @@
         chosen[f.name] = f.value.trim();
       }
     });
+    // free-text fields that DO carry a set price once filled (engraving, once
+    // Harley gives a number — see ENGRAVING_ADD in build-products.py)
+    form.querySelectorAll('[data-add-if-filled]').forEach(function (f) {
+      if (f.value.trim()) {
+        adds += parseFloat(f.dataset.addIfFilled);
+        chosen[f.name] = f.value.trim();
+      }
+    });
     form.querySelectorAll('select[data-size]').forEach(function (s) {
       chosen[s.name] = s.options[s.selectedIndex].text;
     });

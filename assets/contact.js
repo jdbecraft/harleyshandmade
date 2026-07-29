@@ -37,7 +37,7 @@
     var body = encodeURIComponent(
       fields() + '\n\n—\nSent from the contact form on harleyshandmade.com');
     window.location.href = 'mailto:hlritchie26@gmail.com'
-      + '?subject=' + encodeURIComponent('Enquiry from your website')
+      + '?subject=' + encodeURIComponent('Inquiry from your website')
       + '&body=' + body;
     if (sent) sent.style.display = 'block';
     if (btn) btn.textContent = 'Opening your email…';
