@@ -5,6 +5,22 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Harley's Handmade — Custom Woodworking, Owingsville KY</title>
 <meta name="description" content="Handmade cedar swings, feeders, birdhouses, engraved signs and custom furniture. Drawn, cut and finished one at a time in Owingsville, Kentucky.">
+<link rel="canonical" href="https://harleyshandmade.pages.dev/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Harley&#39;s Handmade">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Harley&#x27;s Handmade — Custom Woodworking, Owingsville KY">
+<meta property="og:description" content="Handmade cedar swings, feeders, birdhouses, engraved signs and custom furniture. Drawn, cut and finished one at a time in Owingsville, Kentucky.">
+<meta property="og:url" content="https://harleyshandmade.pages.dev/">
+<meta property="og:image" content="https://harleyshandmade.pages.dev/assets/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Harley&#39;s Handmade — everything here starts with one board">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#2D1F12">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": ["LocalBusiness", "HomeAndConstructionBusiness"], "@id": "https://harleyshandmade.pages.dev/#business", "name": "Harley's Handmade", "legalName": "Harley's Handmade, LLC", "description": "Handmade cedar swings, bird feeders, birdhouses, engraved signs, picture frames and custom furniture, built one at a time by hand in Owingsville, Kentucky.", "url": "https://harleyshandmade.pages.dev/", "telephone": "+1-859-749-2814", "email": "hlritchie26@gmail.com", "image": "https://harleyshandmade.pages.dev/assets/img/og.jpg", "logo": "https://harleyshandmade.pages.dev/assets/img/logo.webp", "priceRange": "$75\u2013$425", "address": {"@type": "PostalAddress", "addressLocality": "Owingsville", "addressRegion": "KY", "postalCode": "40360", "addressCountry": "US"}, "areaServed": [{"@type": "State", "name": "Kentucky"}], "sameAs": ["https://www.facebook.com/harleyshandmadeky"], "founder": {"@type": "Person", "name": "Harley Ritchie"}, "knowsAbout": ["woodworking", "cedar furniture", "wood engraving", "custom picture frames"]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,500..900,0..100,0..1&family=IBM+Plex+Mono:wght@400;500&family=Lora:wght@400;500&display=swap" rel="stylesheet">
@@ -21,7 +37,7 @@ h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:800;line-height:1.02;let
 img{display:block;max-width:100%}
 
 /* ===================== THE WALK ===================== */
-.phoneboard,.boardhint{display:none}
+.phoneboard,.boardhint,.phoneintro{display:none}
 .walk{height:900vh;position:relative}
 .cam{position:sticky;top:0;height:100svh;overflow:hidden;
      perspective:420px;perspective-origin:50% 38%;background:#120c06}
@@ -172,8 +188,8 @@ img{display:block;max-width:100%}
 .card .eyebrow{display:flex;align-items:center;gap:12px;font-size:10px;color:#7A5533;margin-bottom:13px;
   font-family:'IBM Plex Mono',monospace;letter-spacing:.18em;text-transform:uppercase}
 .card .eyebrow::after{content:"";flex:1;height:1px;background:rgba(74,46,29,.3)}
-.card h2{font-size:clamp(25px,3.5vw,43px);margin-bottom:12px;color:#1D1207}
-.card p{color:rgba(32,20,7,.88);font-size:clamp(15px,1.55vw,17.5px);max-width:58ch}
+.card h2{font-size:clamp(25px,3.5vw,43px);margin-bottom:17px;color:#1D1207;line-height:1.08}
+.card p{color:rgba(32,20,7,.88);font-size:clamp(15px,1.55vw,17.5px);max-width:54ch;line-height:1.7}
 .card p+p{margin-top:10px}
 .card b{color:#1D1207}
 .cardlink{position:absolute;inset:0;z-index:3;pointer-events:auto;text-indent:-9999px;overflow:hidden}
@@ -353,11 +369,19 @@ img{display:block;max-width:100%}
 
   /* HERO — the board itself, with tappable marks. Tap a mark, go to that
      section. Same idea as the desktop walk, expressed for a thumb. */
+  /* THE FIRST SCREEN IS THE BOARD AND NOTHING ELSE.
+     min-height 100svh with the content centred means a phone opens on the wood,
+     the five marks, and the one line that says what this is — no half-visible
+     card peeking up from underneath competing for the first tap.
+     pointer-events:auto is NOT optional: the desktop .open sets it to none so
+     the hero can't swallow clicks meant for the board behind it, and phones
+     inherited that, which is exactly why the marks were dead. */
   .open{position:relative;inset:auto;z-index:5;display:flex;flex-direction:column;align-items:center;
-        text-align:center;padding:26px 16px 20px;animation:none!important;opacity:1!important;visibility:visible!important;
-        background:transparent}
+        justify-content:center;min-height:100svh;
+        text-align:center;padding:20px 16px 16px;animation:none!important;opacity:1!important;visibility:visible!important;
+        background:transparent;pointer-events:auto}
   .open .stampWrap{order:1}
-  .phoneboard{order:2}
+  .phoneboard{order:2;pointer-events:auto}
   .open::before{display:none}
   .stampWrap{position:relative;z-index:1;display:block}
   .stamp{width:108px;margin:0 auto 14px;mix-blend-mode:normal;
@@ -369,30 +393,56 @@ img{display:block;max-width:100%}
           max-width:30ch;font-style:italic}
   .cue{display:none}
 
-  /* THE BOARD, tappable */
-  .phoneboard{display:block;position:relative;margin:26px auto 6px;width:100%;
-    filter:drop-shadow(0 16px 22px rgba(45,31,18,.28)) drop-shadow(0 4px 6px rgba(45,31,18,.22))}
-  .phoneboard>img{width:100%;display:block}
-  .pn{position:absolute;transform:translate(-50%,-50%);width:54px;height:54px;
-    display:grid;place-items:center;text-decoration:none;-webkit-tap-highlight-color:transparent}
+  /* THE BOARD, STOOD ON ITS END.
+     Laid flat, a 1113x440 plank on a 390px phone is a 154px-tall strip — five
+     marks and five labels fought each other for the same inch and two of the
+     labels overlapped outright. Turned upright it runs the length of the screen,
+     which is also what the desktop does: you travel ALONG the board.
+     The rotation is on the <img width="1200" height="900"> only, never on the container, so the marks and
+     their labels stay in normal upright coordinates and stay readable. */
+  .phoneboard{display:block;position:relative;margin:18px auto 4px;
+    width:100%;height:min(52svh,470px);
+    filter:drop-shadow(0 14px 20px rgba(45,31,18,.26)) drop-shadow(0 3px 5px rgba(45,31,18,.2))}
+  .phoneboard>img{position:absolute;left:50%;top:50%;display:block;
+    width:min(52svh,470px);max-width:none;height:auto;
+    transform:translate(-50%,-50%) rotate(90deg)}
+
+  .pn{position:absolute;transform:translate(-50%,-50%);width:56px;height:56px;
+    display:grid;place-items:center;text-decoration:none;z-index:2;
+    -webkit-tap-highlight-color:transparent}
   .pn::before{content:"";position:absolute;inset:30%;border-radius:50%;
-    background:rgba(45,31,18,.5);box-shadow:0 0 0 2px rgba(250,244,230,.85);transition:all .2s}
+    background:rgba(45,31,18,.52);box-shadow:0 0 0 2px rgba(250,244,230,.9);transition:all .2s}
   .pn::after{content:"";position:absolute;inset:8%;border-radius:50%;
     border:1px solid rgba(74,46,29,.5);animation:pnPing 3s ease-out infinite}
   .pn:active::before{inset:18%;background:#4A2E1D;box-shadow:0 0 0 3px rgba(250,244,230,.95)}
   @keyframes pnPing{0%{transform:scale(.7);opacity:.7}70%{transform:scale(1.3);opacity:0}100%{opacity:0}}
-  .pn span{position:absolute;top:calc(100% - 8px);left:50%;transform:translateX(-50%);
-    font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;
-    white-space:nowrap;color:#2D1F12;background:rgba(250,244,230,.95);padding:3px 6px;
+
+  /* labels sit OFF the plank, alternating sides, so nothing overlaps anything */
+  .pn span{position:absolute;top:50%;transform:translateY(-50%);
+    font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+    white-space:nowrap;color:#2D1F12;background:rgba(250,244,230,.96);padding:5px 8px;
     border:1px solid rgba(74,46,29,.3)}
-  /* pull the outer marks inboard and align their labels inward */
-  .pn:nth-of-type(3){left:72%!important}
-  .pn:nth-of-type(5){left:84%!important}
-  .pn:nth-of-type(3) span,.pn:nth-of-type(5) span{left:auto;right:-4px;transform:none}
-  .pn:nth-of-type(1) span{left:-4px;transform:none}
-  .phoneboard{padding-bottom:14px}
+  .pn.l span{right:calc(100% - 12px)}
+  .pn.r span{left:calc(100% - 12px)}
   .boardhint{display:block;order:3;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:9.5px;
     letter-spacing:.16em;text-transform:uppercase;color:var(--oak);margin:14px 0 4px}
+
+  /* WHAT SITS UNDER THE BOARD, AND WHY IT ISN'T NOTHING.
+     Jeff asked whether the phone homepage should be only the wood. It gets the
+     whole first screen — but not the whole page, for two reasons that cost real
+     money: Google ranks the phone rendering, and a page of five links has
+     nothing to rank; and someone arriving cold from a Facebook link needs the
+     what/where/how-to-reach answer without solving a puzzle first.
+     So: the board owns screen one, then one short paragraph that says who and
+     where, then the sections CONDENSED to a headline, a line and a link — the
+     long versions already live on their own pages, so repeating them here was
+     duplicate text and a wall to scroll past. */
+  .phoneintro{display:block;padding:26px 20px 4px;text-align:center;
+    border-top:1px solid rgba(74,46,29,.16)}
+  .phoneintro p{font-size:16.5px;line-height:1.55;color:rgba(45,31,18,.9);max-width:34ch;margin:0 auto}
+  .phoneintro b{color:#1D1207}
+  .phoneintro .where{display:block;margin-top:10px;font-family:'IBM Plex Mono',monospace;
+    font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--oak)}
 
   /* SECTIONS — clean cards on daylight, not paper in a dark room */
   .station{position:relative;left:auto;top:auto;inset:auto;transform:none!important;
@@ -400,16 +450,20 @@ img{display:block;max-width:100%}
     width:auto;z-index:5;padding:0 16px 14px;animation:none!important}
   .station:first-of-type{padding-top:22px}
   .station>.card{width:100%;max-width:100%}
-  .card{background:#fff;color:#2D1F12;padding:24px 20px;rotate:0deg!important;
+  .card{background:#fff;color:#2D1F12;padding:26px 22px 24px;rotate:0deg!important;
     border:1px solid rgba(74,46,29,.2);
     box-shadow:0 2px 0 rgba(74,46,29,.05),0 10px 24px rgba(45,31,18,.07)}
   .card::before{display:none}
   .card::after{width:3px}
-  .card h2{font-size:26px;color:#1D1207}
-  .card p{font-size:16px;color:rgba(45,31,18,.86)}
+  .card h2{font-size:23px;color:#1D1207;line-height:1.12;margin-bottom:14px}
+  .card p{font-size:16.5px;line-height:1.68;color:rgba(45,31,18,.86)}
   .card .eyebrow{font-size:9.5px}
   .cardlink{display:none}
-  .act{display:block;text-align:center;padding:16px;margin-top:18px;font-size:12px;
+  /* condensed: the lead line stays, the second paragraph and the blueprint
+     don't — both are on the page the button goes to, word for word */
+  .card p:nth-of-type(n+2){display:none}
+  .bpimg{display:none}
+  .act{display:block;text-align:center;padding:16px;margin-top:16px;font-size:12px;
        background:#4A2E1D;color:#F4E9D2;transform:none!important}
   .row{grid-template-columns:1fr 1fr;gap:9px}
   .pick{background:#FAF4E6}
@@ -452,11 +506,11 @@ img{display:block;max-width:100%}
     <div class="world" id="world">
       <div class="floor">
         <!-- real features from the plank, lying on the board, passed as you walk -->
-        <div class="feat" style="left:24%;top:20%;width:26%"><img src="assets/img/f-knot.webp" alt="A dark knot in the board"></div>
-        <div class="feat" style="left:58%;top:34%;width:14%"><img src="assets/img/f-worm.webp" alt="A wormhole bored through the grain"></div>
-        <div class="feat" style="left:20%;top:49%;width:30%"><img src="assets/img/f-kerf.webp" alt="Circular saw kerf marks scored across the grain"></div>
-        <div class="feat" style="left:52%;top:64%;width:28%"><img src="assets/img/f-crack.webp" alt="A check crack running with the grain"></div>
-        <div class="feat" style="left:26%;top:79%;width:24%"><img src="assets/img/f-knot.webp" alt="A second knot near the far end"></div>
+        <div class="feat" style="left:24%;top:20%;width:26%"><img src="assets/img/f-knot.webp" alt="A dark knot in the board" width="760" height="760"></div>
+        <div class="feat" style="left:58%;top:34%;width:14%"><img src="assets/img/f-worm.webp" alt="A wormhole bored through the grain" loading="lazy" decoding="async" width="600" height="600"></div>
+        <div class="feat" style="left:20%;top:49%;width:30%"><img src="assets/img/f-kerf.webp" alt="Circular saw kerf marks scored across the grain" loading="lazy" decoding="async" width="760" height="489"></div>
+        <div class="feat" style="left:52%;top:64%;width:28%"><img src="assets/img/f-crack.webp" alt="A check crack running with the grain" loading="lazy" decoding="async" width="760" height="326"></div>
+        <div class="feat" style="left:26%;top:79%;width:24%"><img src="assets/img/f-knot.webp" alt="A second knot near the far end" loading="lazy" decoding="async" width="760" height="760"></div>
       </div>
       <div class="edge edgeL"></div>
       <div class="edge edgeR"></div>
@@ -472,23 +526,28 @@ img{display:block;max-width:100%}
 
     <div class="open">
       <div class="phoneboard" aria-label="Tap a mark in the wood">
-        <img src="assets/img/slab-cut.webp" alt="A raw live-edge board with bark edges, saw marks, a knot and scattered sawdust">
-        <a class="pn" style="left:22%;top:30%" href="shop.html"><span>The Shop</span></a>
-        <a class="pn" style="left:63%;top:36%" href="story.html"><span>My Story</span></a>
-        <a class="pn" style="left:76%;top:18%" href="process.html"><span>Process</span></a>
-        <a class="pn" style="left:30%;top:86%" href="material.html"><span>The Wood</span></a>
-        <a class="pn" style="left:89%;top:55%" href="custom.html"><span>Custom</span></a>
+        <img src="assets/img/slab-cut.webp" alt="A raw live-edge board with bark edges, saw marks, a knot and scattered sawdust" loading="lazy" decoding="async" width="1113" height="440">
+        <a class="pn l" style="left:44%;top:13%" href="story.html"><span>My Story</span></a>
+        <a class="pn r" style="left:57%;top:31%" href="material.html"><span>The Wood</span></a>
+        <a class="pn l" style="left:43%;top:49%" href="process.html"><span>Process</span></a>
+        <a class="pn r" style="left:57%;top:67%" href="shop.html"><span>The Shop</span></a>
+        <a class="pn l" style="left:44%;top:85%" href="custom.html"><span>Custom Work</span></a>
       </div>
       <div class="stampWrap">
-        <img class="stamp" src="assets/img/stamp.webp" srcset="assets/img/stamp-sm.webp 560w, assets/img/stamp.webp 900w" sizes="(max-width:820px) 132px, 240px" alt="Harley's Handmade maker's mark branded into the wood">
+        <img class="stamp" src="assets/img/stamp.webp" srcset="assets/img/stamp-sm.webp 560w, assets/img/stamp.webp 900w" sizes="(max-width:820px) 132px, 240px" alt="Harley's Handmade maker's mark branded into the wood" loading="lazy" decoding="async" width="900" height="895">
         <div>
           <h1>Everything here starts<br>with <em>one board.</em></h1>
           <p>Walk it with me. You'll see the whole shop.</p>
         </div>
       </div>
+      <div class="boardhint">Tap a mark in the wood</div>
     </div>
     <div class="cue mono"><span>Scroll to walk the board ↓</span></div>
-    <div class="boardhint">Tap a mark in the wood</div>
+
+    <div class="phoneintro">
+      <p>I'm <b>Harley Ritchie</b>. I build porch swings, bird feeders, birdhouses, engraved signs and custom furniture by hand — one at a time, in my own shop.
+      <span class="where">Owingsville, Kentucky &middot; (859) 749-2814</span></p>
+    </div>
 
     <section class="station" id="s1"><div class="card">
       <a class="cardlink" href="story.html">Read the whole story</a>
@@ -516,7 +575,7 @@ img{display:block;max-width:100%}
       <div class="eyebrow">Saw marks · process</div>
       <h2>I draw it first.</h2>
       <p>Every measurement on this plate is mine — board lengths, arm-rest heights, the little right-triangle braces in the corners. I work it out before I cut, which is why the second one matches the first.</p>
-      <img class="bpimg" src="assets/svg/plate-01.svg" alt="Blueprint: swing seat front elevation, 12 inch length, 7 inch height">
+      <img class="bpimg" src="assets/svg/plate-01.svg" alt="Blueprint: swing seat front elevation, 12 inch length, 7 inch height" width="1200" height="900" loading="lazy" decoding="async">
       <a class="act" href="process.html">See how a piece gets built</a>
     </div></section>
 
@@ -527,9 +586,9 @@ img{display:block;max-width:100%}
       <h2>Ready to go out.</h2>
       <p>These I keep on hand, or built and waiting on finish. Order one and you're waiting on me to sand it, stain it and box it — not six weeks.</p>
       <div class="row">
-        <div class="pick"><img src="assets/img/swing.webp" alt="Mini porch swing"><div class="t"><h3>Mini Porch Swing</h3><div class="pr">$75</div></div></div>
-        <div class="pick"><img src="assets/img/sign.webp" alt="Engraved sign"><div class="t"><h3>Engraved Sign</h3><div class="pr">$285</div></div></div>
-        <div class="pick"><img src="assets/img/cardinal.webp" alt="Hand-carved cardinal"><div class="t"><h3>Carved Cardinal</h3><div class="pr">$425</div></div></div>
+        <div class="pick"><img src="assets/img/swing.webp" alt="Mini porch swing" loading="lazy" decoding="async" width="1000" height="1000"><div class="t"><h3>Mini Porch Swing</h3><div class="pr">$75</div></div></div>
+        <div class="pick"><img src="assets/img/sign.webp" alt="Engraved sign" loading="lazy" decoding="async" width="1000" height="1000"><div class="t"><h3>Engraved Sign</h3><div class="pr">$285</div></div></div>
+        <div class="pick"><img src="assets/img/cardinal.webp" alt="Hand-carved cardinal" loading="lazy" decoding="async" width="1000" height="1000"><div class="t"><h3>Carved Cardinal</h3><div class="pr">$425</div></div></div>
       </div>
       <a class="act" href="shop.html">See the whole shop</a>
     </div></section>
@@ -550,7 +609,7 @@ img{display:block;max-width:100%}
     </div></section>
 
     <section class="endcap" id="end" data-rise>
-      <div class="markwrap"><img class="mark" src="assets/img/logo.webp" alt="Harley's Handmade"></div>
+      <div class="markwrap"><img class="mark" src="assets/img/logo.webp" alt="Harley's Handmade" loading="lazy" decoding="async" width="640" height="636"></div>
       <h2>That's the whole board.</h2>
       <p>If you saw something you want, or something you want made, I'm the one who answers.</p>
       <div class="endacts">

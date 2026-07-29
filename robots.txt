@@ -10,4 +10,5 @@
 User-agent: *
 Allow: /
 
-# Sitemap: https://<his-domain>/sitemap.xml
+Sitemap: https://harleyshandmade.pages.dev/sitemap.xml
+# ^ change the host when the real domain goes live

@@ -1,0 +1,122 @@
+/* Harley's Handmade — the individual product page.
+   Calm on purpose, same as the other interior pages: somebody deciding on a
+   $75 swing needs to see the thing from four sides, read what it is, tick the
+   options they want and press one button. The drama lives on the board. */
+
+.pwrap{max-width:1180px;margin:0 auto;padding:0 clamp(18px,4vw,44px)}
+@media(min-width:821px){ .pwrap{padding-right:clamp(150px,13vw,210px)} }
+
+.plive{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);
+  gap:clamp(24px,4vw,56px);align-items:start;padding:clamp(30px,5vh,58px) 0 clamp(20px,3vh,34px)}
+@media(max-width:900px){ .plive{grid-template-columns:1fr;gap:26px} }
+
+/* ---------- gallery ---------- */
+.gal{position:sticky;top:24px;min-width:0}
+@media(max-width:900px){ .gal{position:static} }
+.gal .main{position:relative;background:var(--parchment);border:1px solid rgba(74,46,29,.2);
+  aspect-ratio:1/1;overflow:hidden}
+.gal .main img{width:100%;height:100%;object-fit:cover;display:block}
+.gal .strip{display:flex;gap:9px;margin-top:10px;overflow-x:auto;padding-bottom:4px;min-width:0;max-width:100%;
+  scrollbar-width:thin}
+.gal .strip button{flex:none;width:74px;height:74px;padding:0;border:1px solid rgba(74,46,29,.25);
+  background:var(--parchment);cursor:pointer;overflow:hidden;transition:border-color .2s,transform .2s}
+.gal .strip button img{width:100%;height:100%;object-fit:cover;display:block}
+.gal .strip button[aria-current="true"]{border-color:var(--walnut);border-width:2px}
+.gal .strip button:hover{transform:translateY(-2px)}
+.gal .shotno{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--oak);margin-top:9px}
+
+/* ---------- the buy column ---------- */
+.pmeta{min-width:0}
+.pmeta .eyebrow{margin-bottom:14px}
+.pmeta h1{font-size:clamp(30px,4.2vw,50px);line-height:1.06;margin-bottom:16px}
+.pmeta .lede{font-size:clamp(16px,1.7vw,18.5px);line-height:1.7;color:rgba(45,31,18,.86);max-width:52ch}
+.pmeta .price{font-family:Fraunces,Georgia,serif;font-weight:800;font-size:clamp(34px,4vw,46px);
+  margin:22px 0 4px;display:flex;align-items:baseline;gap:12px}
+.pmeta .price .from{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--oak);font-weight:400}
+
+/* ---------- the options sheet ---------- */
+.sheet{margin-top:26px;border:1px solid rgba(74,46,29,.28);background:rgba(255,255,255,.6)}
+.sheet .hd{padding:14px 18px;border-bottom:1px solid rgba(74,46,29,.2);
+  background:rgba(176,132,86,.14);
+  font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--walnut)}
+.opt{padding:18px;border-bottom:1px solid rgba(74,46,29,.14)}
+.opt:last-of-type{border-bottom:0}
+.opt > .k{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--oak);display:block;margin-bottom:11px}
+.opt .hint{font-size:14px;line-height:1.6;color:rgba(45,31,18,.72);margin-top:10px;max-width:46ch}
+
+/* stain swatches — real wood, cut from his own four sample sticks */
+.stains{display:flex;flex-wrap:wrap;gap:11px}
+.stains label{cursor:pointer;text-align:center;width:78px}
+.stains input{position:absolute;opacity:0;width:0;height:0}
+.stains .sw{display:block;width:78px;height:60px;border:2px solid transparent;
+  outline:1px solid rgba(74,46,29,.28);background-size:cover;background-position:center;
+  transition:border-color .18s}
+.stains input:focus-visible + .sw{border-color:var(--saddle)}
+.stains input:checked + .sw{border-color:var(--walnut)}
+.stains .nm{display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.06em;
+  text-transform:uppercase;margin-top:6px;color:rgba(45,31,18,.72);line-height:1.35}
+.stains input:checked ~ .nm{color:var(--ink)}
+
+/* pill choices — hanging, style, size */
+.picks{display:flex;flex-wrap:wrap;gap:9px}
+.picks label{cursor:pointer}
+.picks input{position:absolute;opacity:0;width:0;height:0}
+.picks span{display:inline-block;padding:11px 15px;border:1px solid rgba(74,46,29,.34);
+  font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  transition:all .18s;min-height:44px;display:inline-flex;align-items:center}
+.picks input:checked + span{background:var(--walnut);color:var(--linen);border-color:var(--walnut)}
+.picks input:focus-visible + span{outline:2px solid var(--saddle);outline-offset:2px}
+
+.opt input[type=text],.opt textarea,.opt select{width:100%;font-family:Lora,Georgia,serif;font-size:16px;
+  padding:12px 13px;border:1px solid rgba(74,46,29,.34);background:#fff;color:var(--espresso);
+  border-radius:0;min-height:46px}
+.opt textarea{min-height:92px;resize:vertical;line-height:1.55}
+.opt input[type=text]:focus,.opt textarea:focus,.opt select:focus{outline:2px solid var(--saddle);outline-offset:-1px}
+
+/* running total */
+.total{padding:18px;background:rgba(176,132,86,.16);border-top:1px solid rgba(74,46,29,.24)}
+.total .row{display:flex;justify-content:space-between;align-items:baseline;gap:14px;
+  font-size:15px;color:rgba(45,31,18,.82)}
+.total .row + .row{margin-top:7px}
+.total .row.big{margin-top:13px;padding-top:13px;border-top:1px solid rgba(74,46,29,.24)}
+.total .row.big .v{font-family:Fraunces,Georgia,serif;font-weight:800;font-size:29px;color:var(--ink)}
+.total .quoted{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--walnut)}
+
+.padd{display:block;width:100%;margin-top:16px;padding:18px;border:0;cursor:pointer;
+  background:var(--walnut);color:var(--linen);
+  font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  transition:background .2s}
+.padd:hover{background:var(--espresso)}
+.padd:disabled{opacity:.65;cursor:default}
+.pask{display:block;text-align:center;margin-top:11px;font-size:14.5px;color:rgba(45,31,18,.76)}
+.pask a{display:inline-block;padding:12px 6px;min-height:44px}
+.pask a{color:var(--walnut);text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- the long description ---------- */
+.pbody{border-top:1px solid rgba(74,46,29,.16);padding:clamp(40px,6vw,68px) 0}
+.pbody .cols{display:grid;grid-template-columns:1fr 1fr;gap:clamp(26px,4vw,60px);align-items:start}
+@media(max-width:900px){ .pbody .cols{grid-template-columns:1fr;gap:30px} }
+.pbody h2{font-size:clamp(24px,3vw,34px);margin-bottom:18px}
+.pbody p{max-width:58ch;line-height:1.72}
+.pbody p + p{margin-top:1.05em}
+.specs{border-top:1px solid rgba(74,46,29,.2)}
+.specs div{display:grid;grid-template-columns:130px 1fr;gap:16px;padding:13px 0;
+  border-bottom:1px solid rgba(74,46,29,.14);font-size:15.5px}
+.specs .k{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--oak);padding-top:4px}
+
+.more{border-top:1px solid rgba(74,46,29,.16);padding:clamp(34px,5vw,56px) 0}
+.more .g{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(12px,2vw,20px);margin-top:22px}
+@media(max-width:900px){ .more .g{grid-template-columns:repeat(2,1fr)} }
+.more a{text-decoration:none;display:block}
+.more img{width:100%;aspect-ratio:1/1;object-fit:cover;background:var(--parchment);
+  border:1px solid rgba(74,46,29,.2)}
+.more .n{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;margin-top:9px;color:rgba(45,31,18,.8)}
+.more .p{font-family:Fraunces;font-weight:800;font-size:17px;margin-top:3px}
+.more a:hover img{border-color:var(--walnut)}

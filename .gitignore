@@ -4,3 +4,6 @@ _forlater/
 _*.html
 Thumbs.db
 .DS_Store
+
+# local QA harnesses — never ship
+_*.html

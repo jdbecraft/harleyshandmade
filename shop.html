@@ -5,6 +5,22 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>The Shop — Harley's Handmade, Owingsville KY</title>
 <meta name="description" content="Handmade cedar swings, feeders, birdhouses, engraved signs, hand-carved cardinals and custom picture frames. Built one at a time in Owingsville, Kentucky. Free local pickup.">
+<link rel="canonical" href="https://harleyshandmade.pages.dev/shop.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Harley&#39;s Handmade">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="The Shop — Harley&#x27;s Handmade">
+<meta property="og:description" content="Handmade cedar swings, feeders, birdhouses, engraved signs, hand-carved cardinals and custom picture frames. Built one at a time in Owingsville, Kentucky. Free local pickup.">
+<meta property="og:url" content="https://harleyshandmade.pages.dev/shop.html">
+<meta property="og:image" content="https://harleyshandmade.pages.dev/assets/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Harley&#39;s Handmade — everything here starts with one board">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#2D1F12">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Harley's Handmade", "item": "https://harleyshandmade.pages.dev/"}, {"@type": "ListItem", "position": 2, "name": "The Shop", "item": "https://harleyshandmade.pages.dev/shop.html"}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,500..900,0..100,0..1&family=IBM+Plex+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -13,13 +29,15 @@
       --saddle:#B08456;--parchment:#F1E6CC;--linen:#FAF4E6;--blueprint:#0E3050}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--linen);color:var(--espresso);font-family:Lora,Georgia,serif;font-size:18px;
-     line-height:1.62;-webkit-font-smoothing:antialiased;padding-bottom:58px}
-h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:800;line-height:1.02;letter-spacing:-.022em;
+     line-height:1.72;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:800;line-height:1.09;letter-spacing:-.022em;
          font-variation-settings:'SOFT' 16,'WONK' 1}
 .mono{font-family:'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.15em;text-transform:uppercase}
 img{display:block;max-width:100%}
 a{color:inherit}
 .wrap{max-width:1180px;margin:0 auto;padding:0 clamp(18px,4vw,44px)}
+/* the rail is fixed to the right edge — keep the grid from running under it */
+@media(min-width:821px){ .wrap{padding-right:clamp(150px,13vw,210px)} }
 
 /* ---- the board, still here, as the header you surfaced from ---- */
 .top{position:relative;background:#160e06;overflow:hidden}
@@ -47,10 +65,18 @@ a{color:inherit}
 .card:hover .ph img{transform:scale(1.04)}
 .pl{position:absolute;top:10px;left:10px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;
     letter-spacing:.15em;color:var(--linen);background:rgba(29,18,7,.8);padding:4px 8px}
-.bd{padding:16px 18px 18px;display:flex;flex-direction:column;flex:1}
-.bd h3{font-size:20px}
-.spec{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;color:var(--oak);margin-top:5px}
-.desc{font-size:15px;color:rgba(45,31,18,.78);margin-top:9px;flex:1}
+.card>.tap{text-decoration:none;color:inherit;display:flex;flex-direction:column;flex:1}
+.bd{padding:16px 18px 10px;display:flex;flex-direction:column;flex:1}
+.foot{padding:0 18px 16px}
+.price .fr{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--oak);font-weight:400;margin-left:2px}
+.det{display:block;margin-top:11px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--walnut);text-decoration:none;border-top:1px solid rgba(74,46,29,.16);padding-top:11px;
+  min-height:44px;display:flex;align-items:center}
+.det:hover{color:var(--ink)}
+.bd h3{font-size:20px;line-height:1.16}
+.spec{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;color:var(--oak);margin-top:7px;line-height:1.5}
+.desc{font-size:15.5px;line-height:1.62;color:rgba(45,31,18,.8);margin-top:11px;flex:1}
 .buy{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:15px}
 .price{font-family:Fraunces;font-weight:800;font-size:25px}
 .add{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
@@ -66,8 +92,8 @@ a{color:inherit}
 .eyebrow{display:flex;align-items:center;gap:13px;font-size:10px;color:var(--oak);margin-bottom:16px;
   font-family:'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase}
 .eyebrow::after{content:"";flex:1;height:1px;background:rgba(74,46,29,.22)}
-.band h2{font-size:clamp(26px,3.6vw,42px);margin-bottom:14px}
-.band p{max-width:62ch;color:rgba(45,31,18,.84)}
+.band h2{font-size:clamp(26px,3.6vw,42px);margin-bottom:19px}
+.band p{max-width:58ch;color:rgba(45,31,18,.84)}
 .band p+p{margin-top:11px}
 .band b{color:var(--espresso)}
 .note{margin-top:22px;padding:16px 18px;border:1px solid rgba(74,46,29,.3);background:rgba(176,132,86,.14);
@@ -95,8 +121,14 @@ a{color:inherit}
 .cartbtn .n{background:var(--saddle);color:var(--ink);min-width:19px;height:19px;display:grid;place-items:center}
 
 @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:820px){ body{padding-bottom:58px}
+  /* thumb-sized targets on a phone */
+  .add{padding:15px 20px;min-height:46px}
+  #cartBtn{min-height:46px}
+  .back{padding:13px 0;min-height:44px} }   /* room for the pinned call bar */
 @media(max-width:600px){.grid{grid-template-columns:1fr}}
 </style>
+<link rel="stylesheet" href="assets/rail.css">
 </head>
 <body>
 
@@ -114,51 +146,83 @@ a{color:inherit}
 <main class="wrap">
   <div class="grid">
 
-    <article class="card"><div class="ph"><span class="pl">PL. 01</span>
-      <img src="assets/img/swing.webp" alt="Mini porch swing in dark stain with a carved rose, hanging from its stand"></div>
-      <div class="bd"><h3>Mini Porch Swing</h3><div class="spec mono">Cedar · 12" seat · stand optional</div>
-      <p class="desc">A porch swing at a twelfth the size, built the same way the big ones are — scalloped back, real arm rests, hung on chain.</p>
-      <div class="buy"><span class="price">$75</span>
-      <button class="add mono" data-n="Mini Porch Swing" data-p="75">Add</button></div></div></article>
-
-    <article class="card"><div class="ph"><span class="pl">PL. 02</span>
-      <img src="assets/img/feeder.webp" alt="Cedar bird feeder swing hanging from a tree with cut-out silhouettes"></div>
-      <div class="bd"><h3>Feeder</h3><div class="spec mono">Cedar · hangs from a limb</div>
-      <p class="desc">Hangs off a branch and holds up to weather. Cut-out silhouettes on request — dogs, deer, whatever you want in it.</p>
-      <div class="buy"><span class="price">$75</span>
-      <button class="add mono" data-n="Feeder" data-p="75">Add</button></div></div></article>
-
-    <article class="card"><div class="ph"><span class="pl">PL. 03</span>
-      <img src="assets/img/birdhouse.webp" alt="Log-cabin birdhouse with a hand-shingled roof and a covered porch"></div>
-      <div class="bd"><h3>Birdhouse</h3><div class="spec mono">Log cabin · hand-shingled roof</div>
-      <p class="desc">Built like a cabin, log by log, with a shingled roof laid one piece at a time. The porch is the part people notice.</p>
-      <div class="buy"><span class="price">$150</span>
-      <button class="add mono" data-n="Birdhouse" data-p="150">Add</button></div></div></article>
-
-    <article class="card"><div class="ph"><span class="pl">PL. 04</span>
-      <img src="assets/img/sign.webp" alt="Engraved oval wooden sign with a wolf, script lettering and a dragonfly"></div>
-      <div class="bd"><h3>Engraved Sign</h3><div class="spec mono">Any name · any design</div>
-      <p class="desc">Your name, your farm, your family. Engraved and torched by hand — tell me what you want on it and I'll draw it first.</p>
-      <div class="buy"><span class="price">$285</span>
-      <button class="add mono" data-n="Engraved Sign" data-p="285">Add</button></div></div></article>
-
-    <article class="card"><div class="ph"><span class="pl">PL. 05</span>
-      <img src="assets/img/cardinal.webp" alt="Hand-carved and painted cardinal perched on a live-edge hanging feeder"></div>
-      <div class="bd"><h3>Hand-Carved Cardinal</h3><div class="spec mono">Carved + painted · live-edge perch</div>
-      <p class="desc">Carved from a block and painted by hand, sat on a live-edge perch. The slowest thing I make, and the one I'm proudest of.</p>
-      <div class="buy"><span class="price">$425</span>
-      <button class="add mono" data-n="Hand-Carved Cardinal" data-p="425">Add</button></div></div></article>
-
-    <article class="card"><div class="ph"><span class="pl">PL. 06</span>
-      <img src="assets/img/frame.webp" alt="Custom picture frame with engraved lettering and horse detailing around a western print"></div>
-      <div class="bd"><h3>Custom Picture Frame</h3><div class="spec mono">Built to your art · glazing included</div>
-      <p class="desc">Built around whatever you've got — a print, a photo, a jersey. Glazing's included. Laser engraving on the frame quoted separately.</p>
-      <div class="two">
-        <div class="buy"><span class="price">$145</span>
-        <button class="add mono" data-n="Picture Frame 11x14" data-p="145">Add 11&times;14</button></div>
-        <div class="buy"><span class="price">$205</span>
-        <button class="add mono" data-n="Picture Frame up to 35x23" data-p="205">Add up to 35&times;23</button></div>
-      </div></div></article>
+    <article class="card">
+      <a class="tap" href="p-swing.html" aria-label="Mini Porch Swing — see every angle and the options">
+        <div class="ph"><span class="pl">PL. 01</span>
+          <img src="assets/img/swing.webp" alt="Handmade cedar mini porch swing with a scalloped back, hanging from its stand" width="1000" height="1000"></div>
+        <div class="bd"><h3>Mini Porch Swing</h3><div class="spec mono">Cedar &middot; 12" seat &middot; scalloped back</div>
+        <p class="desc">A porch swing at a twelfth the size, built the same way the big ones are — scalloped back, real arm rests, hung on rope.</p></div>
+      </a>
+      <div class="foot"><div class="buy"><span class="price">$75</span>
+        <button class="add mono" data-n="Mini Porch Swing" data-p="75">Add</button></div>
+        <a class="det mono" href="p-swing.html">See every angle &amp; options &rarr;</a></div>
+    </article>
+    <article class="card">
+      <a class="tap" href="p-loveseat.html" aria-label="Loveseat Swing — see every angle and the options">
+        <div class="ph"><span class="pl">PL. 02</span>
+          <img src="assets/img/p/loveseat-1.webp" alt="Handmade cedar loveseat swing with a flat back and arm rests, hanging from yellow rope" width="900" height="900"></div>
+        <div class="bd"><h3>Loveseat Swing</h3><div class="spec mono">Cedar &middot; flat back &middot; two-seat</div>
+        <p class="desc">The wider one. Straight back, arm rests both ends, same build as the porch swing.</p></div>
+      </a>
+      <div class="foot"><div class="buy"><span class="price">$75</span>
+        <button class="add mono" data-n="Loveseat Swing" data-p="75">Add</button></div>
+        <a class="det mono" href="p-loveseat.html">See every angle &amp; options &rarr;</a></div>
+    </article>
+    <article class="card">
+      <a class="tap" href="p-feeder.html" aria-label="Bird Feeder — see every angle and the options">
+        <div class="ph"><span class="pl">PL. 03</span>
+          <img src="assets/img/feeder.webp" alt="Cedar bird feeder hanging from a tree with cut-out silhouettes" loading="lazy" decoding="async" width="1000" height="1000"></div>
+        <div class="bd"><h3>Bird Feeder</h3><div class="spec mono">Cedar &middot; hangs from a limb</div>
+        <p class="desc">Hangs off a branch and holds up to weather. Cut-out silhouettes on request — dogs, deer, whatever you want in it.</p></div>
+      </a>
+      <div class="foot"><div class="buy"><span class="price">$75</span>
+        <button class="add mono" data-n="Bird Feeder" data-p="75">Add</button></div>
+        <a class="det mono" href="p-feeder.html">See every angle &amp; options &rarr;</a></div>
+    </article>
+    <article class="card">
+      <a class="tap" href="p-birdhouse.html" aria-label="Birdhouse — see every angle and the options">
+        <div class="ph"><span class="pl">PL. 04</span>
+          <img src="assets/img/birdhouse.webp" alt="Log-cabin birdhouse with a hand-shingled roof and a covered porch" loading="lazy" width="1000" height="1000"></div>
+        <div class="bd"><h3>Birdhouse</h3><div class="spec mono">Log cabin &middot; hand-shingled roof</div>
+        <p class="desc">Built like a cabin, log by log, with a shingled roof laid one piece at a time. The porch is the part people notice.</p></div>
+      </a>
+      <div class="foot"><div class="buy"><span class="price">$150</span>
+        <button class="add mono" data-n="Birdhouse" data-p="150">Add</button></div>
+        <a class="det mono" href="p-birdhouse.html">See every angle &amp; options &rarr;</a></div>
+    </article>
+    <article class="card">
+      <a class="tap" href="p-sign.html" aria-label="Engraved Sign — see every angle and the options">
+        <div class="ph"><span class="pl">PL. 05</span>
+          <img src="assets/img/sign.webp" alt="Engraved oval sign with a wolf, script lettering and a dragonfly" loading="lazy" width="1000" height="1000"></div>
+        <div class="bd"><h3>Engraved Sign</h3><div class="spec mono">Any name &middot; any design</div>
+        <p class="desc">Your name, your farm, your family. Engraved and torched by hand — tell me what you want on it and I'll draw it first.</p></div>
+      </a>
+      <div class="foot"><div class="buy"><span class="price">$285</span>
+        <button class="add mono" data-n="Engraved Sign" data-p="285">Add</button></div>
+        <a class="det mono" href="p-sign.html">See every angle &amp; options &rarr;</a></div>
+    </article>
+    <article class="card">
+      <a class="tap" href="p-cardinal.html" aria-label="Hand-Carved Cardinal — see every angle and the options">
+        <div class="ph"><span class="pl">PL. 06</span>
+          <img src="assets/img/cardinal.webp" alt="Hand-carved cardinal, painted, on a live-edge perch" loading="lazy" width="1000" height="1000"></div>
+        <div class="bd"><h3>Hand-Carved Cardinal</h3><div class="spec mono">Carved + painted &middot; live-edge perch</div>
+        <p class="desc">Carved from a block and painted by hand, sat on a live-edge perch. The slowest thing I make, and the one I'm proudest of.</p></div>
+      </a>
+      <div class="foot"><div class="buy"><span class="price">$425</span>
+        <button class="add mono" data-n="Hand-Carved Cardinal" data-p="425">Add</button></div>
+        <a class="det mono" href="p-cardinal.html">See every angle &amp; options &rarr;</a></div>
+    </article>
+    <article class="card">
+      <a class="tap" href="p-frame.html" aria-label="Custom Picture Frame — see every angle and the options">
+        <div class="ph"><span class="pl">PL. 07</span>
+          <img src="assets/img/frame.webp" alt="Custom-built wood picture frame with engraved lettering, on the workbench" loading="lazy" width="1000" height="1000"></div>
+        <div class="bd"><h3>Custom Picture Frame</h3><div class="spec mono">Built to your art &middot; glazing included</div>
+        <p class="desc">Built around whatever you've got — a print, a photo, a jersey. Glazing's included. Pick your size and the price follows it.</p></div>
+      </a>
+      <div class="foot"><div class="buy"><span class="price">$145 <span class="fr">from</span></span>
+        <button class="add mono" data-n="Custom Picture Frame" data-p="145">Add</button></div>
+        <a class="det mono" href="p-frame.html">See every angle &amp; options &rarr;</a></div>
+    </article>
 
   </div>
 </main>
@@ -181,6 +245,22 @@ a{color:inherit}
     <a class="s" href="index.html#shop">Back to the board</a>
   </div>
 </section>
+
+<nav class="rail" aria-label="Go to a section">
+    <a class="nav" href="index.html"><span class="lbl">The Board</span><i></i></a>
+    <a class="nav" href="story.html"><span class="lbl">The Story</span><i></i></a>
+    <a class="nav" href="material.html"><span class="lbl">Material</span><i></i></a>
+    <a class="nav" href="process.html"><span class="lbl">Process</span><i></i></a>
+    <a class="nav" href="shop.html" aria-current="page"><span class="lbl">The Shop</span><i></i></a>
+    <a class="nav" href="custom.html"><span class="lbl">Custom Work</span><i></i></a>
+    <div class="sep"></div>
+    <div class="contact">
+      <a href="tel:+18597492814" aria-label="Call Harley on 859 749 2814"><span class="lbl">(859) 749-2814</span><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.2.4 2.4.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.2 1z"/></svg></span></a>
+      <a href="mailto:hlritchie26@gmail.com" aria-label="Email Harley"><span class="lbl">Email me</span><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18c.6 0 1 .4 1 1v12c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1V6c0-.6.4-1 1-1zm9 7.2L4.4 7H19.6zM4 8.5V17h16V8.5l-7.4 5.1a1 1 0 0 1-1.2 0z"/></svg></span></a>
+      <a href="https://www.facebook.com/harleyshandmadeky" target="_blank" rel="noopener" aria-label="Harley's Handmade on Facebook"><span class="lbl">Facebook</span><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5h1.65V3.62A22 22 0 0 0 14.3 3.5c-2.38 0-4 1.45-4 4.12V9.9H7.6V13h2.7v8z"/></svg></span></a>
+      <a href="#" data-needs-url="gbp" aria-disabled="true" title="Google Business Profile — not set up yet" aria-label="Google Business Profile, not yet available"><span class="lbl">Google</span><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 10.2v3.9h5.5a4.9 4.9 0 0 1-2.1 3.2l3.3 2.6c1.95-1.8 3.05-4.45 3.05-7.6 0-.73-.06-1.43-.19-2.1z"/><path d="M6.6 14.3 3.2 16.9A9 9 0 0 0 11.3 21.6c2.43 0 4.47-.8 5.96-2.18l-3.3-2.56c-.87.59-2 .94-2.66.94-2.05 0-3.8-1.38-4.43-3.25z"/><path d="M3.2 7.1A8.9 8.9 0 0 0 2.25 11.1c0 1.44.35 2.8.95 4l3.4-2.64a5.4 5.4 0 0 1 0-3.44z"/><path d="M11.3 5.35c1.33 0 2.52.46 3.46 1.35l2.6-2.6C15.77 2.63 13.73 1.8 11.3 1.8A9 9 0 0 0 3.2 7.1l3.4 2.63c.63-1.88 2.38-3.26 4.43-3.26z"/></svg></span></a>
+    </div>
+</nav>
 
 <div class="callbar">
   <a class="c1" href="tel:+18597492814">Call Harley</a>
