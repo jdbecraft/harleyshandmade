@@ -58,8 +58,8 @@ img{display:block;max-width:100%;height:auto}
 .edgeR{left:1030px;transform:translateY(240px) rotateX(-90deg) translateY(var(--walk,0px)) rotateY(90deg)}
 
 /* features lying ON the board, passed as you walk */
-.feat{position:absolute;pointer-events:none;mix-blend-mode:multiply;opacity:.92}
-.feat img{width:100%}
+.feat{position:absolute;pointer-events:none;mix-blend-mode:multiply;opacity:.92;
+  background-size:100% 100%;background-repeat:no-repeat}
 
 /* depth haze so distance reads */
 .haze{position:absolute;inset:0;z-index:4;pointer-events:none;
@@ -393,7 +393,6 @@ img{display:block;max-width:100%;height:auto}
   .open::before{display:none}
   .stampWrap{position:relative;z-index:1;display:block}
   .stamp{width:108px;margin:0 auto 14px;mix-blend-mode:normal;
-         content:url(assets/img/logo.webp);
          filter:drop-shadow(0 5px 14px rgba(45,31,18,.34))}
   .open h1{font-size:28px;color:#2D1F12;text-shadow:none;line-height:1.06;max-width:100%}
   .open h1 em{color:#7A4B22}
@@ -515,11 +514,11 @@ img{display:block;max-width:100%;height:auto}
     <div class="world" id="world">
       <div class="floor">
         <!-- real features from the plank, lying on the board, passed as you walk -->
-        <div class="feat" style="left:24%;top:20%;width:26%"><img src="assets/img/f-knot.webp" alt="A dark knot in the board" width="760" height="760"></div>
-        <div class="feat" style="left:58%;top:34%;width:14%"><img src="assets/img/f-worm.webp" alt="A wormhole bored through the grain" loading="lazy" decoding="async" width="600" height="600"></div>
-        <div class="feat" style="left:20%;top:49%;width:30%"><img src="assets/img/f-kerf.webp" alt="Circular saw kerf marks scored across the grain" loading="lazy" decoding="async" width="760" height="489"></div>
-        <div class="feat" style="left:52%;top:64%;width:28%"><img src="assets/img/f-crack.webp" alt="A check crack running with the grain" loading="lazy" decoding="async" width="760" height="326"></div>
-        <div class="feat" style="left:26%;top:79%;width:24%"><img src="assets/img/f-knot.webp" alt="A second knot near the far end" loading="lazy" decoding="async" width="760" height="760"></div>
+        <div class="feat" style="left:24%;top:20%;width:26%;aspect-ratio:760/760;background-image:url(assets/img/f-knot.webp)" aria-hidden="true"></div>
+        <div class="feat" style="left:58%;top:34%;width:14%;aspect-ratio:600/600;background-image:url(assets/img/f-worm.webp)" aria-hidden="true"></div>
+        <div class="feat" style="left:20%;top:49%;width:30%;aspect-ratio:760/489;background-image:url(assets/img/f-kerf.webp)" aria-hidden="true"></div>
+        <div class="feat" style="left:52%;top:64%;width:28%;aspect-ratio:760/326;background-image:url(assets/img/f-crack.webp)" aria-hidden="true"></div>
+        <div class="feat" style="left:26%;top:79%;width:24%;aspect-ratio:760/760;background-image:url(assets/img/f-knot.webp)" aria-hidden="true"></div>
       </div>
       <div class="edge edgeL"></div>
       <div class="edge edgeR"></div>
@@ -543,7 +542,12 @@ img{display:block;max-width:100%;height:auto}
         <a class="pn l" style="left:44%;top:85%" href="custom"><span>Custom Work</span></a>
       </div>
       <div class="stampWrap">
-        <img class="stamp" src="assets/img/stamp.webp" srcset="assets/img/stamp-sm.webp 560w, assets/img/stamp.webp 900w" sizes="(max-width:820px) 132px, 240px" alt="Harley's Handmade maker's mark branded into the wood" loading="lazy" decoding="async" width="900" height="895">
+        <picture>
+          <!-- phones show his real logo, desktop shows the burnt mark: one fetch each -->
+          <source media="(max-width:820px)" srcset="assets/img/logo.webp" width="512" height="509">
+          <img class="stamp" src="assets/img/stamp.webp" width="900" height="895"
+               alt="Harley's Handmade maker's mark branded into the wood">
+        </picture>
         <div>
           <h1>Everything here starts<br>with <em>one board.</em></h1>
           <p>Walk it with me. You'll see the whole shop.</p>
