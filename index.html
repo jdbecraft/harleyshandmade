@@ -118,21 +118,22 @@ img{display:block;max-width:100%}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
 
 /* ---------- STATIONS ---------- */
-.station{position:absolute;z-index:7;left:50%;top:46%;transform:translate(-50%,-50%);
-  width:min(92vw,720px);opacity:0;pointer-events:none}
+.station{position:absolute;z-index:7;inset:0;display:grid;place-items:center;
+  padding:0 clamp(16px,4vw,40px);opacity:0;pointer-events:none}
+.station>.card{width:min(92vw,720px)}
 
 /* ---- STATION CARDS AS PHYSICAL OBJECTS ----
    Paper laid on the board: warm stock, deckled feel, a real cast shadow,
    each one set at its own slight angle so no two read the same. ---- */
-.card{position:relative;background:
+.card{position:relative;transform:translateZ(0);backface-visibility:hidden;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;background:
     linear-gradient(178deg,#F7EFDD 0%,#F2E7D0 46%,#EADCC0 100%);
   color:#241708;border:0;padding:clamp(26px,3.4vw,44px) clamp(24px,3.2vw,46px);
   box-shadow:0 30px 44px rgba(8,4,1,.62),0 6px 12px rgba(8,4,1,.45),
              inset 0 1px 0 rgba(255,255,255,.6);
   backdrop-filter:none}
 /* paper tooth */
-.card::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.28;
-  mix-blend-mode:multiply;
+.card::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.16;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='0.86' numOctaves='4'/></filter><rect width='120' height='120' filter='url(%23p)' opacity='0.55'/></svg>")}
 /* a hairline rule the copy hangs off, like a drawing sheet */
 .card::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
@@ -153,11 +154,11 @@ img{display:block;max-width:100%}
 .bpimg{border-color:rgba(74,46,29,.35)}
 
 /* each station sits at its own angle and carries its own tab colour */
-#s1 .card{transform:rotate(-.5deg);--tab:#8B6342}
-#s2 .card{transform:rotate(.65deg);--tab:#4A2E1D}
-#s3 .card{transform:rotate(-.35deg);--tab:#0E3050}
-#s4 .card{transform:rotate(.5deg);--tab:#B08456}
-#s5 .card{transform:rotate(-.6deg);--tab:#2D1F12}
+#s1 .card{rotate:-.5deg;--tab:#8B6342}
+#s2 .card{rotate:.65deg;--tab:#4A2E1D}
+#s3 .card{rotate:-.35deg;--tab:#0E3050}
+#s4 .card{rotate:.5deg;--tab:#B08456}
+#s5 .card{rotate:-.6deg;--tab:#2D1F12}
 /* a plate number stamped in the corner, tying back to the blueprints */
 .card>*{position:relative;z-index:1}
 .card .plate{position:absolute;z-index:2;right:clamp(16px,2vw,26px);top:clamp(14px,1.8vw,22px);
@@ -176,7 +177,7 @@ img{display:block;max-width:100%}
   padding:13px 22px;text-decoration:none}
 .row{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
 .pick{pointer-events:auto;border:1px solid rgba(74,46,29,.28);background:rgba(255,255,255,.45)}
-.pick img{width:100%;aspect-ratio:1;object-fit:cover}
+.pick img{width:100%;aspect-ratio:1;object-fit:cover;image-rendering:auto;transform:translateZ(0)}
 .pick .t{padding:9px 10px 11px}
 .pick h3{font-size:13px;color:#1D1207}
 .pick .pr{font-family:Fraunces;font-weight:800;font-size:16px;color:#7A4B22;margin-top:2px}
@@ -184,7 +185,7 @@ img{display:block;max-width:100%}
 .tm{border:1px solid rgba(74,46,29,.3);padding:12px;background:rgba(255,255,255,.36)}
 .tm .k{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;color:#7A5533;text-transform:uppercase}
 .tm .v{font-family:Fraunces;font-weight:800;font-size:18px;color:#1D1207;margin-top:2px}
-.bpimg{margin-top:16px;border:1px solid rgba(74,46,29,.32);width:100%;box-shadow:0 6px 16px rgba(8,4,1,.28)}
+.bpimg{margin-top:16px;border:1px solid rgba(74,46,29,.32);width:100%;transform:translateZ(0);box-shadow:0 6px 16px rgba(8,4,1,.28)}
 
 /* ---------- SCROLL-DRIVEN: one continuous walk ---------- */
 @supports (animation-timeline: scroll()){
@@ -197,10 +198,15 @@ img{display:block;max-width:100%}
   .open {animation:fadeOut linear both;animation-timeline:scroll(root);animation-range:0 9%}
   .cue  {animation:fadeOut linear both;animation-timeline:scroll(root);animation-range:0 6%}
   #s1{animation:pop linear both;animation-timeline:scroll(root);animation-range:14% 29%}
+  #s1 .card{animation:cardLift linear both;animation-timeline:scroll(root);animation-range:14% 29%}
   #s2{animation:pop linear both;animation-timeline:scroll(root);animation-range:31% 46%}
+  #s2 .card{animation:cardLift linear both;animation-timeline:scroll(root);animation-range:31% 46%}
   #s3{animation:pop linear both;animation-timeline:scroll(root);animation-range:48% 63%}
+  #s3 .card{animation:cardLift linear both;animation-timeline:scroll(root);animation-range:48% 63%}
   #s4{animation:pop linear both;animation-timeline:scroll(root);animation-range:65% 80%}
+  #s4 .card{animation:cardLift linear both;animation-timeline:scroll(root);animation-range:65% 80%}
   #s5{animation:pop linear both;animation-timeline:scroll(root);animation-range:80% 93%}
+  #s5 .card{animation:cardLift linear both;animation-timeline:scroll(root);animation-range:80% 93%}
   #end{animation:endIn linear both;animation-timeline:scroll(root);animation-range:93% 100%}
  }
 }
@@ -216,18 +222,26 @@ img{display:block;max-width:100%}
 @property --zoom{syntax:'<number>';inherits:false;initial-value:1}
 @property --walk{syntax:'<length>';inherits:false;initial-value:-1400px}
 @keyframes fadeOut{0%{opacity:1}62%{opacity:1}100%{opacity:0}}
-@keyframes endIn{0%{opacity:0;transform:translate(-50%,-42%)}100%{opacity:1;transform:translate(-50%,-50%)}}
+@keyframes endIn{0%{opacity:0}100%{opacity:1}}
 @keyframes pop{
-  0%{opacity:0;transform:translate(-50%,-40%) scale(.965)}
-  16%{opacity:1;transform:translate(-50%,-50%) scale(1)}
-  84%{opacity:1;transform:translate(-50%,-50%) scale(1)}
-  100%{opacity:0;transform:translate(-50%,-60%) scale(.985)}
+  0%{opacity:0}
+  16%{opacity:1}
+  84%{opacity:1}
+  100%{opacity:0}
+}
+/* the card drifts on its own axis, translate only, no scaling of type */
+@keyframes cardLift{
+  0%{transform:translateY(26px)}
+  16%{transform:translateY(0)}
+  84%{transform:translateY(0)}
+  100%{transform:translateY(-30px)}
 }
 
 
 /* the far end of the board — the walk arrives somewhere */
-.endcap{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);z-index:9;
-  width:min(92vw,660px);text-align:center;opacity:0;pointer-events:none}
+.endcap{position:absolute;inset:0;display:grid;place-items:center;align-content:center;z-index:9;
+  padding:0 clamp(16px,4vw,40px);text-align:center;opacity:0;pointer-events:none}
+.endcap>*{max-width:660px;margin-left:auto;margin-right:auto}
 .endcap .mark{width:clamp(132px,14vw,190px);margin:0 auto 26px;position:relative;
   filter:drop-shadow(0 10px 26px rgba(0,0,0,.75)) drop-shadow(0 2px 5px rgba(0,0,0,.6))}
 .endcap .markwrap{position:relative;display:grid;place-items:center;margin-bottom:26px}
@@ -392,6 +406,7 @@ img{display:block;max-width:100%}
       <h2>I don't build things nobody ordered.</h2>
       <p>Big shops run a thousand of something and hope. I build what's on the list, so there's no pile of unsold stock heading for a dumpster. Offcuts get used — the cut-off from one swing arm becomes the brace on the next.</p>
       <p>A good bit of my lumber is <b>reclaimed</b> — pallet wood and old barn boards when I can get them and they're sound. <b>I won't tell you it's everything I use, because it isn't.</b> Some pieces need new cedar to last outside.</p>
+      <a class="act" href="material.html">Where the wood comes from</a>
     </div></section>
 
     <section class="station" id="s3"><div class="card">
@@ -400,6 +415,7 @@ img{display:block;max-width:100%}
       <h2>I draw it first.</h2>
       <p>Every measurement on this plate is mine — board lengths, arm-rest heights, the little right-triangle braces in the corners. I work it out before I cut, which is why the second one matches the first.</p>
       <img class="bpimg" src="assets/svg/plate-01.svg" alt="Blueprint: swing seat front elevation, 12 inch length, 7 inch height">
+      <a class="act" href="process.html">See how a piece gets built</a>
     </div></section>
 
     <section class="station" id="s4"><div class="card">
