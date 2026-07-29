@@ -1,0 +1,13 @@
+# Harley's Handmade
+#
+# Crawling is ALLOWED on purpose so that the X-Robots-Tag: noindex header in
+# _headers is actually readable — a Disallow here would hide the noindex and
+# leave the URLs eligible to be indexed by reference. Keep both files in sync.
+#
+# WHEN THIS GOES LIVE ON HIS REAL DOMAIN: delete _headers (that removes the
+# noindex) and add the Sitemap line below.
+
+User-agent: *
+Allow: /
+
+# Sitemap: https://<his-domain>/sitemap.xml
