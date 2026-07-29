@@ -123,3 +123,26 @@
   text-transform:uppercase;margin-top:9px;color:rgba(45,31,18,.8)}
 .more .p{font-family:Fraunces;font-weight:800;font-size:17px;margin-top:3px}
 .more a:hover img{border-color:var(--walnut)}
+
+/* ---------- "not quite it?" — the route to the contact form ----------
+   Jeff, 2026-07-29: "I would also like the link to the form on each of the
+   product pages so people see if they dont see what they want they can nav to
+   the contact form." It sits after the description and before the other
+   products, which is where somebody has finished reading and decided this
+   isn't the one. */
+.askband{background:var(--parchment);border-top:1px solid rgba(74,46,29,.18);
+  border-bottom:1px solid rgba(74,46,29,.18);padding:clamp(34px,5vw,56px) 0}
+.askin{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(22px,4vw,52px);
+  align-items:center}
+@media(max-width:820px){ .askin{grid-template-columns:1fr;gap:22px} }
+.askband h2{font-size:clamp(23px,2.8vw,32px);margin-bottom:12px}
+.askband p{max-width:52ch;line-height:1.7;color:rgba(45,31,18,.86)}
+.askacts{display:flex;flex-direction:column;gap:10px}
+@media(max-width:820px){ .askacts{flex-direction:row;flex-wrap:wrap} }
+.askacts a{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  text-decoration:none;padding:16px 24px;min-height:46px}
+.askacts .p{background:var(--walnut);color:var(--linen)}
+.askacts .p:hover{background:var(--espresso)}
+.askacts .s{border:1px solid rgba(74,46,29,.45)}
+.askacts .s:hover{background:rgba(74,46,29,.08)}

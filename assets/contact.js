@@ -31,15 +31,49 @@
   }
 
   form.addEventListener('submit', function (e) {
-    if (wired) return;                       // real key: let Web3Forms have it
+    var sk = window.hhSketch;
+    var hasDrawing = !!(sk && sk.hasInk());
+
+    if (wired) {
+      /* Real key. Push the PNG into the file input FIRST, then let the form go —
+         Web3Forms takes it as multipart, so Harley gets it as an attachment and
+         the customer does nothing. toBlob is async, hence the re-submit. */
+      if (hasDrawing && !form.dataset.sketchReady) {
+        e.preventDefault();
+        sk.attach(function () {
+          form.dataset.sketchReady = '1';
+          form.submit();
+        });
+      }
+      return;
+    }
+
+    /* No key yet, so this falls back to a pre-filled email — and a mailto cannot
+       carry an attachment, no matter how it's dressed up. So: download the
+       drawing and say so plainly, in the message and on the page. */
     e.preventDefault();
     if (!form.reportValidity()) return;
+    var extra = '';
+    if (hasDrawing) {
+      sk.download();
+      extra = '\n\n[ I drew a sketch on your website. The file "sketch-for-harley.png" '
+            + 'just downloaded to my computer and I am attaching it to this email. ]';
+    }
     var body = encodeURIComponent(
-      fields() + '\n\n—\nSent from the contact form on harleyshandmade.com');
+      fields() + extra + '\n\n—\nSent from the contact form on harleyshandmade.com');
     window.location.href = 'mailto:hlritchie26@gmail.com'
       + '?subject=' + encodeURIComponent('Inquiry from your website')
       + '&body=' + body;
-    if (sent) sent.style.display = 'block';
+    if (sent) {
+      sent.style.display = 'block';
+      if (hasDrawing) {
+        var note = document.createElement('p');
+        note.style.cssText = 'margin-top:10px;font-size:15px;line-height:1.6';
+        note.innerHTML = '<b>Your drawing downloaded as sketch-for-harley.png</b> — '
+                       + 'attach it to the email that just opened and he gets both.';
+        sent.appendChild(note);
+      }
+    }
     if (btn) btn.textContent = 'Opening your email…';
   });
 

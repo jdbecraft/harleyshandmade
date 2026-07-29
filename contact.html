@@ -64,6 +64,28 @@
   color:rgba(45,31,18,.72);margin-top:3px}
 #sent{display:none;padding:22px 18px;background:rgba(176,132,86,.2);border-top:1px solid rgba(74,46,29,.3)}
 #sent b{display:block;font-family:Fraunces,Georgia,serif;font-size:21px;margin-bottom:7px;color:var(--ink)}
+
+/* ---------- the Sketch Pad ---------- */
+.pad{border:1px solid rgba(74,46,29,.28);background:#FBF6EA;margin-bottom:14px}
+.padbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:9px 10px;
+  border-bottom:1px solid rgba(74,46,29,.2);background:rgba(176,132,86,.12)}
+.pgap{flex:1}
+.pt{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+  border:1px solid rgba(74,46,29,.34);background:#fff;color:var(--espresso);
+  padding:9px 11px;min-height:36px;cursor:pointer;transition:all .18s}
+.pt:hover{background:rgba(74,46,29,.08)}
+/* thumb-sized on a phone — these are drawing tools, they get pressed a lot */
+@media(max-width:820px){ .pt{min-height:46px;padding:12px 14px;font-size:10px} }
+.pt[aria-pressed="true"]{background:var(--walnut);color:var(--linen);border-color:var(--walnut)}
+#padCanvas{display:block;width:100%;height:auto;aspect-ratio:4/3;cursor:crosshair;
+  background:#FBF6EA;touch-action:none}
+.padfoot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  padding:10px;border-top:1px solid rgba(74,46,29,.2)}
+.padstate{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--oak)}
+.padstate.on{color:var(--walnut);font-weight:500}
+.padstate.on::before{content:"● ";color:var(--saddle)}
+.padnote{font-size:14.5px;line-height:1.62;color:rgba(45,31,18,.74);max-width:46ch;margin-bottom:30px}
 </style>
 </head>
 <body>
@@ -80,7 +102,7 @@
 <div class="pwrap">
   <div class="cgrid">
 
-    <form class="cform" id="cform" method="post" action="https://api.web3forms.com/submit">
+    <form class="cform" id="cform" method="post" action="https://api.web3forms.com/submit" enctype="multipart/form-data">
       <div class="hd">Send me the details</div>
 
       <!-- ⚠️ PLACEHOLDER KEY — Harley creates his own free key at web3forms.com
@@ -92,6 +114,10 @@
       <input type="hidden" name="subject" value="New inquiry from harleyshandmade.com">
       <input type="hidden" name="from_name" value="Harley's Handmade website">
       <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
+      <!-- the Sketch Pad pushes its PNG in here via DataTransfer, so the form
+           posts it as multipart/form-data and it arrives as an attachment -->
+      <input type="file" name="attachment" id="padFile" accept="image/png"
+             style="display:none" tabindex="-1" aria-hidden="true">
 
       <div class="fld">
         <label for="cname">Your name</label>
@@ -153,6 +179,27 @@
     </form>
 
     <div>
+      <div class="eyebrow">Can't find the words? Draw it</div>
+      <div class="pad">
+        <div class="padbar" role="toolbar" aria-label="Drawing tools">
+          <button type="button" class="pt" id="tool-pencil" data-tool="pencil" aria-pressed="true">Pencil</button>
+          <button type="button" class="pt" id="tool-marker" data-tool="marker" aria-pressed="false">Marker</button>
+          <button type="button" class="pt" id="tool-eraser" data-tool="eraser" aria-pressed="false">Eraser</button>
+          <span class="pgap"></span>
+          <button type="button" class="pt" id="padUndo">Undo</button>
+          <button type="button" class="pt" id="padClear">Clear</button>
+        </div>
+        <canvas id="padCanvas" width="1200" height="900"
+                aria-label="Sketch pad — draw the piece you want Harley to build"></canvas>
+        <div class="padfoot">
+          <span class="padstate" id="padState">Nothing drawn yet — the pad is optional</span>
+          <button type="button" class="pt" id="padDownload">Save the drawing</button>
+        </div>
+      </div>
+      <p class="padnote">Rough is fine. Harley reads chicken-scratch fluently — sizes scribbled
+      on a shape tell him more than a paragraph does. Anything you draw here goes to him with
+      your message.</p>
+
       <div class="eyebrow">Or just reach me</div>
       <div class="cways">
         <a href="tel:+18597492814">
@@ -210,6 +257,7 @@
 </div>
 
 <script src="assets/gate.js"></script>
+<script src="assets/sketch.js"></script>
 <script src="assets/contact.js"></script>
 </body>
 </html>
