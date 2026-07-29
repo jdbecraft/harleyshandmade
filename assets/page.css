@@ -10,7 +10,7 @@ body{background:var(--linen);color:var(--espresso);font-family:Lora,Georgia,seri
 h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:800;line-height:1.09;letter-spacing:-.022em;
          font-variation-settings:'SOFT' 16,'WONK' 1}
 .mono{font-family:'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.15em;text-transform:uppercase}
-img{display:block;max-width:100%}
+img{display:block;max-width:100%;height:auto}
 a{color:inherit}
 .wrap{max-width:1180px;margin:0 auto;padding:0 clamp(18px,4vw,44px)}
 /* the rail is fixed to the right edge — keep prose from running under it */
