@@ -99,18 +99,18 @@ img{display:block;max-width:100%}
 /* ---------- OPENING ---------- */
 .open{position:absolute;inset:0;z-index:8;display:grid;place-items:center;text-align:center;padding:20px;pointer-events:none}
 .open::before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:min(1100px,94vw);height:min(560px,72vh);pointer-events:none;
+  width:min(1320px,96vw);height:min(660px,78vh);pointer-events:none;
   background:radial-gradient(ellipse 60% 54% at 50% 56%,rgba(12,7,3,.82),rgba(12,7,3,.55) 52%,transparent 78%)}
 .stampWrap{position:relative;z-index:1}
 .stampWrap{display:grid;place-items:center;gap:clamp(16px,3vh,32px)}
-.stamp{width:clamp(150px,19vw,260px);opacity:1;mix-blend-mode:multiply;
+.stamp{width:clamp(160px,23vw,330px);opacity:1;mix-blend-mode:multiply;
   filter:contrast(1.25) brightness(.82) drop-shadow(0 1px 0 rgba(255,238,204,.22))}
-.open h1{font-size:clamp(28px,5.2vw,64px);color:#F6ECD8;
+.open h1{font-size:clamp(30px,6.4vw,82px);color:#F6ECD8;
   font-variation-settings:'opsz' 144,'SOFT' 12,'WONK' 1;text-shadow:0 3px 30px rgba(10,6,2,.85)}
 .open h1{color:rgba(246,236,216,.74)}
 .open h1 em{font-style:normal;color:#FFF7E4;
   text-shadow:0 2px 2px rgba(10,6,2,.95),0 6px 26px rgba(10,6,2,.9),0 0 60px rgba(255,196,120,.28)}
-.open p{margin-top:14px;font-size:clamp(15px,1.7vw,20px);color:#F2E6CE;max-width:36ch;font-style:italic;
+.open p{margin-top:16px;font-size:clamp(15px,2.1vw,25px);color:#F2E6CE;max-width:36ch;font-style:italic;
   text-shadow:0 2px 4px rgba(10,6,2,.98),0 4px 22px rgba(10,6,2,.95)}
 .cue{position:absolute;bottom:9vh;left:0;right:0;text-align:center;font-size:10px;
   color:rgba(246,236,216,.55);z-index:9;pointer-events:none}
@@ -221,10 +221,10 @@ img{display:block;max-width:100%}
   50%  { --pitch:-44deg; --eye:86px }
   100% { --pitch:-90deg; --eye:240px }
 }
-@keyframes zoomIn{ 0%{--zoom:.30} 100%{--zoom:1} }
+@keyframes zoomIn{ 0%{--zoom:.48} 100%{--zoom:1} }
 @property --pitch{syntax:'<angle>';inherits:false;initial-value:0deg}
 @property --eye{syntax:'<length>';inherits:false;initial-value:0px}
-@property --zoom{syntax:'<number>';inherits:false;initial-value:1}
+@property --zoom{syntax:'<number>';inherits:false;initial-value:.48}
 @property --walk{syntax:'<length>';inherits:false;initial-value:-1400px}
 @keyframes fadeOut{0%{opacity:1}62%{opacity:1}100%{opacity:0}}
 @keyframes endIn{0%{opacity:0;visibility:hidden}2%{visibility:visible}100%{opacity:1;visibility:visible}}
@@ -350,6 +350,8 @@ img{display:block;max-width:100%}
         animation:none!important;opacity:1!important}
   .stamp{width:132px;margin:0 auto 22px}
   .open h1{font-size:34px}
+  .open p{font-size:16px;margin-top:12px}
+  .open::before{display:none}
   .cue{position:relative;bottom:auto;margin:26px 0 0;animation:none!important;opacity:1!important}
   .cue span{animation:none}
 
