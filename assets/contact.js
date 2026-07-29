@@ -84,4 +84,51 @@
       if (btn) { btn.textContent = 'Sending…'; btn.disabled = true; }
     });
   }
+
+  /* ------------------------------------------------------------------------
+     THE ORDER HANDOFF — the receiving end of the cart's "Send this order".
+
+     The cart writes the itemised order to hh_order_msg and navigates here with
+     ?order=1. Without this block that order is silently discarded and the
+     customer lands on an empty form — the exact defect the top of this file is
+     about, reintroduced by the cart. Caught before it shipped, by checking
+     whether the destination actually read what the sender wrote.
+     ------------------------------------------------------------------------ */
+  var params = new URLSearchParams(location.search);
+  if (params.get('order')) {
+    var msg = null;
+    try { msg = localStorage.getItem('hh_order_msg'); } catch (e) {}
+    var details = document.getElementById('cdetails');
+    if (msg && details) {
+      /* Never clobber something the customer has already typed. */
+      details.value = details.value.trim() ? msg + '\n\n' + details.value : msg;
+
+      /* Point the select at the shop-order option. Matched on VALUE, not on the
+         wording — the first attempt used a regex against the option text and it
+         matched "Engraving on something" because of the word "something", i.e.
+         it silently mislabelled every order as an engraving enquiry. A value is
+         a contract; option text is copy and will get rewritten. */
+      var sel = document.getElementById('cwhat');
+      if (sel) {
+        var opt = sel.querySelector('option[value="shop-order"]');
+        if (opt) sel.value = 'shop-order';
+      }
+
+      /* Say plainly that the order came through, so it isn't a mystery why the
+         box is full of text. Styled inline: this appears on one page, once. */
+      var note = document.createElement('p');
+      note.setAttribute('role', 'status');
+      note.style.cssText = 'margin:0 0 16px;padding:13px 16px;border:1px solid rgba(74,46,29,.3);' +
+        'background:rgba(176,132,86,.16);font-size:15.5px;line-height:1.6;border-radius:3px';
+      note.innerHTML = "<b>Your order came through.</b> It's written out below — add anything else you want me " +
+        "to know, put your name and number in, and send it. I'll come back with the total including shipping.";
+      form.parentNode.insertBefore(note, form);
+
+      /* Deliberately NOT cleared: if they navigate away and come back, losing
+         the order would be worse than prefilling it twice. The next order
+         overwrites it. */
+      details.focus();
+      details.setSelectionRange(details.value.length, details.value.length);
+    }
+  }
 })();

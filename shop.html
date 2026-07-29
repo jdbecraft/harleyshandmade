@@ -115,10 +115,6 @@ a{color:inherit}
   font-size:11px;letter-spacing:.12em;text-transform:uppercase}
 .callbar .c1{background:var(--walnut);color:var(--linen)}
 .callbar .c2{background:var(--parchment);color:var(--espresso)}
-.cartbtn{position:fixed;top:14px;right:clamp(14px,3vw,28px);z-index:60;display:flex;align-items:center;gap:9px;
-  border:1px solid rgba(246,236,216,.45);background:rgba(22,14,6,.6);color:#F6ECD8;padding:9px 15px;
-  font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
-.cartbtn .n{background:var(--saddle);color:var(--ink);min-width:19px;height:19px;display:grid;place-items:center}
 
 @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:820px){ body{padding-bottom:58px}
@@ -288,180 +284,21 @@ a{color:inherit}
   <a class="c2" href="shop">Shop</a>
 </div>
 
-<style>
-  /* Cart panel — scoped here so nothing else on the site can be affected. */
-  .cart-scrim{position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:80;opacity:0;pointer-events:none;transition:opacity .22s ease}
-  .cart-scrim[data-open]{opacity:1;pointer-events:auto}
-  .cart-panel{position:fixed;z-index:81;right:0;top:0;bottom:0;width:min(430px,100%);background:var(--parchment,#f1e6cc);
-    color:var(--espresso,#2d1f12);display:flex;flex-direction:column;transform:translateX(102%);
-    transition:transform .26s cubic-bezier(.22,.61,.36,1);box-shadow:-18px 0 48px rgba(0,0,0,.4)}
-  .cart-panel[data-open]{transform:none}
-  @media (prefers-reduced-motion:reduce){.cart-panel,.cart-scrim{transition:none}}
-  .cart-hd{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.1rem 1.25rem;border-bottom:1px solid rgba(45,31,18,.16)}
-  .cart-hd h2{margin:0;font-size:1.1rem;letter-spacing:.02em}
-  .cart-x{background:none;border:0;font-size:1.6rem;line-height:1;cursor:pointer;padding:.2rem .5rem;color:inherit}
-  .cart-body{flex:1;overflow-y:auto;padding:1.25rem;-webkit-overflow-scrolling:touch}
-  .cart-li{padding:.85rem 0;border-bottom:1px solid rgba(45,31,18,.12)}
-  .cart-li b{display:block;font-size:.98rem}
-  .cart-li .o{font-size:.82rem;opacity:.75;margin-top:.2rem;line-height:1.5}
-  .cart-li .r{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin-top:.4rem;font-variant-numeric:tabular-nums}
-  .cart-li .q{font-size:.82rem;opacity:.7}
-  .cart-rm{background:none;border:0;font-size:.78rem;text-decoration:underline;cursor:pointer;padding:0;color:inherit;opacity:.65}
-  .cart-q{font-size:.82rem;background:rgba(176,132,86,.16);border-left:3px solid #b08456;padding:.6rem .75rem;margin-top:.55rem;border-radius:3px}
-  .cart-ft{border-top:1px solid rgba(45,31,18,.16);padding:1.15rem 1.25rem;display:grid;gap:.8rem}
-  .cart-tot{display:flex;justify-content:space-between;font-weight:700;font-size:1.12rem;font-variant-numeric:tabular-nums}
-  .cart-note{font-size:.8rem;opacity:.75;line-height:1.55}
-  .cart-cta{display:block;text-align:center;padding:.85rem 1rem;border-radius:4px;background:#2d1f12;color:#f1e6cc;
-    text-decoration:none;font-weight:700;letter-spacing:.02em;border:0;cursor:pointer;width:100%;font-size:.95rem}
-  .cart-cta.alt{background:none;border:1px solid rgba(45,31,18,.4);color:inherit;font-weight:600}
-  .cart-pending{font-size:.84rem;background:rgba(45,31,18,.07);border:1px dashed rgba(45,31,18,.32);padding:.75rem .85rem;border-radius:4px;line-height:1.55}
-  .cart-empty{text-align:center;opacity:.7;padding:2.5rem 1rem;font-size:.95rem}
-</style>
 
-<div class="cart-scrim" id="cartScrim" hidden></div>
-<aside class="cart-panel" id="cartPanel" role="dialog" aria-modal="true" aria-labelledby="cartTitle" hidden>
-  <div class="cart-hd">
-    <h2 id="cartTitle">Your order</h2>
-    <button class="cart-x" type="button" id="cartClose" aria-label="Close your order">&times;</button>
-  </div>
-  <div class="cart-body" id="cartBody"></div>
-  <div class="cart-ft" id="cartFoot"></div>
-</aside>
 
 <script src="assets/gate.js"></script>
+<script src="assets/cart.js"></script>
 <script>
-/* ============================================================================
-   THE CART — and the one thing that is deliberately not finished.
-
-   O-030 (board order, 2026-07-29): the cart is real and persists, so the day
-   this link travels somebody will fill it and press the button. It must either
-   take a payment or SAY PLAINLY that it cannot yet. Until Harley's Square
-   account exists it says so — and, more importantly, it still gives the customer
-   a working way to finish: the order goes to Harley as a message he can read.
-   A shop that says "call me" is a shop. A button that lies is not.
-
-   TO GO LIVE: paste Harley's Square checkout URL into SQUARE_CHECKOUT_URL.
-   The pending notice disappears and a real Pay button takes its place.
-   Nothing else in this file changes.
-   ========================================================================== */
-var SQUARE_CHECKOUT_URL = "";   // <-- Harley's Square checkout link
-
-(function(){
-  var KEY='hh_cart_v1', cart={};
-  try{ cart=JSON.parse(localStorage.getItem(KEY))||{} }catch(e){ cart={} }
-
-  var n     = document.getElementById('cartN'),
-      panel = document.getElementById('cartPanel'),
-      scrim = document.getElementById('cartScrim'),
-      body  = document.getElementById('cartBody'),
-      foot  = document.getElementById('cartFoot'),
-      opener= null;
-
-  function count(){ var t=0; for(var k in cart) t+=cart[k].q; return t }
-  function total(){ var t=0; for(var k in cart) t+=cart[k].p*cart[k].q; return t }
-  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(cart)) }catch(e){} }
-  function money(v){ return '$'+v.toFixed(2).replace(/\.00$/,'') }
-  function paintCount(){ if(n) n.textContent=count(); }
-
-  /* A product-page key looks like  Mini Porch Swing (Stain: Cherry, Engraving: ...)
-     Split it so the options read as their own line instead of one long title. */
-  function split(k){
-    var m = k.match(/^(.*?)\s*\((.*)\)$/);
-    return m ? { name:m[1], opts:m[2] } : { name:k, opts:'' };
-  }
-
-  function render(){
-    var keys = Object.keys(cart);
-    if(!keys.length){
-      body.innerHTML = '<p class="cart-empty">Nothing in here yet.<br>Pick something from the shop and it\'ll show up.</p>';
-      foot.innerHTML = '<a class="cart-cta alt" href="shop">Keep looking</a>';
-      return;
-    }
-    var anyQuoted = false;
-    body.innerHTML = keys.map(function(k){
-      var it=cart[k], s=split(k);
-      /* quoted extras were being dropped here, which contradicted the whole
-         point of tracking them on the product page. They show now. */
-      var q = (it.quoted && it.quoted.length) ? (anyQuoted=true,
-        '<div class="cart-q"><b>'+it.quoted.join(' · ')+'</b> — Harley prices this once he\'s seen it, '
-        +'and tells you the number before you pay. It is not in the total below.</div>') : '';
-      return '<div class="cart-li"><b>'+s.name+'</b>'
-        + (s.opts ? '<div class="o">'+s.opts+'</div>' : '')
-        + '<div class="r"><span class="q">Qty '+it.q+' · '+money(it.p)+' each</span>'
-        + '<span>'+money(it.p*it.q)+'</span></div>'
-        + q
-        + '<div class="r"><button class="cart-rm" type="button" data-rm="'+encodeURIComponent(k)+'">Remove</button><span></span></div>'
-        + '</div>';
-    }).join('');
-
-    var pay = SQUARE_CHECKOUT_URL
-      ? '<a class="cart-cta" href="'+SQUARE_CHECKOUT_URL+'" rel="noopener">Pay with card</a>'
-      : '<div class="cart-pending"><b>Card checkout isn\'t switched on yet.</b> I\'m still getting that set up, '
-        + 'so for now send me the order and I\'ll reply with the total including shipping, and how to pay. '
-        + 'Usually the same day.</div>'
-        + '<button class="cart-cta" type="button" id="cartSend">Send this order to Harley</button>';
-
-    foot.innerHTML =
-        '<div class="cart-tot"><span>'+(anyQuoted?'Total so far':'Total')+'</span><span>'+money(total())+'</span></div>'
-      + '<p class="cart-note">Shipping is a flat rate and gets added on top&nbsp;— free if you collect in Owingsville.'
-      + (anyQuoted?' The quoted items above aren\'t counted in this figure yet.':'')+'</p>'
-      + pay
-      + '<a class="cart-cta alt" href="shop">Keep looking</a>';
-  }
-
-  /* Hand the order to the contact page as a written message. No payment, no
-     card, no pretending — but the customer leaves having actually ordered. */
-  function sendOrder(){
-    var lines=['Order from the website:',''];
-    for(var k in cart){
-      var s=split(k), it=cart[k];
-      lines.push('• '+it.q+' x '+s.name+'  —  '+money(it.p*it.q));
-      if(s.opts) lines.push('    '+s.opts);
-      if(it.quoted && it.quoted.length) lines.push('    (to be quoted: '+it.quoted.join(', ')+')');
-    }
-    lines.push('', 'Total so far: '+money(total())+' plus shipping.');
-    try{ localStorage.setItem('hh_order_msg', lines.join('\n')) }catch(e){}
-    location.href = 'contact?order=1';
-  }
-
-  function open(){ opener=document.activeElement; panel.hidden=scrim.hidden=false;
-    render();
-    /* Force a reflow, THEN set the attribute. The obvious version of this used
-       requestAnimationFrame and the panel never opened — rAF does not reliably
-       fire for an element revealed in the same tick, and a cart that silently
-       stays off-screen is the worst possible failure on a shop page. Reading
-       offsetHeight makes the browser commit the closed state synchronously, so
-       the attribute change is guaranteed to be a transition and not the initial
-       paint. Caught by reading the computed transform, not by trusting the code. */
-    void panel.offsetHeight;
-    panel.dataset.open = scrim.dataset.open = '1';
-    document.getElementById('cartClose').focus();
-    document.documentElement.style.overflow='hidden'; }
-  function close(){ delete panel.dataset.open; delete scrim.dataset.open;
-    document.documentElement.style.overflow='';
-    setTimeout(function(){ panel.hidden=scrim.hidden=true; if(opener) opener.focus() },240); }
-
-  document.querySelectorAll('.add').forEach(function(b){
-    b.addEventListener('click',function(){
-      var k=b.dataset.n; if(!cart[k])cart[k]={p:parseFloat(b.dataset.p),q:0};
-      cart[k].q++; save(); paintCount();
-      var w=b.textContent; b.textContent='Added'; b.disabled=true;
-      setTimeout(function(){b.textContent=w;b.disabled=false},900);
-    });
+/* The shop tiles. Everything about the cart itself — the button, the panel, the
+   total, the quoted extras, the checkout state — lives in assets/cart.js so the
+   product pages get exactly the same cart. This is just the Add buttons. */
+document.querySelectorAll('.add').forEach(function(b){
+  b.addEventListener('click',function(){
+    HHCart.addKey(b.dataset.n, parseFloat(b.dataset.p));
+    var w=b.textContent; b.textContent='Added'; b.disabled=true;
+    setTimeout(function(){b.textContent=w;b.disabled=false},900);
   });
-
-  document.getElementById('cartBtn').addEventListener('click', open);
-  document.getElementById('cartClose').addEventListener('click', close);
-  scrim.addEventListener('click', close);
-  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&panel.dataset.open) close() });
-  foot.addEventListener('click',function(e){ if(e.target.id==='cartSend') sendOrder() });
-  body.addEventListener('click',function(e){
-    var t=e.target.getAttribute&&e.target.getAttribute('data-rm'); if(!t) return;
-    delete cart[decodeURIComponent(t)]; save(); paintCount(); render();
-  });
-
-  paintCount();
-})();
+});
 </script>
 </body>
 </html>

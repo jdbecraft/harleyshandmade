@@ -138,6 +138,10 @@
       <div class="fld">
         <label for="cwhat">What are you after?</label>
         <select id="cwhat" name="What they want">
+          <!-- Added 2026-07-29: the cart hands orders to this form, and there was
+               no option that said "I want to buy this". The closest was "a
+               question about something in the shop", which is not an order. -->
+          <option value="shop-order">An order from the shop — it's written out below</option>
           <option>Engraving on something — I'll send the wording</option>
           <option>A size that isn't on the list</option>
           <option>A stain or paint color you don't stock</option>

@@ -111,24 +111,17 @@
     for (var k in s.chosen) bits.push(k + ': ' + s.chosen[k]);
     var key = NAME + (bits.length ? ' (' + bits.join(', ') + ')' : '');
 
-    var cart = {};
-    try { cart = JSON.parse(localStorage.getItem(CART)) || {}; } catch (e) { cart = {}; }
-    if (!cart[key]) cart[key] = { p: b + s.adds, q: 0, quoted: s.quoted };
-    cart[key].q++;
-    try { localStorage.setItem(CART, JSON.stringify(cart)); } catch (e) {}
+    /* One writer, not two. assets/cart.js owns the cart — the button, the panel,
+       the total, the quoted extras and the checkout state — so the product pages
+       and the shop page behave identically. This used to write localStorage
+       directly and then hunt for a #cartN that did not exist on these pages,
+       which is why adding to the cart here gave the customer no feedback at all
+       (Jeff caught it, 2026-07-29). */
+    HHCart.addKey(key, b + s.adds, s.quoted);
 
     var btn = this, was = btn.textContent;
     btn.textContent = 'Added to your cart';
     btn.disabled = true;
     setTimeout(function () { btn.textContent = was; btn.disabled = false; }, 1400);
-    var n = document.getElementById('cartN');
-    if (n) { var t = 0; for (var i in cart) t += cart[i].q; n.textContent = t; }
   });
-
-  /* keep the header cart count honest on load */
-  var n = document.getElementById('cartN');
-  if (n) {
-    var c = {}; try { c = JSON.parse(localStorage.getItem(CART)) || {}; } catch (e) {}
-    var t = 0; for (var i in c) t += c[i].q; n.textContent = t;
-  }
 })();
