@@ -13,7 +13,7 @@
 ------------------------------------------------------------------ */
 (function () {
   var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var ON_BOARD = /(^|\/)(index\.html)?($|[?#])/.test(location.pathname.split('/').pop() || 'index.html');
+  var ON_BOARD = /(^|\/)(index\.html)?($|[?#])/.test(location.pathname.split('/').pop() || '/');
 
   /* where each station sits along the walk, as a percentage of total scroll */
   var MARKS = { story:21, material:38, process:55, shop:72, custom:89 };
