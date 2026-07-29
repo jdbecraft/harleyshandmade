@@ -41,8 +41,8 @@
     <div class="gal">
       <div class="main"><img id="galMain" src="assets/img/p/chair-1.webp" alt="Handmade cedar Adirondack chair squirrel feeder with fanned back slats, mounted on its own deck base" width="900" height="900"></div>
       <div class="strip">
-        <button type="button" data-full="assets/img/p/chair-1.webp" data-alt="Handmade cedar Adirondack chair squirrel feeder with fanned back slats, mounted on its own deck base" aria-current="true" aria-label="View angle 1"><img src="assets/img/p/chair-1.webp" alt="" loading="lazy" width="900" height="900"></button>
-        <button type="button" data-full="assets/img/p/chair-2.webp" data-alt="Handmade cedar Adirondack chair squirrel feeder with fanned back slats, mounted on its own deck base" aria-label="View angle 2"><img src="assets/img/p/chair-2.webp" alt="" loading="lazy" width="900" height="900"></button>
+        <button type="button" data-full="assets/img/p/chair-1.webp" data-alt="Handmade cedar Adirondack chair squirrel feeder with fanned back slats, mounted on its own deck base" aria-current="true" aria-label="View angle 1"><img src="assets/img/p/chair-1.webp" alt="" loading="lazy" width="74" height="74"></button>
+        <button type="button" data-full="assets/img/p/chair-2.webp" data-alt="Handmade cedar Adirondack chair squirrel feeder with fanned back slats, mounted on its own deck base" aria-label="View angle 2"><img src="assets/img/p/chair-2.webp" alt="" loading="lazy" width="74" height="74"></button>
       </div>
       <div class="shotno" id="shotno">Shot 01 of 02</div>
     </div>
@@ -61,17 +61,24 @@
     <span class="k">Stain — pick one</span>
     <div class="stains">
       <label><input type="radio" name="Stain" value="unstained" data-label="Unstained / Unfinished" checked><span class="sw" style="background-image:url(assets/img/p/stain-unstained.webp)"></span><span class="nm">Unstained / Unfinished</span></label>
-      <label><input type="radio" name="Stain" value="cedar" data-label="Natural Cedar"><span class="sw" style="background-image:url(assets/img/p/stain-cedar.webp)"></span><span class="nm">Natural Cedar</span></label>
-      <label><input type="radio" name="Stain" value="cherry" data-label="Cherry"><span class="sw" style="background-image:url(assets/img/p/stain-cherry.webp)"></span><span class="nm">Cherry</span></label>
-      <label><input type="radio" name="Stain" value="walnut" data-label="Dark Walnut"><span class="sw" style="background-image:url(assets/img/p/stain-walnut.webp)"></span><span class="nm">Dark Walnut</span></label>
+      <label><input type="radio" name="Stain" value="cedar" data-label="Natural Cedar" data-add="15"><span class="sw" style="background-image:url(assets/img/p/stain-cedar.webp)"></span><span class="nm">Natural Cedar<span class="up">+$15</span></span></label>
+      <label><input type="radio" name="Stain" value="cherry" data-label="Cherry" data-add="15"><span class="sw" style="background-image:url(assets/img/p/stain-cherry.webp)"></span><span class="nm">Cherry<span class="up">+$15</span></span></label>
+      <label><input type="radio" name="Stain" value="walnut" data-label="Dark Walnut" data-add="15"><span class="sw" style="background-image:url(assets/img/p/stain-walnut.webp)"></span><span class="nm">Dark Walnut<span class="up">+$15</span></span></label>
     </div>
+    <p class="hint">A finish adds $15 on this piece — same price whichever of the three you pick. Left unstained it's the plain cedar, and that costs nothing.</p>
     <input type="text" name="Other color" placeholder="Or name a stain or paint color I don't stock" data-quote-if-filled="A finish I don't stock">
     <p class="hint">The four above are the finishes I keep. Anything else I can do — it may carry an upcharge, and I'll tell you what it is before you pay.</p>
   </div>
   <div class="opt">
     <span class="k">Engraving (optional)</span>
-    <input type="text" name="Engraving" placeholder="The exact wording you want" data-quote-if-filled="Engraving">
-    <p class="hint">Names, farms, families, dates. Send me the wording and any picture you're working from — I draw it first, and I price it when I've seen it. A single word and a full scene aren't the same job.</p>
+    <div class="picks">
+      <label><input type="radio" name="Engraving" value="none" data-label="No engraving" checked><span>None</span></label>
+      <label><input type="radio" name="Engraving" value="simple" data-label="Simple name or short text" data-add="25"><span>A name or a short line &mdash; +$25</span></label>
+      <label><input type="radio" name="Engraving" value="long" data-label="Multiple lines or longer text" data-add="40"><span>Several lines, or a longer piece of text &mdash; +$40</span></label>
+      <label><input type="radio" name="Engraving" value="custom" data-label="Custom artwork, logo or portrait" data-quote="Custom engraving artwork"><span>Artwork, a logo, or a photo portrait &mdash; quoted</span></label>
+    </div>
+    <input type="text" name="Engraving wording" placeholder="The exact wording you want">
+    <p class="hint">Type the wording exactly how you want it to read &mdash; spelling, capitals and all. A name or one short line is $25; several lines or a longer piece of text is $40. <b>Artwork, a logo or a portrait from a photo is its own job</b> &mdash; I draw those first and give you the number before you pay, because a single word and a full scene aren't remotely the same work.</p>
   </div>
   <div class="opt">
     <span class="k">Anything else you want done to it</span>
@@ -135,10 +142,10 @@
   <div class="pwrap">
     <div class="eyebrow">Also on the bench</div>
     <div class="g">
-      <a href="p-swing"><img src="assets/img/p/swing-1.webp" alt="Mini Porch Swing" loading="lazy" width="900" height="900"><div class="n">Mini Porch Swing</div><div class="p">$75</div></a>
-      <a href="p-loveseat"><img src="assets/img/p/loveseat-1.webp" alt="Loveseat Swing" loading="lazy" width="900" height="900"><div class="n">Loveseat Swing</div><div class="p">$75</div></a>
-      <a href="p-picnic"><img src="assets/img/p/picnic-1.webp" alt="Picnic Table Feeder" loading="lazy" width="900" height="900"><div class="n">Picnic Table Feeder</div><div class="p">$75</div></a>
-      <a href="p-birdhouse"><img src="assets/img/p/birdhouse-1.webp" alt="Birdhouse" loading="lazy" width="900" height="900"><div class="n">Birdhouse</div><div class="p">$150</div></a>
+      <a href="p-swing"><img src="assets/img/p/swing-1.webp" alt="Mini Porch Swing" loading="lazy" width="300" height="300"><div class="n">Mini Porch Swing</div><div class="p">$75</div></a>
+      <a href="p-loveseat"><img src="assets/img/p/loveseat-1.webp" alt="Loveseat Swing" loading="lazy" width="300" height="300"><div class="n">Loveseat Swing</div><div class="p">$75</div></a>
+      <a href="p-picnic"><img src="assets/img/p/picnic-1.webp" alt="Picnic Table Feeder" loading="lazy" width="300" height="300"><div class="n">Picnic Table Feeder</div><div class="p">$75</div></a>
+      <a href="p-birdhouse"><img src="assets/img/p/birdhouse-1.webp" alt="Birdhouse" loading="lazy" width="300" height="300"><div class="n">Birdhouse</div><div class="p">$150</div></a>
     </div>
   </div>
 </section>
