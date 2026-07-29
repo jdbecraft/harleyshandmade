@@ -105,11 +105,8 @@
     <form class="cform" id="cform" method="post" action="https://api.web3forms.com/submit" enctype="multipart/form-data">
       <div class="hd">Send me the details</div>
 
-      <!-- ⚠️ PLACEHOLDER KEY — Harley creates his own free key at web3forms.com
-           against his own email, and it drops in here. Until then the form does
-           NOT silently vanish: the script below turns the button into a
-           pre-filled email to him instead. A form that pretends to send is the
-           most expensive defect a site like this can ship. -->
+      <!-- Web3Forms access key. Replace with the real key from web3forms.com.
+     Also update assets/cart.js. -->
       <input type="hidden" name="access_key" value="REPLACE-WITH-HARLEYS-WEB3FORMS-KEY">
       <input type="hidden" name="subject" value="New inquiry from harleyshandmade.com">
       <input type="hidden" name="from_name" value="Harley's Handmade website">
@@ -138,9 +135,6 @@
       <div class="fld">
         <label for="cwhat">What are you after?</label>
         <select id="cwhat" name="What they want">
-          <!-- Added 2026-07-29: the cart hands orders to this form, and there was
-               no option that said "I want to buy this". The closest was "a
-               question about something in the shop", which is not an order. -->
           <option value="shop-order">An order from the shop — it's written out below</option>
           <option>Engraving on something — I'll send the wording</option>
           <option>A size that isn't on the list</option>
