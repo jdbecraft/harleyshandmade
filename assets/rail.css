@@ -3,8 +3,17 @@
    does not link page.css; one stylesheet, one source of truth, every page.
    Desktop only: phones get the pinned call bar instead. */
 
-.rail{position:fixed;right:clamp(12px,2vw,26px);top:50%;transform:translateY(-50%);z-index:30;
-  display:flex;flex-direction:column;gap:2px}
+.rail{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:30;
+  display:flex;flex-direction:column;gap:2px;
+  /* its own surface, so it never disappears into whatever is behind it —
+     the header board used to swallow the top three links */
+  padding:16px 14px 16px 20px;
+  background:rgba(250,244,230,.9);
+  -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
+  border:1px solid rgba(74,46,29,.16);
+  border-right:0;
+  box-shadow:-6px 0 22px rgba(45,31,18,.09)}
+@supports not (backdrop-filter:blur(2px)){ .rail{background:rgba(250,244,230,.97)} }
 .rail a.nav{display:flex;align-items:center;justify-content:flex-end;gap:10px;
   text-decoration:none;padding:10px 0;color:rgba(45,31,18,.62);
   font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;
