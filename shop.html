@@ -242,7 +242,12 @@ a{color:inherit}
   <div class="wrap">
     <div class="eyebrow">Getting it to you</div>
     <h2>Shipping and pickup.</h2>
-    <p>Shipping is worked out at checkout on size and where it's going. Nothing padded — it costs what it costs.</p>
+    <!-- This used to read "worked out at checkout on size and where it's going", which
+         describes real-time carrier-calculated rates. Verified 2026-07-29 on Square's own
+         pricing page: real-time shipping rates are a PREMIUM-plan feature. On the free plan
+         it's a flat rate, so the old sentence was a promise the platform wouldn't keep.
+         Rewritten to be true on any plan; the exact figure goes in once Harley sets it. -->
+    <p>Shipping is added at checkout. Nothing padded — it costs what it costs, and you see the number before you pay.</p>
     <p><b>Local pickup is always free</b> in Owingsville, Winchester, Mt. Sterling and Morehead. Most folks round here just meet me.</p>
     <div class="note"><b>Bigger frames and laser engraving</b> — a name, a border, a design — are quoted on their own, because no two are the same. Message me and we'll sort it out.</div>
   </div>
