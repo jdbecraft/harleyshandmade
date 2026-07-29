@@ -144,7 +144,10 @@ img{display:block;max-width:100%}
 .card p{color:rgba(36,23,8,.86)}
 .card b{color:#20150A}
 .act{background:#241708;color:#F4E9D2}
-.act:hover{background:#4A2E1D}
+.act:hover{background:var(--saddle);color:#1A1209;transform:translateY(-2px);
+  box-shadow:0 8px 18px rgba(8,4,1,.4);border-color:#7A4B22}
+.act:active{transform:translateY(0);box-shadow:0 3px 8px rgba(8,4,1,.4)}
+.act:focus-visible{outline:3px solid var(--saddle);outline-offset:3px}
 .pick{border-color:rgba(74,46,29,.3);background:rgba(255,255,255,.4)}
 .pick h3{color:#20150A}
 .pick .pr{color:#7A4B22}
@@ -181,8 +184,10 @@ img{display:block;max-width:100%}
              inset 0 1px 0 rgba(255,255,255,.55),
              inset 0 0 0 1px rgba(122,85,51,.28)}
 .station:hover .card .plate{color:rgba(74,46,29,.62)}
-.station:hover .act{background:#4A2E1D}
-.act{position:relative;z-index:4;pointer-events:auto;display:inline-block;margin-top:20px;font-family:'IBM Plex Mono',monospace;font-size:11px;
+.station:hover .act{background:#3a2413}
+.act{position:relative;z-index:4;pointer-events:auto;cursor:pointer;display:inline-block;margin-top:20px;
+  transition:background .22s ease, color .22s ease, transform .22s ease, box-shadow .22s ease;
+  border:1px solid transparent;font-family:'IBM Plex Mono',monospace;font-size:11px;
   letter-spacing:.14em;text-transform:uppercase;color:#F4E9D2;background:#241708;
   padding:13px 22px;text-decoration:none}
 .row{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
@@ -338,26 +343,34 @@ img{display:block;max-width:100%}
   .walk{height:auto}
   .cam{position:static;height:auto;overflow:visible;perspective:none;background:#120c06}
   .world{position:static;transform:none;width:auto;height:auto;transform-style:flat}
+  /* the board was nearly black on a phone: half brightness under a 90% dark
+     wash. Let the wood actually show. */
   .floor{position:fixed;inset:0;width:100%;height:100%;transform:none;
     background-image:url(assets/img/spine.webp);background-size:cover;background-position:50% 0;
-    background-repeat:repeat-y;filter:brightness(.5) saturate(.75);z-index:0}
+    background-repeat:repeat-y;filter:brightness(1.02) saturate(.95);z-index:0}
   .edge,.lamp,.feat,.bulb,.dust,.spec,.spec2,.near{display:none}
   .haze{position:fixed;inset:0;z-index:1;
-    background:linear-gradient(180deg,rgba(18,12,6,.86),rgba(18,12,6,.94))}
+    background:linear-gradient(180deg,rgba(20,13,6,.34) 0%,rgba(20,13,6,.16) 34%,rgba(20,13,6,.46) 100%)}
 
   /* opening */
   .open{position:relative;inset:auto;z-index:5;display:block;padding:16vh 22px 8vh;
         animation:none!important;opacity:1!important}
-  .stamp{width:132px;margin:0 auto 22px}
+  .stamp{width:150px;margin:0 auto 20px;mix-blend-mode:normal;filter:none;
+         content:url(assets/img/logo.webp);
+         filter:drop-shadow(0 6px 18px rgba(0,0,0,.75))}
   .open h1{font-size:34px}
-  .open p{font-size:16px;margin-top:12px}
-  .open::before{display:none}
+  .open p{font-size:16.5px;margin-top:12px;color:#FDF6E6}
+  .open h1{text-shadow:0 2px 5px rgba(8,4,1,.95),0 4px 24px rgba(8,4,1,.9)}
+  .open::before{display:block;width:94vw;height:52vh;
+    background:radial-gradient(ellipse 62% 56% at 50% 54%,rgba(14,9,4,.7),transparent 76%)}
   .cue{position:relative;bottom:auto;margin:26px 0 0;animation:none!important;opacity:1!important}
   .cue span{animation:none}
 
   /* stations stack and stay put — everything reachable by thumb */
   .station{position:relative;left:auto;top:auto;transform:none!important;opacity:1!important;visibility:visible!important;
-    width:auto;z-index:5;padding:0 14px 20px;animation:none!important}
+    width:auto;z-index:5;padding:0 14px 20px;animation:none!important;display:block}
+  .station>.card{width:100%;max-width:100%}
+  .cardlink{display:none}
   .card{padding:26px 20px}
   .card h2{font-size:27px}
   .card p{font-size:16px}
