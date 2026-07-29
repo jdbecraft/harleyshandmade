@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 860" width="1240" height="860" font-family="'IBM Plex Mono',ui-monospace,monospace">
+  <defs>
+    <style>
+      .ink   { fill:#0E3050 }
+      .obj   { fill:none; stroke:#FFFFFF; stroke-width:2.6; stroke-linejoin:round; stroke-linecap:round }
+      .objf  { fill:rgba(255,255,255,.055); stroke:#FFFFFF; stroke-width:2.6; stroke-linejoin:round }
+      .hid   { fill:none; stroke:#BBD6EA; stroke-width:1.4; stroke-dasharray:7 6; opacity:.75 }
+      .dim   { fill:none; stroke:#CFE3F2; stroke-width:1.15 }
+      .ext   { fill:none; stroke:#CFE3F2; stroke-width:1; opacity:.55 }
+      .grid  { fill:none; stroke:#FFFFFF; stroke-width:.5; opacity:.16 }
+      .t     { fill:#EAF3FA; font-size:16px; letter-spacing:.06em }
+      .tsm   { fill:#A9C8DE; font-size:13px; letter-spacing:.10em }
+      .ttl   { fill:#FFFFFF; font-size:23px; letter-spacing:.16em }
+      .frame { fill:none; stroke:#9FC0D8; stroke-width:1.2; opacity:.55 }
+    </style>
+    <marker id="a" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 z" fill="#CFE3F2"/>
+    </marker>
+    <marker id="b" markerWidth="9" markerHeight="9" refX="1" refY="4.5" orient="auto">
+      <path d="M9,0 L0,4.5 L9,9 z" fill="#CFE3F2"/>
+    </marker>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" seed="7" result="n"/>
+      <feColorMatrix in="n" type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.13"/></feComponentTransfer>
+    </filter>
+    <radialGradient id="vig" cx="50%" cy="46%" r="78%">
+      <stop offset="55%" stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity=".42"/>
+    </radialGradient>
+    <linearGradient id="wash" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff" stop-opacity=".05"/>
+      <stop offset="45%" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity=".10"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1240" height="860" class="ink"/>
+  <rect width="1240" height="860" fill="url(#wash)"/>
+  <g class="grid">
+    <path d="M0 0"/>
+    <g id="g">
+      <line x1="0" y1="120" x2="1240" y2="120"/><line x1="0" y1="240" x2="1240" y2="240"/>
+      <line x1="0" y1="360" x2="1240" y2="360"/><line x1="0" y1="480" x2="1240" y2="480"/>
+      <line x1="0" y1="600" x2="1240" y2="600"/><line x1="0" y1="720" x2="1240" y2="720"/>
+      <line x1="160" y1="0" x2="160" y2="860"/><line x1="340" y1="0" x2="340" y2="860"/>
+      <line x1="520" y1="0" x2="520" y2="860"/><line x1="700" y1="0" x2="700" y2="860"/>
+      <line x1="880" y1="0" x2="880" y2="860"/><line x1="1060" y1="0" x2="1060" y2="860"/>
+    </g>
+  </g>
+
+  <!-- ===== SEAT FRONT ELEVATION — 1" = 46px · origin x=300 y=640 (ground) ===== -->
+  <!-- overall: length 12" = 552 · height 7" = 322 · back V-notch · 2 1/2" chamfers -->
+  <g transform="translate(300,640)">
+    <!-- seat deck (1" thick) -->
+    <path class="objf" d="M0,0 L552,0 L552,-46 L0,-46 Z"/>
+    <!-- back panel with 2 1/2" chamfered top corners + centre V-notch -->
+    <path class="objf" d="M46,-46 L46,-207 L161,-322 L241,-322 L276,-253 L311,-322 L391,-322 L506,-207 L506,-46 Z"/>
+    <!-- back vertical slat lines -->
+    <g class="hid">
+      <line x1="115" y1="-46" x2="115" y2="-276"/><line x1="161" y1="-46" x2="161" y2="-322"/>
+      <line x1="207" y1="-46" x2="207" y2="-322"/><line x1="253" y1="-46" x2="253" y2="-300"/>
+      <line x1="299" y1="-46" x2="299" y2="-300"/><line x1="345" y1="-46" x2="345" y2="-322"/>
+      <line x1="391" y1="-46" x2="391" y2="-322"/><line x1="437" y1="-46" x2="437" y2="-276"/>
+    </g>
+    <!-- left arm rest: 5 1/2" long, 1/2" thick, support 4 1/4" -->
+    <path class="objf" d="M-16,-196 L207,-196 L207,-219 L-16,-219 Z"/>
+    <path class="obj" d="M6,-196 L6,-46 M46,-196 L46,-46"/>
+    <!-- right arm rest -->
+    <path class="objf" d="M345,-196 L568,-196 L568,-219 L345,-219 Z"/>
+    <path class="obj" d="M506,-196 L506,-46 M546,-196 L546,-46"/>
+    <!-- ground line -->
+    <line class="ext" x1="-90" y1="0" x2="640" y2="0"/>
+  </g>
+
+  <!-- ===== DIMENSIONS ===== -->
+  <!-- overall length 12" (below) -->
+  <g>
+    <line class="ext" x1="300" y1="648" x2="300" y2="716"/>
+    <line class="ext" x1="852" y1="648" x2="852" y2="716"/>
+    <line class="dim" x1="300" y1="702" x2="852" y2="702" marker-start="url(#b)" marker-end="url(#a)"/>
+    <text class="t" x="576" y="694" text-anchor="middle">12"</text>
+    <text class="tsm" x="576" y="734" text-anchor="middle">LENGTH</text>
+  </g>
+  <!-- height 7" (right) -->
+  <g>
+    <line class="ext" x1="860" y1="318" x2="936" y2="318"/>
+    <line class="ext" x1="860" y1="640" x2="936" y2="640"/>
+    <line class="dim" x1="922" y1="318" x2="922" y2="640" marker-start="url(#b)" marker-end="url(#a)"/>
+    <text class="t" x="934" y="484">7"</text>
+    <text class="tsm" x="934" y="504">HEIGHT</text>
+  </g>
+  <!-- back board width 12" (top) -->
+  <g>
+    <line class="ext" x1="346" y1="310" x2="346" y2="250"/>
+    <line class="ext" x1="806" y1="310" x2="806" y2="250"/>
+    <line class="dim" x1="346" y1="264" x2="806" y2="264" marker-start="url(#b)" marker-end="url(#a)"/>
+    <text class="t" x="576" y="256" text-anchor="middle">12"</text>
+  </g>
+  <!-- 2 1/2" chamfer callout -->
+  <g>
+    <line class="dim" x1="392" y1="306" x2="452" y2="352"/>
+    <text class="t" x="384" y="302" text-anchor="end">2 1/2"</text>
+  </g>
+  <!-- arm rest 5 1/2" -->
+  <g>
+    <line class="ext" x1="284" y1="444" x2="284" y2="474"/>
+    <line class="ext" x1="507" y1="444" x2="507" y2="474"/>
+    <line class="dim" x1="284" y1="466" x2="507" y2="466" marker-start="url(#b)" marker-end="url(#a)"/>
+    <text class="t" x="396" y="492" text-anchor="middle">5 1/2"</text>
+    <text class="tsm" x="396" y="510" text-anchor="middle">ARM REST</text>
+  </g>
+  <!-- arm rest support 4 1/4" -->
+  <g>
+    <line class="dim" x1="230" y1="444" x2="230" y2="594" marker-start="url(#b)" marker-end="url(#a)"/>
+    <text class="t" x="218" y="512" text-anchor="end">4 1/4"</text>
+    <text class="tsm" x="218" y="530" text-anchor="end">ARM REST SUPPORT</text>
+  </g>
+  <!-- deck thickness 1" -->
+  <g>
+    <line class="dim" x1="268" y1="594" x2="268" y2="640" marker-start="url(#b)" marker-end="url(#a)"/>
+    <text class="tsm" x="258" y="622" text-anchor="end">1" THK</text>
+  </g>
+
+  <!-- ===== TITLE BLOCK ===== -->
+  <rect class="frame" x="40" y="40" width="1160" height="780"/>
+  <line class="frame" x1="40" y1="756" x2="1200" y2="756"/>
+  <line class="frame" x1="812" y1="756" x2="812" y2="820"/>
+  <line class="frame" x1="1010" y1="756" x2="1010" y2="820"/>
+  <text class="ttl" x="66" y="798">SWING SEAT — FRONT ELEVATION</text>
+  <text class="tsm" x="836" y="782">MATERIAL</text><text class="t" x="836" y="806">CEDAR</text>
+  <text class="tsm" x="1034" y="782">PLATE</text><text class="t" x="1034" y="806">PL. 01</text>
+  <text class="tsm" x="66" y="82">HARLEY'S HANDMADE · OWINGSVILLE, KY</text>
+  <text class="tsm" x="1174" y="82" text-anchor="end">DRAWN BY THE MAKER · SCALE 1" = 46PX</text>
+  <rect width="1240" height="860" filter="url(#grain)" opacity=".55" style="mix-blend-mode:overlay"/>
+  <rect width="1240" height="860" fill="url(#vig)"/>
+</svg>

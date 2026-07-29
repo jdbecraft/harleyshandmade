@@ -1,0 +1,6 @@
+_alternates/
+_unused/
+_forlater/
+_*.html
+Thumbs.db
+.DS_Store
