@@ -3,7 +3,7 @@
    $75 swing needs to see the thing from four sides, read what it is, tick the
    options they want and press one button. The drama lives on the board. */
 
-.pwrap{max-width:1180px;margin:0 auto;padding:0 clamp(18px,4vw,44px)}
+.pwrap{max-width:1180px;margin:0 auto;padding-inline:clamp(18px,4vw,44px)}   /* inline axis ONLY — the shorthand was wiping every section's vertical padding */
 @media(min-width:821px){ .pwrap{padding-right:clamp(150px,13vw,210px)} }
 
 .plive{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);

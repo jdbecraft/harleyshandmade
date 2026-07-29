@@ -70,7 +70,7 @@
         var note = document.createElement('p');
         note.style.cssText = 'margin-top:10px;font-size:15px;line-height:1.6';
         note.innerHTML = '<b>Your drawing downloaded as sketch-for-harley.png</b> — '
-                       + 'attach it to the email that just opened and he gets both.';
+                       + 'attach it to the email that just opened and I get both.';
         sent.appendChild(note);
       }
     }

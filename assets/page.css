@@ -12,7 +12,7 @@ h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:800;line-height:1.09;let
 .mono{font-family:'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.15em;text-transform:uppercase}
 img{display:block;max-width:100%;height:auto}
 a{color:inherit}
-.wrap{max-width:1180px;margin:0 auto;padding:0 clamp(18px,4vw,44px)}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:clamp(18px,4vw,44px)}   /* inline axis ONLY — the shorthand was wiping every section's vertical padding */
 /* the rail is fixed to the right edge — keep prose from running under it */
 @media(min-width:821px){ .wrap{padding-right:clamp(150px,13vw,210px)} }
 .narrow{max-width:760px}
