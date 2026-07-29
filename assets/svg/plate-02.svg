@@ -1,0 +1,148 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 860" width="1240" height="860" font-family="'IBM Plex Mono',ui-monospace,monospace">
+  <defs>
+    <style>
+      .ink   { fill:#0E3050 }
+      .obj   { fill:none; stroke:#FFFFFF; stroke-width:2.6; stroke-linejoin:round; stroke-linecap:round }
+      .objf  { fill:rgba(255,255,255,.055); stroke:#FFFFFF; stroke-width:2.6; stroke-linejoin:round }
+      .hid   { fill:none; stroke:#BBD6EA; stroke-width:1.4; stroke-dasharray:7 6; opacity:.75 }
+      .dim   { fill:none; stroke:#CFE3F2; stroke-width:1.15 }
+      .ext   { fill:none; stroke:#CFE3F2; stroke-width:1; opacity:.55 }
+      .grid  { fill:none; stroke:#FFFFFF; stroke-width:.5; opacity:.16 }
+      .t     { fill:#EAF3FA; font-size:16px; letter-spacing:.06em }
+      .tsm   { fill:#A9C8DE; font-size:13px; letter-spacing:.10em }
+      .ttl   { fill:#FFFFFF; font-size:23px; letter-spacing:.16em }
+      .frame { fill:none; stroke:#9FC0D8; stroke-width:1.2; opacity:.55 }
+    </style>
+    <marker id="a" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 z" fill="#CFE3F2"/>
+    </marker>
+    <marker id="b" markerWidth="9" markerHeight="9" refX="1" refY="4.5" orient="auto">
+      <path d="M9,0 L0,4.5 L9,9 z" fill="#CFE3F2"/>
+    </marker>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" seed="7" result="n"/>
+      <feColorMatrix in="n" type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.13"/></feComponentTransfer>
+    </filter>
+    <radialGradient id="vig" cx="50%" cy="46%" r="78%">
+      <stop offset="55%" stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity=".42"/>
+    </radialGradient>
+    <linearGradient id="wash" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff" stop-opacity=".05"/>
+      <stop offset="45%" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity=".10"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1240" height="860" class="ink"/>
+  <rect width="1240" height="860" fill="url(#wash)"/>
+  <g class="grid">
+    <line x1="0" y1="120" x2="1240" y2="120"/><line x1="0" y1="240" x2="1240" y2="240"/>
+    <line x1="0" y1="360" x2="1240" y2="360"/><line x1="0" y1="480" x2="1240" y2="480"/>
+    <line x1="0" y1="600" x2="1240" y2="600"/><line x1="0" y1="720" x2="1240" y2="720"/>
+    <line x1="160" y1="0" x2="160" y2="860"/><line x1="340" y1="0" x2="340" y2="860"/>
+    <line x1="520" y1="0" x2="520" y2="860"/><line x1="700" y1="0" x2="700" y2="860"/>
+    <line x1="880" y1="0" x2="880" y2="860"/><line x1="1060" y1="0" x2="1060" y2="860"/>
+  </g>
+
+  <!-- ===== TRESTLE STAND — FRONT ELEVATION · 1" = 42px · origin x=286 y=712 (ground) ===== -->
+  <g transform="translate(286,712)">
+    <!-- top board 15 1/2" x 1 1/2" -->
+    <path class="objf" d="M0,-556 L651,-556 L651,-493 L0,-493 Z"/>
+    <!-- legs (side supports) 1" stock -->
+    <path class="objf" d="M84,-493 L126,-493 L126,-42 L84,-42 Z"/>
+    <path class="objf" d="M525,-493 L567,-493 L567,-42 L525,-42 Z"/>
+    <!-- bottom feet 15 1/4" overall, 1" thick -->
+    <path class="objf" d="M-11,-42 L221,-42 L221,0 L-11,0 Z"/>
+    <path class="objf" d="M430,-42 L662,-42 L662,0 L430,0 Z"/>
+    <!-- centre bottom support 13 1/2" -->
+    <path class="objf" d="M21,-96 L630,-96 L630,-54 L21,-54 Z"/>
+    <!-- 1" right-triangle corner braces -->
+    <path class="obj" d="M126,-96 L126,-138 L168,-96 Z"/>
+    <path class="obj" d="M525,-96 L525,-138 L483,-96 Z"/>
+    <!-- eye hooks + chain, 4" drop -->
+    <g class="obj">
+      <circle cx="168" cy="-479" r="7"/><circle cx="483" cy="-479" r="7"/>
+      <path d="M168,-472 L168,-304 M483,-472 L483,-304"/>
+    </g>
+    <g class="hid">
+      <path d="M158,-455 h20 M158,-424 h20 M158,-393 h20 M158,-362 h20 M158,-331 h20"/>
+      <path d="M473,-455 h20 M473,-424 h20 M473,-393 h20 M473,-362 h20 M473,-331 h20"/>
+    </g>
+    <line class="ext" x1="-80" y1="0" x2="740" y2="0"/>
+  </g>
+
+  <!-- ===== DIMENSIONS — every leader touches its feature ===== -->
+  <!-- top board 15 1/2" -->
+  <g><line class="ext" x1="286" y1="150" x2="286" y2="112"/><line class="ext" x1="937" y1="150" x2="937" y2="112"/>
+     <line class="dim" x1="286" y1="126" x2="937" y2="126" marker-start="url(#b)" marker-end="url(#a)"/>
+     <text class="t" x="611" y="118" text-anchor="middle">15 1/2"</text>
+     <text class="tsm" x="611" y="100" text-anchor="middle">TOTAL LENGTH / TOP BOARD</text></g>
+
+  <!-- total height 13 1/4" -->
+  <g><line class="ext" x1="941" y1="156" x2="1012" y2="156"/><line class="ext" x1="952" y1="712" x2="1012" y2="712"/>
+     <line class="dim" x1="1000" y1="156" x2="1000" y2="712" marker-start="url(#b)" marker-end="url(#a)"/>
+     <text class="t" x="1016" y="428">13 1/4"</text>
+     <text class="tsm" x="1016" y="447">TOTAL HEIGHT</text></g>
+
+  <!-- side supports 12" — extension lines meet the actual leg -->
+  <g><line class="ext" x1="366" y1="219" x2="228" y2="219"/><line class="ext" x1="366" y1="670" x2="228" y2="670"/>
+     <line class="dim" x1="240" y1="219" x2="240" y2="670" marker-start="url(#b)" marker-end="url(#a)"/>
+     <text class="t" x="228" y="437" text-anchor="end">12"</text>
+     <text class="tsm" x="228" y="456" text-anchor="end">SIDE SUPPORTS</text></g>
+
+  <!-- top board width 1 1/2" -->
+  <g><line class="ext" x1="282" y1="156" x2="196" y2="156"/><line class="ext" x1="282" y1="219" x2="196" y2="219"/>
+     <line class="dim" x1="208" y1="156" x2="208" y2="219" marker-start="url(#b)" marker-end="url(#a)"/>
+     <text class="tsm" x="196" y="192" text-anchor="end">1 1/2"</text></g>
+
+  <!-- chain 4" — clear of the chain itself -->
+  <g><line class="ext" x1="450" y1="240" x2="424" y2="240"/><line class="ext" x1="450" y1="408" x2="424" y2="408"/>
+     <line class="dim" x1="432" y1="240" x2="432" y2="408" marker-start="url(#b)" marker-end="url(#a)"/>
+     <text class="t" x="444" y="316">4"</text>
+     <text class="tsm" x="444" y="335">CHAIN</text></g>
+
+  <!-- eye hook — leader lands on the hook -->
+  <g><line class="dim" x1="462" y1="233" x2="556" y2="281"/>
+     <circle cx="462" cy="233" r="2.4" fill="#CFE3F2"/>
+     <text class="t" x="564" y="286">1 1/4"</text>
+     <text class="tsm" x="564" y="305">EYE HOOK</text></g>
+
+  <!-- corner brace — leader lands on the triangle -->
+  <g><line class="dim" x1="424" y1="600" x2="330" y2="556"/>
+     <circle cx="424" cy="600" r="2.4" fill="#CFE3F2"/>
+     <text class="tsm" x="322" y="552" text-anchor="end">1" RIGHT TRIANGLES</text></g>
+
+  <!-- centre bottom support — leader note, not a competing dim line -->
+  <g><line class="dim" x1="611" y1="637" x2="611" y2="592"/>
+     <circle cx="611" cy="637" r="2.4" fill="#CFE3F2"/>
+     <text class="t" x="611" y="584" text-anchor="middle">13 1/2"</text>
+     <text class="tsm" x="611" y="566" text-anchor="middle">CENTER BOTTOM SUPPORT</text></g>
+
+  <!-- total bottom length 15 1/4" -->
+  <g><line class="ext" x1="275" y1="716" x2="275" y2="744"/><line class="ext" x1="948" y1="716" x2="948" y2="744"/>
+     <line class="dim" x1="275" y1="734" x2="948" y2="734" marker-start="url(#b)" marker-end="url(#a)"/>
+     <text class="t" x="611" y="726" text-anchor="middle">15 1/4"</text>
+     <text class="tsm" x="611" y="748" text-anchor="middle">TOTAL BOTTOM LENGTH</text></g>
+
+  <!-- general notes, inside the frame -->
+  <g><line class="ext" x1="1042" y1="506" x2="1174" y2="506"/>
+     <text class="tsm" x="1174" y="528" text-anchor="end">NOTES</text>
+     <text class="tsm" x="1174" y="550" text-anchor="end">BOTTOM SUPPORTS / TOTAL WIDTH &#183; 7"</text>
+     <text class="tsm" x="1174" y="569" text-anchor="end">SPACE HANGOVER EACH END &#183; 1/4"</text>
+     <text class="tsm" x="1174" y="588" text-anchor="end">STOCK THICKNESS &#183; 1"</text></g>
+
+  <!-- ===== TITLE BLOCK ===== -->
+  <rect class="frame" x="40" y="40" width="1160" height="780"/>
+  <line class="frame" x1="40" y1="756" x2="1200" y2="756"/>
+  <line class="frame" x1="812" y1="756" x2="812" y2="820"/>
+  <line class="frame" x1="1010" y1="756" x2="1010" y2="820"/>
+  <text class="ttl" x="66" y="798">TRESTLE STAND — FRONT ELEVATION</text>
+  <text class="tsm" x="836" y="782">MATERIAL</text><text class="t" x="836" y="806">CEDAR</text>
+  <text class="tsm" x="1034" y="782">PLATE</text><text class="t" x="1034" y="806">PL. 02</text>
+  <text class="tsm" x="66" y="82">HARLEY'S HANDMADE · OWINGSVILLE, KY</text>
+  <text class="tsm" x="1174" y="82" text-anchor="end">DRAWN BY THE MAKER · SCALE 1" = 42PX</text>
+  <rect width="1240" height="860" filter="url(#grain)" opacity=".55" style="mix-blend-mode:overlay"/>
+  <rect width="1240" height="860" fill="url(#vig)"/>
+</svg>

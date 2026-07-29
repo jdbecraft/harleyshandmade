@@ -228,8 +228,11 @@ img{display:block;max-width:100%}
 /* the far end of the board — the walk arrives somewhere */
 .endcap{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);z-index:9;
   width:min(92vw,660px);text-align:center;opacity:0;pointer-events:none}
-.endcap .mark{width:clamp(110px,12vw,158px);margin:0 auto 24px;opacity:.96;
-  filter:drop-shadow(0 3px 20px rgba(0,0,0,.7))}
+.endcap .mark{width:clamp(132px,14vw,190px);margin:0 auto 26px;position:relative;
+  filter:drop-shadow(0 10px 26px rgba(0,0,0,.75)) drop-shadow(0 2px 5px rgba(0,0,0,.6))}
+.endcap .markwrap{position:relative;display:grid;place-items:center;margin-bottom:26px}
+.endcap .markwrap::before{content:"";position:absolute;width:min(340px,52vw);aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,206,146,.20),transparent 68%)}
 .endcap h2{font-size:clamp(26px,3.8vw,46px);color:#F6ECD8;margin-bottom:12px;
   text-shadow:0 3px 26px rgba(10,6,2,.9)}
 .endcap p{color:rgba(246,236,216,.84);font-size:clamp(15px,1.6vw,18px);max-width:46ch;margin:0 auto;
@@ -367,7 +370,7 @@ img{display:block;max-width:100%}
       <div class="stampWrap">
         <img class="stamp" src="assets/img/stamp.webp" srcset="assets/img/stamp-sm.webp 560w, assets/img/stamp.webp 900w" sizes="(max-width:820px) 132px, 240px" alt="Harley's Handmade maker's mark branded into the wood">
         <div>
-          <h1>Everything here starts<br>on <em>one board.</em></h1>
+          <h1>Everything here starts<br>with <em>one board.</em></h1>
           <p>Walk it with me. You'll see the whole shop.</p>
         </div>
       </div>
@@ -426,8 +429,8 @@ img{display:block;max-width:100%}
       <a class="act" href="custom.html">Start a custom order</a>
     </div></section>
 
-    <section class="endcap" id="end">
-      <img class="mark" src="assets/img/mark-cream.webp" alt="Harley's Handmade maker's mark">
+    <section class="endcap" id="end" data-rise>
+      <div class="markwrap"><img class="mark" src="assets/img/logo.webp" alt="Harley's Handmade"></div>
       <h2>That's the whole board.</h2>
       <p>If you saw something you want, or something you want made, I'm the one who answers.</p>
       <div class="endacts">
@@ -458,6 +461,7 @@ img{display:block;max-width:100%}
   <a class="c2" href="shop.html">Shop</a>
 </div>
 
+<script src="assets/gate.js"></script>
 <script>
 (function(){
   var prog=document.getElementById('prog');

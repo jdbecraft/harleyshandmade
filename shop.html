@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Shop — Harley's Handmade, Owingsville KY</title>
+<meta name="description" content="Handmade cedar swings, feeders, birdhouses, engraved signs, hand-carved cardinals and custom picture frames. Built one at a time in Owingsville, Kentucky. Free local pickup.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,500..900,0..100,0..1&family=IBM+Plex+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1A1209;--espresso:#2D1F12;--walnut:#4A2E1D;--oak:#8B6342;
+      --saddle:#B08456;--parchment:#F1E6CC;--linen:#FAF4E6;--blueprint:#0E3050}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--linen);color:var(--espresso);font-family:Lora,Georgia,serif;font-size:18px;
+     line-height:1.62;-webkit-font-smoothing:antialiased;padding-bottom:58px}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:800;line-height:1.02;letter-spacing:-.022em;
+         font-variation-settings:'SOFT' 16,'WONK' 1}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.15em;text-transform:uppercase}
+img{display:block;max-width:100%}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 clamp(18px,4vw,44px)}
+
+/* ---- the board, still here, as the header you surfaced from ---- */
+.top{position:relative;background:#160e06;overflow:hidden}
+.top .board{position:absolute;inset:0;background:url(assets/img/gate.webp) center/cover;opacity:.9;
+  filter:brightness(.62) saturate(.9)}
+.top .fade{position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(18,11,4,.62) 0%,rgba(18,11,4,.5) 30%,rgba(18,11,4,.72) 62%,var(--linen) 99%)}
+.top .inner{position:relative;z-index:2;padding:clamp(78px,13vh,132px) 0 clamp(30px,5vh,54px)}
+.back{display:inline-flex;align-items:center;gap:9px;font-size:10px;color:rgba(246,236,216,.8);
+  text-decoration:none;border-bottom:1px solid rgba(246,236,216,.35);padding-bottom:4px}
+.back:hover{color:#fff;border-color:#fff}
+.top h1{margin-top:24px;font-size:clamp(34px,6vw,72px);color:#F6ECD8;
+  font-variation-settings:'opsz' 144,'SOFT' 12,'WONK' 1;text-shadow:0 2px 4px rgba(8,4,1,.9),0 4px 30px rgba(8,4,1,.9)}
+.top p{margin-top:14px;max-width:52ch;color:#F2E7D0;font-size:clamp(15px,1.7vw,19px);
+  text-shadow:0 1px 3px rgba(8,4,1,.98),0 3px 20px rgba(8,4,1,.95)}
+
+/* ---- the goods ---- */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2.4vw,30px);
+      padding:clamp(34px,6vw,64px) 0 clamp(20px,3vw,34px)}
+.card{background:#fff;border:1px solid rgba(74,46,29,.18);display:flex;flex-direction:column;
+      box-shadow:0 2px 0 rgba(74,46,29,.06);transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s}
+.card:hover{transform:translateY(-4px);box-shadow:0 18px 30px rgba(45,31,18,.16)}
+.ph{position:relative;background:var(--parchment);overflow:hidden}
+.ph img{width:100%;aspect-ratio:1;object-fit:cover;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+.card:hover .ph img{transform:scale(1.04)}
+.pl{position:absolute;top:10px;left:10px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;
+    letter-spacing:.15em;color:var(--linen);background:rgba(29,18,7,.8);padding:4px 8px}
+.bd{padding:16px 18px 18px;display:flex;flex-direction:column;flex:1}
+.bd h3{font-size:20px}
+.spec{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;color:var(--oak);margin-top:5px}
+.desc{font-size:15px;color:rgba(45,31,18,.78);margin-top:9px;flex:1}
+.buy{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:15px}
+.price{font-family:Fraunces;font-weight:800;font-size:25px}
+.add{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+     border:1px solid var(--walnut);background:transparent;color:var(--espresso);padding:11px 15px;cursor:pointer}
+.add:hover{background:var(--walnut);color:var(--linen)}
+.add:disabled{opacity:.55;cursor:default}
+.two{display:flex;flex-direction:column;gap:7px}
+.two .buy{margin-top:0}
+
+/* ---- terms ---- */
+.band{background:var(--parchment);margin-top:clamp(30px,5vw,58px);
+      padding:clamp(34px,5vw,60px) 0;border-top:1px solid rgba(74,46,29,.16)}
+.eyebrow{display:flex;align-items:center;gap:13px;font-size:10px;color:var(--oak);margin-bottom:16px;
+  font-family:'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase}
+.eyebrow::after{content:"";flex:1;height:1px;background:rgba(74,46,29,.22)}
+.band h2{font-size:clamp(26px,3.6vw,42px);margin-bottom:14px}
+.band p{max-width:62ch;color:rgba(45,31,18,.84)}
+.band p+p{margin-top:11px}
+.band b{color:var(--espresso)}
+.note{margin-top:22px;padding:16px 18px;border:1px solid rgba(74,46,29,.3);background:rgba(176,132,86,.14);
+  font-size:15px;color:rgba(45,31,18,.9);max-width:62ch}
+
+.cta{padding:clamp(40px,6vw,72px) 0;text-align:center}
+.cta h2{font-size:clamp(25px,3.4vw,40px);margin-bottom:10px}
+.cta p{color:rgba(45,31,18,.78);max-width:46ch;margin:0 auto}
+.acts{display:flex;gap:11px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+.acts a{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  text-decoration:none;padding:14px 22px}
+.acts .p{background:var(--walnut);color:var(--linen)}
+.acts .s{border:1px solid rgba(74,46,29,.45)}
+.acts .s:hover{background:rgba(74,46,29,.08)}
+
+.callbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:grid;grid-template-columns:1fr 1fr;
+  border-top:1px solid rgba(74,46,29,.35)}
+.callbar a{padding:14px;text-align:center;text-decoration:none;font-family:'IBM Plex Mono',monospace;
+  font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.callbar .c1{background:var(--walnut);color:var(--linen)}
+.callbar .c2{background:var(--parchment);color:var(--espresso)}
+.cartbtn{position:fixed;top:14px;right:clamp(14px,3vw,28px);z-index:60;display:flex;align-items:center;gap:9px;
+  border:1px solid rgba(246,236,216,.45);background:rgba(22,14,6,.6);color:#F6ECD8;padding:9px 15px;
+  font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+.cartbtn .n{background:var(--saddle);color:var(--ink);min-width:19px;height:19px;display:grid;place-items:center}
+
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<button class="cartbtn" id="cartBtn">Cart <span class="n" id="cartN">0</span></button>
+
+<header class="top">
+  <div class="board"></div><div class="fade"></div>
+  <div class="inner wrap" data-rise>
+    <a class="back mono" href="index.html">&larr; Back to the board</a>
+    <h1>The shop.</h1>
+    <p>These I keep on hand, or built and waiting on finish. Order one and you're waiting on me to sand it, stain it and box it — not six weeks.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="grid">
+
+    <article class="card"><div class="ph"><span class="pl">PL. 01</span>
+      <img src="assets/img/swing.webp" alt="Mini porch swing in dark stain with a carved rose, hanging from its stand"></div>
+      <div class="bd"><h3>Mini Porch Swing</h3><div class="spec mono">Cedar · 12" seat · stand optional</div>
+      <p class="desc">A porch swing at a twelfth the size, built the same way the big ones are — scalloped back, real arm rests, hung on chain.</p>
+      <div class="buy"><span class="price">$75</span>
+      <button class="add mono" data-n="Mini Porch Swing" data-p="75">Add</button></div></div></article>
+
+    <article class="card"><div class="ph"><span class="pl">PL. 02</span>
+      <img src="assets/img/feeder.webp" alt="Cedar bird feeder swing hanging from a tree with cut-out silhouettes"></div>
+      <div class="bd"><h3>Feeder</h3><div class="spec mono">Cedar · hangs from a limb</div>
+      <p class="desc">Hangs off a branch and holds up to weather. Cut-out silhouettes on request — dogs, deer, whatever you want in it.</p>
+      <div class="buy"><span class="price">$75</span>
+      <button class="add mono" data-n="Feeder" data-p="75">Add</button></div></div></article>
+
+    <article class="card"><div class="ph"><span class="pl">PL. 03</span>
+      <img src="assets/img/birdhouse.webp" alt="Log-cabin birdhouse with a hand-shingled roof and a covered porch"></div>
+      <div class="bd"><h3>Birdhouse</h3><div class="spec mono">Log cabin · hand-shingled roof</div>
+      <p class="desc">Built like a cabin, log by log, with a shingled roof laid one piece at a time. The porch is the part people notice.</p>
+      <div class="buy"><span class="price">$150</span>
+      <button class="add mono" data-n="Birdhouse" data-p="150">Add</button></div></div></article>
+
+    <article class="card"><div class="ph"><span class="pl">PL. 04</span>
+      <img src="assets/img/sign.webp" alt="Engraved oval wooden sign with a wolf, script lettering and a dragonfly"></div>
+      <div class="bd"><h3>Engraved Sign</h3><div class="spec mono">Any name · any design</div>
+      <p class="desc">Your name, your farm, your family. Engraved and torched by hand — tell me what you want on it and I'll draw it first.</p>
+      <div class="buy"><span class="price">$285</span>
+      <button class="add mono" data-n="Engraved Sign" data-p="285">Add</button></div></div></article>
+
+    <article class="card"><div class="ph"><span class="pl">PL. 05</span>
+      <img src="assets/img/cardinal.webp" alt="Hand-carved and painted cardinal perched on a live-edge hanging feeder"></div>
+      <div class="bd"><h3>Hand-Carved Cardinal</h3><div class="spec mono">Carved + painted · live-edge perch</div>
+      <p class="desc">Carved from a block and painted by hand, sat on a live-edge perch. The slowest thing I make, and the one I'm proudest of.</p>
+      <div class="buy"><span class="price">$425</span>
+      <button class="add mono" data-n="Hand-Carved Cardinal" data-p="425">Add</button></div></div></article>
+
+    <article class="card"><div class="ph"><span class="pl">PL. 06</span>
+      <img src="assets/img/frame.webp" alt="Custom picture frame with engraved lettering and horse detailing around a western print"></div>
+      <div class="bd"><h3>Custom Picture Frame</h3><div class="spec mono">Built to your art · glazing included</div>
+      <p class="desc">Built around whatever you've got — a print, a photo, a jersey. Glazing's included. Laser engraving on the frame quoted separately.</p>
+      <div class="two">
+        <div class="buy"><span class="price">$145</span>
+        <button class="add mono" data-n="Picture Frame 11x14" data-p="145">Add 11&times;14</button></div>
+        <div class="buy"><span class="price">$205</span>
+        <button class="add mono" data-n="Picture Frame up to 35x23" data-p="205">Add up to 35&times;23</button></div>
+      </div></div></article>
+
+  </div>
+</main>
+
+<section class="band">
+  <div class="wrap">
+    <div class="eyebrow">Getting it to you</div>
+    <h2>Shipping and pickup.</h2>
+    <p>Shipping is worked out at checkout on size and where it's going. Nothing padded — it costs what it costs.</p>
+    <p><b>Local pickup is always free</b> in Owingsville, Winchester, Mt. Sterling and Morehead. Most folks round here just meet me.</p>
+    <div class="note"><b>Bigger frames and laser engraving</b> — a name, a border, a design — are quoted on their own, because no two are the same. Message me and we'll sort it out.</div>
+  </div>
+</section>
+
+<section class="cta wrap">
+  <h2>Want something that isn't here?</h2>
+  <p>Any name, any design, any size. I'll draw it first so you know what you're getting before I cut.</p>
+  <div class="acts">
+    <a class="p" href="custom.html">Custom orders</a>
+    <a class="s" href="index.html">Back to the board</a>
+  </div>
+</section>
+
+<div class="callbar">
+  <a class="c1" href="tel:+18597492814">Call Harley</a>
+  <a class="c2" href="custom.html">Custom order</a>
+</div>
+
+<script src="assets/gate.js"></script>
+<script>
+(function(){
+  var KEY='hh_cart_v1', cart={};
+  try{ cart=JSON.parse(localStorage.getItem(KEY))||{} }catch(e){ cart={} }
+  var n=document.getElementById('cartN');
+  function count(){var t=0;for(var k in cart)t+=cart[k].q;return t}
+  function paint(){n.textContent=count();try{localStorage.setItem(KEY,JSON.stringify(cart))}catch(e){}}
+  document.querySelectorAll('.add').forEach(function(b){
+    b.addEventListener('click',function(){
+      var k=b.dataset.n; if(!cart[k])cart[k]={p:parseFloat(b.dataset.p),q:0};
+      cart[k].q++; paint();
+      var w=b.textContent; b.textContent='Added'; b.disabled=true;
+      setTimeout(function(){b.textContent=w;b.disabled=false},900);
+    });
+  });
+  document.getElementById('cartBtn').addEventListener('click',function(){
+    if(!count()){alert('Your cart is empty.');return}
+    var l=[],t=0;
+    for(var k in cart){l.push(cart[k].q+' x '+k+'  $'+(cart[k].p*cart[k].q).toFixed(2));t+=cart[k].p*cart[k].q}
+    alert(l.join('\n')+'\n\nTotal  $'+t.toFixed(2)+'\n\nCheckout goes live once Square is wired in.');
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
