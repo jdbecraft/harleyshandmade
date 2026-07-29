@@ -21,6 +21,16 @@
    ========================================================================== */
 var SQUARE_CHECKOUT_URL = "";   // <-- Harley's Square checkout link
 
+/* Harley's Web3Forms access key — the SAME key that's in contact.html's hidden
+   input. Free, 30 seconds, made against his own email.
+   ⚠️ TWO PLACES TO UPDATE when it exists: here, and contact.html.
+   Until then every email capture on this site falls back to a pre-filled mailto
+   rather than pretending to have sent something. That fallback is not a nicety:
+   FCR once shipped a form that loaded a thank-you page and sent nothing, and the
+   business never learned it was losing customers. */
+var WEB3FORMS_KEY = "REPLACE-WITH-HARLEYS-WEB3FORMS-KEY";
+var WEB3FORMS_PLACEHOLDER = "REPLACE-WITH-HARLEYS-WEB3FORMS-KEY";
+
 window.HHCart = (function () {
   var KEY = 'hh_cart_v1', cart = {};
   try { cart = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { cart = {}; }
@@ -61,6 +71,29 @@ window.HHCart = (function () {
 .cart-cta.alt{background:none;border:1px solid rgba(45,31,18,.4);color:inherit;font-weight:600}
 .cart-pending{font-size:.84rem;background:rgba(45,31,18,.07);border:1px dashed rgba(45,31,18,.32);padding:.75rem .85rem;border-radius:4px;line-height:1.55}
 .cart-empty{text-align:center;opacity:.7;padding:2.5rem 1rem;font-size:.95rem;line-height:1.6}
+/* "hold my cart" capture — asked at the moment of hesitation, not at the door */
+.cart-hold{border-top:1px solid rgba(45,31,18,.16);padding-top:.85rem;margin-top:.2rem}
+.cart-hold p{font-size:.84rem;line-height:1.55;margin:0 0 .55rem;opacity:.85}
+.cart-hold .row{display:flex;gap:.5rem}
+.cart-hold input{flex:1;min-width:0;font-family:inherit;font-size:16px;padding:.7rem .75rem;
+  border:1px solid rgba(45,31,18,.35);background:#fff;color:inherit;border-radius:3px;min-height:46px}
+.cart-hold input:focus{outline:2px solid #b08456;outline-offset:-1px}
+.cart-hold button{flex:none;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;padding:.7rem .9rem;border:1px solid #2d1f12;background:#2d1f12;color:#f1e6cc;
+  cursor:pointer;border-radius:3px;min-height:46px}
+.cart-hold button:disabled{opacity:.55;cursor:default}
+.cart-hold .msg{font-size:.82rem;margin-top:.5rem;line-height:1.5}
+/* the returning-visitor nudge — a line, not a popup */
+.cart-nudge{position:fixed;top:64px;right:clamp(14px,3vw,28px);z-index:59;max-width:min(310px,calc(100vw - 28px));
+  background:#f1e6cc;color:#2d1f12;border:1px solid rgba(45,31,18,.3);border-left:3px solid #b08456;
+  padding:.7rem .8rem;font-family:Lora,Georgia,serif;font-size:14px;line-height:1.5;
+  box-shadow:0 10px 26px rgba(0,0,0,.28);display:flex;gap:.6rem;align-items:flex-start;border-radius:3px}
+.cart-nudge button.go{background:none;border:0;padding:0;font:inherit;text-decoration:underline;cursor:pointer;color:inherit;text-align:left}
+/* 44px, not 32 — the rest of this site holds to 44 and a dismiss control the
+   customer has to hit twice is worse than no dismiss control. */
+.cart-nudge button.x{background:none;border:0;font-size:1.15rem;line-height:1;cursor:pointer;color:inherit;
+  opacity:.6;padding:0;min-width:44px;min-height:44px;display:grid;place-items:center;margin:-6px -6px 0 0}
+@media(max-width:820px){.cart-nudge{top:auto;bottom:66px;left:clamp(14px,3vw,28px);right:clamp(14px,3vw,28px);max-width:none}}
 `;
   var st = document.createElement('style');
   st.textContent = CSS;
@@ -146,7 +179,104 @@ window.HHCart = (function () {
       + '<p class="cart-note">Shipping is a flat rate and gets added on top&nbsp;— free if you collect in Owingsville.'
       + (anyQuoted ? ' The quoted items above aren\'t counted in this figure yet.' : '') + '</p>'
       + pay
-      + '<a class="cart-cta alt" href="shop">Keep looking</a>';
+      + '<a class="cart-cta alt" href="shop">Keep looking</a>'
+      + holdBlock();
+    wireHold();
+  }
+
+  /* ---------------- email capture ----------------
+     One helper, used by the cart's "hold my cart" and by the shop page's inline
+     signup. Posts to Web3Forms so Harley gets an email per signup — and if his
+     key doesn't exist yet, it opens a pre-filled mail to him instead of quietly
+     losing the address. Same guard the contact form already uses. */
+  var wired = WEB3FORMS_KEY && WEB3FORMS_KEY !== WEB3FORMS_PLACEHOLDER;
+
+  function validEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()); }
+
+  function captureEmail(email, subject, extra, done) {
+    if (!wired) {
+      /* No key: hand it to his mail client, fully written, and say so. A mailto
+         is not elegant but it cannot silently drop an address. */
+      var b = encodeURIComponent((extra ? extra + '\n\n' : '') + 'My email: ' + email);
+      window.location.href = 'mailto:hlritchie26@gmail.com?subject='
+        + encodeURIComponent(subject) + '&body=' + b;
+      done(true, 'unwired');
+      return;
+    }
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        access_key: WEB3FORMS_KEY,
+        subject: subject,
+        from_name: "Harley's Handmade website",
+        Email: email,
+        Details: extra || ''
+      })
+    }).then(function (r) { return r.json(); })
+      .then(function (j) { done(!!j.success, j.message || ''); })
+      .catch(function () { done(false, 'network'); });
+  }
+
+  function holdBlock() {
+    return '<div class="cart-hold">'
+      + '<p><b>Not ready yet?</b> Leave me your email and I\'ll hold this and answer any questions. '
+      + 'No spam, and I won\'t chase you.</p>'
+      + '<div class="row"><input type="email" id="cartEmail" placeholder="you@example.com" '
+      + 'autocomplete="email" inputmode="email" aria-label="Your email address">'
+      + '<button type="button" id="cartHold">Hold it</button></div>'
+      + '<p class="msg" id="cartHoldMsg" hidden></p></div>';
+  }
+
+  function wireHold() {
+    var inp = panel.querySelector('#cartEmail'),
+        b   = panel.querySelector('#cartHold'),
+        msg = panel.querySelector('#cartHoldMsg');
+    if (!b) return;
+    b.addEventListener('click', function () {
+      var v = (inp.value || '').trim();
+      msg.hidden = false;
+      if (!validEmail(v)) { msg.textContent = 'That email doesn\'t look right — mind checking it?'; inp.focus(); return; }
+      b.disabled = true; msg.textContent = 'Sending…';
+      /* Send the cart with it, so Harley knows what to hold. */
+      var lines = [];
+      for (var k in cart) {
+        var s = split(k), it = cart[k];
+        lines.push(it.q + ' x ' + s.name + (s.opts ? ' (' + s.opts + ')' : ''));
+      }
+      captureEmail(v, 'Someone asked me to hold their cart',
+        'Hold this cart:\n' + lines.join('\n') + '\n\nTotal so far: ' + money(total()),
+        function (ok, why) {
+          b.disabled = false;
+          msg.textContent = ok
+            ? (why === 'unwired'
+                ? 'Opening your email app so you can send it to me — hit send and I\'ve got it.'
+                : 'Got it. I\'ll hold this and be in touch — thanks.')
+            : 'That didn\'t go through. Call or text me on (859) 749-2814 and I\'ll sort it.';
+          if (ok && why !== 'unwired') inp.value = '';
+        });
+    });
+    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); b.click(); } });
+  }
+
+  /* ---------------- the returning-visitor nudge ----------------
+     The only thing here that reaches the customers email never can: they left
+     items and came back, and we already know because the cart persists. A line,
+     dismissible, once per session. Not a popup and never on a fresh cart. */
+  function nudge() {
+    if (!count()) return;
+    try { if (sessionStorage.getItem('hh_nudged')) return; } catch (e) {}
+    var n = count();
+    var el = document.createElement('div');
+    el.className = 'cart-nudge';
+    el.setAttribute('role', 'status');
+    el.innerHTML = '<button class="go" type="button">You\'ve still got '
+      + n + (n === 1 ? ' thing' : ' things') + ' in your cart — want to pick up where you left off?</button>'
+      + '<button class="x" type="button" aria-label="Dismiss">&times;</button>';
+    document.body.appendChild(el);
+    function bye() { el.remove(); try { sessionStorage.setItem('hh_nudged', '1'); } catch (e) {} }
+    el.querySelector('.go').addEventListener('click', function () { bye(); open(); });
+    el.querySelector('.x').addEventListener('click', bye);
   }
 
   /* Hands the order to the contact page as written text. No payment, no card,
@@ -201,8 +331,14 @@ window.HHCart = (function () {
   });
 
   refresh();
+  nudge();
 
   return {
+    /* Exposed so the shop page's inline signup uses the same submit path and the
+       same never-silently-fail guard, instead of a second copy of it. */
+    captureEmail: captureEmail,
+    validEmail: validEmail,
+    wired: wired,
     /* Both callers go through here so there is one writer, not two.
        shop.html passes a plain product name; product.js passes a key that
        already encodes the chosen options, plus any quoted extras. */

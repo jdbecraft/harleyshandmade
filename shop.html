@@ -234,6 +234,41 @@ a{color:inherit}
   </div>
 </main>
 
+<!-- Inline signup. Deliberately NOT a popup on entering the shop: somebody who
+     has just scrolled all eight pieces is the most receptive they will ever be,
+     and an interruption at the door asks before it offers. It also promises new
+     pieces rather than "deals" — Harley doesn't run deals, his prices are his
+     prices, and promising discounts to win an address is a small lie. -->
+<section class="signup">
+  <div class="wrap">
+    <div class="su-box">
+      <div class="eyebrow">Off the bench</div>
+      <h2>New pieces come off the bench a few times a month</h2>
+      <p>Want me to tell you when? I'll send a note when there's something new &mdash; no spam, no deals I don't mean, and one click gets you off it.</p>
+      <div class="su-row">
+        <input type="email" id="suEmail" placeholder="you@example.com" autocomplete="email" inputmode="email" aria-label="Your email address">
+        <button class="su-btn mono" type="button" id="suGo">Tell me</button>
+      </div>
+      <p class="su-msg" id="suMsg" hidden></p>
+    </div>
+  </div>
+</section>
+
+<style>
+.signup{padding:clamp(30px,5vw,58px) 0 0}
+.su-box{border:1px solid rgba(74,46,29,.22);background:var(--parchment);padding:clamp(22px,3.6vw,38px);max-width:62ch}
+.su-box h2{font-size:clamp(21px,2.6vw,30px);margin-bottom:11px}
+.su-box p{color:rgba(45,31,18,.84);font-size:16px}
+.su-row{display:flex;gap:9px;margin-top:18px;flex-wrap:wrap}
+.su-row input{flex:1 1 220px;min-width:0;font-family:Lora,Georgia,serif;font-size:16px;padding:13px 14px;
+  border:1px solid rgba(45,31,18,.35);background:#fff;color:var(--espresso);min-height:48px}
+.su-row input:focus{outline:2px solid var(--saddle);outline-offset:-1px}
+.su-btn{flex:none;font-size:11px;letter-spacing:.12em;padding:13px 22px;border:1px solid var(--walnut);
+  background:var(--walnut);color:var(--linen);cursor:pointer;min-height:48px}
+.su-btn:disabled{opacity:.55;cursor:default}
+.su-msg{margin-top:11px;font-size:15px}
+</style>
+
 <section class="band">
   <div class="wrap">
     <div class="eyebrow">Getting it to you</div>
@@ -299,6 +334,30 @@ document.querySelectorAll('.add').forEach(function(b){
     setTimeout(function(){b.textContent=w;b.disabled=false},900);
   });
 });
+
+/* The inline signup. Uses HHCart's submit path so there is one Web3Forms
+   integration and one never-silently-fail guard, not a second copy. */
+(function(){
+  var inp=document.getElementById('suEmail'), b=document.getElementById('suGo'), msg=document.getElementById('suMsg');
+  if(!inp||!b) return;
+  function go(){
+    var v=(inp.value||'').trim(); msg.hidden=false;
+    if(!HHCart.validEmail(v)){ msg.textContent="That email doesn't look right — mind checking it?"; inp.focus(); return; }
+    b.disabled=true; msg.textContent='Sending…';
+    HHCart.captureEmail(v,'Someone signed up for new pieces','Add me to your list for new pieces.',
+      function(ok,why){
+        b.disabled=false;
+        msg.textContent = ok
+          ? (why==='unwired'
+              ? "Opening your email app so you can send it to me — hit send and you're on the list."
+              : "You're on the list. I'll only write when there's something new.")
+          : "That didn't go through. Call or text me on (859) 749-2814 and I'll add you myself.";
+        if(ok && why!=='unwired') inp.value='';
+      });
+  }
+  b.addEventListener('click',go);
+  inp.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); go(); } });
+})();
 </script>
 </body>
 </html>
