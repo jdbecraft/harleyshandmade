@@ -55,13 +55,41 @@
               : /Chrome\//.test(navigator.userAgent) ? 'Chrome'
               : /Safari\//.test(navigator.userAgent) ? 'Safari' : 'Other';
 
+  /* Does the browser actually WIRE UP a scroll timeline, not just parse the
+     property? getAnimations() answers this synchronously and reliably.
+
+     ⚠️ A previous version of this probe tried to prove the animation VISUALLY
+     ADVANCES by scrolling and re-measuring the element. It reported a false
+     NEGATIVE on a browser that runs the effect perfectly well, because the
+     value only updates once frames are produced. A diagnostic that blames the
+     graphics driver when the graphics driver is fine is worse than no
+     diagnostic, so that check was removed rather than shipped. */
+  var TIMELINE_WIRED = null;
+  try {
+    var pst = document.createElement('style');
+    pst.textContent = '@keyframes hhProbe{from{opacity:.01}to{opacity:.02}}' +
+      '#hhProbe{animation:hhProbe linear both;animation-timeline:scroll(root)}';
+    document.head.appendChild(pst);
+    var probe = document.createElement('div');
+    probe.id = 'hhProbe';
+    probe.setAttribute('style','position:fixed;left:-9999px;top:0;width:10px;height:10px;pointer-events:none');
+    document.body.appendChild(probe);
+    var anims = probe.getAnimations ? probe.getAnimations() : [];
+    TIMELINE_WIRED = !!(anims.length && anims[0].timeline &&
+      anims[0].timeline.constructor && /ScrollTimeline/.test(anims[0].timeline.constructor.name));
+    document.body.removeChild(probe);
+    document.head.removeChild(pst);
+  } catch (e) { TIMELINE_WIRED = null; }
+
   var rows = [
     ['Browser', BROWSER + (CHROMIUM ? ' ' + CHROMIUM : '')],
     ['Window width the site sees', W + ' px' + (TOO_NARROW ? '  ← TOO NARROW' : '  ✓'), true],
+    ['Window height', window.innerHeight + ' px'],
     ['Screen resolution', screen.width + ' × ' + screen.height],
     ['Zoom / display scaling', Math.round(DPR*100) + '%' + (DPR > 1.3 ? '  ← high' : '')],
-    ['Supports the 3D scroll effect', SCROLL_ANIM ? 'Yes ✓' : 'NO  ← this is it', true],
-    ['"Reduce animations" turned on', REDUCED ? 'YES  ← this is it' : 'No ✓', true],
+    ['Browser supports the 3D effect', SCROLL_ANIM ? 'Yes ✓' : 'NO  ← THIS IS IT', true],
+    ['Scroll effect wired up', TIMELINE_WIRED === null ? 'Could not test' : (TIMELINE_WIRED ? 'Yes ✓' : 'No')],
+    ['"Reduce animations" turned on', REDUCED ? 'YES  ← THIS IS IT' : 'No ✓', true],
     ['Touch screen', COARSE ? 'Yes' : 'No']
   ];
 
@@ -79,8 +107,11 @@
         + (CHROMIUM ? " It's version " + CHROMIUM + " and needs 115 or newer." : "")
         + " Updating the browser should fix it.";
   } else if (REDUCED) {
-    msg = "Found it: this computer has “reduce animations” switched on in Windows settings, "
-        + "so the 3D walk is being skipped on purpose.";
+    msg = "Found it: this computer has “reduce animations” turned on in Windows, so the site is "
+        + "deliberately skipping the 3D walk and showing you a plain scrolling page instead. "
+        + "To see the 3D version: Windows Settings → Accessibility → Visual effects → turn ON "
+        + "“Animation effects”, then reload. It affects every browser, which is why Chrome and "
+        + "Edge both looked the same.";
   } else if (TOO_NARROW) {
     msg = "Found it: the window is only " + W + " pixels wide, and the 3D version needs more than 820. "
         + "Try pressing Ctrl and 0 together to reset zoom, then maximise the window.";
