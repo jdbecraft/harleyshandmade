@@ -54,6 +54,16 @@ const PRODUCTS = {
 /* Ceiling above base: stain (+15/+25) + stand (+20) + frame size (+60) all
    fit under this with room; anything higher is a tampered or broken cart. */
 const MAX_ADDS = 150;
+
+/* Flat shipping, in cents. Set from Harley's own figures (2026-07-30, via
+   Jeff): heaviest shop item ~3 lb, $7 of packaging per order. A 3 lb Ground
+   Advantage label at Square/Shippo commercial rates runs ~$8.50 nearby to
+   ~$15.75 to the west coast, so his true cost is ~$15.50–$22.75. $18 covers
+   packaging plus the label everywhere he is likely to ship and runs a few
+   dollars short only on a far-zone order.
+   ⚠️ The SERVER decides this number, never the browser — the client sends
+   only its choice of pickup-or-ship. */
+const SHIPPING_FLAT_CENTS = 1800;
 const MAX_LINES = 12, MAX_QTY = 25, MAX_TOTAL_CENTS = 500000; // $5,000
 
 const SUPPORT_EMAIL = 'harley@harleyshandmadeky.com';
@@ -121,12 +131,9 @@ export async function onRequestPost(context) {
   if (!lines || !lines.length || lines.length > MAX_LINES)
     return json(400, { error: 'The cart looks empty or malformed — refresh the shop page and try again.' });
 
-  /* v1 takes card payment for pickup orders only. Shipping is real but the
-     flat rate is not confirmed yet — a ship order goes by "Send this order
-     to Harley" and he replies with the total. When the rate lands, this is
-     where shipping becomes a line item. */
-  if (body.fulfillment !== 'pickup')
-    return json(400, { error: 'Card checkout currently covers pickup orders — send the order and Harley replies with shipping.' });
+  const shipping = body.fulfillment === 'ship';
+  if (!shipping && body.fulfillment !== 'pickup')
+    return json(400, { error: 'Pick pickup or shipping before paying.' });
 
   const items = [];
   let totalCents = 0;
@@ -155,6 +162,22 @@ export async function onRequestPost(context) {
       note: opts ? opts.slice(0, 500) : undefined,
     });
   }
+  if (shipping) {
+    /* A line item, not a service charge, for two reasons: it shows on the
+       receipt in the customer's own words, and the order-level KY tax
+       applies to it automatically — which Kentucky requires. Delivery,
+       postage, handling and packaging are all inside "sales price" under
+       KRS 139.010, so shipping on a taxable good is taxable. Leaving it
+       untaxed would have Harley under-collecting and owing it on audit. */
+    items.push({
+      name: 'Shipping',
+      quantity: '1',
+      base_price_money: { amount: SHIPPING_FLAT_CENTS, currency: 'USD' },
+      note: 'Flat rate, anywhere in the US',
+    });
+    totalCents += SHIPPING_FLAT_CENTS;
+  }
+
   if (totalCents < 100 || totalCents > MAX_TOTAL_CENTS)
     return json(400, { error: 'Order total out of range.' });
 
@@ -181,11 +204,17 @@ export async function onRequestPost(context) {
         taxes: [{ uid: 'ky-sales-tax', name: 'KY sales tax', type: 'ADDITIVE', percentage: '6', scope: 'ORDER' }],
       },
       checkout_options: {
-        ask_for_shipping_address: false,
+        /* Square collects the address on its own page for shipped orders, so
+           it arrives attached to the order in the dashboard — which is what
+           the Create Label button reads from. Pickup orders are never asked
+           for an address they don't need. */
+        ask_for_shipping_address: shipping,
         merchant_support_email: SUPPORT_EMAIL,
         redirect_url: url.origin + '/thanks?paid=1',
       },
-      payment_note: 'Website order — FREE PICKUP arranged with the customer (no shipping owed)',
+      payment_note: shipping
+        ? 'Website order — SHIP IT. Flat $18 shipping paid; buy the label in Orders > Shipments.'
+        : 'Website order — FREE PICKUP arranged with the customer (no shipping owed)',
     }),
   });
 
