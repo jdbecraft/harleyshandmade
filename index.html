@@ -9,16 +9,31 @@
 (function(){
   var d = document.documentElement, want = null;
   try { want = localStorage.getItem('hh_walk'); } catch(e){}
-  var able = !!(window.CSS && CSS.supports && CSS.supports('animation-timeline','scroll()'))
-          && !(window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches)
-          && !!(window.matchMedia && matchMedia('(min-width: 821px)').matches);
-  /* matchMedia, not window.innerWidth: innerWidth is unreliable while <head> is
-     still parsing - before the viewport meta is applied it can report the layout
-     width and wrongly mark a phone as walk-capable. A media query is evaluated
-     against the real viewport and is correct this early. Caught in testing at
-     390px, where the class came out "can-walk". */
-  if (!(want === 'on' && able)) d.className += ' flat';   /* opt-in only */
-  if (able) d.className += ' can-walk';                   /* only offer it if it works */
+
+  /* Two separate ideas, deliberately not conflated:
+     CAPABLE  - can this browser physically run it (feature + a real pointer-sized
+                viewport). If not, the walk is never offered.
+     REDUCED  - has the visitor's system ASKED for less motion. That is a
+                preference, not an inability, so it decides the DEFAULT but must
+                never remove the person's ability to choose otherwise.
+
+     matchMedia rather than window.innerWidth: innerWidth is unreliable while
+     <head> is still parsing, before the viewport meta is applied. */
+  var capable = !!(window.CSS && CSS.supports && CSS.supports('animation-timeline','scroll()'))
+             && !!(window.matchMedia && matchMedia('(min-width: 821px)').matches);
+  var reduced = !!(window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches);
+
+  /* Walk by default on a capable browser. Flat if it cannot run, if the visitor
+     turned it off, or if the system asked for less motion and they have not
+     explicitly overridden that. An explicit click always wins over the OS hint -
+     honouring a preference should not mean taking away the choice. */
+  var flat = !capable || want === 'off' || (reduced && want !== 'on');
+  if (flat) d.className += ' flat';
+
+  /* The offer appears whenever the walk COULD run - including for someone whose
+     system asked for less motion, so they can decide for themselves rather than
+     having to go and change a Windows setting they may not know is on. */
+  if (capable) d.className += ' can-walk';
 })();
 </script>
 <meta charset="utf-8">
@@ -746,7 +761,7 @@ html:not(.flat) .walkoff-link:hover{color:#F6ECD8}
             <p class="subflat">Come have a look. You&rsquo;ll see the whole shop.</p>
             <div class="walkoffer">
               <button type="button" id="walkOn">Show me the walk <span aria-hidden="true">&rarr;</span></button>
-              <span class="wo-note">A guided 3D walk along one of my boards. Needs a mouse and a recent browser.</span>
+              <span class="wo-note">A guided 3D walk along one of my boards.</span>
             </div>
         </div>
       </div>
