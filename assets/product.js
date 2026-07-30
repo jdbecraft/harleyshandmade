@@ -104,6 +104,38 @@
   form.addEventListener('input', paint);
   paint();
 
+  /* ---------------- how many ----------------
+     The sheet prices ONE piece; the quantity multiplies in the cart, where
+     the line shows "$X each" and the running math. Different options make
+     different cart lines, so two swings in two stains sit side by side. */
+  var qEl = document.getElementById('pqty'),
+      qMinus = document.getElementById('pqm'),
+      qPlus = document.getElementById('pqp'),
+      addBtn = document.getElementById('padd');
+  function qty() {
+    if (!qEl) return 1;
+    var n = parseInt(qEl.value, 10);
+    if (isNaN(n) || n < 1) n = 1;
+    if (n > 25) n = 25;
+    return n;
+  }
+  function qtyPaint() {
+    if (!qEl) return;
+    var n = qty();
+    qEl.value = n;
+    if (qMinus) qMinus.disabled = n <= 1;
+    if (qPlus) qPlus.disabled = n >= 25;
+    if (addBtn && !addBtn.dataset.busy)
+      addBtn.textContent = n > 1 ? 'Add ' + n + ' to cart' : 'Add to cart';
+  }
+  if (qMinus) qMinus.addEventListener('click', function () { qEl.value = qty() - 1; qtyPaint(); });
+  if (qPlus)  qPlus.addEventListener('click', function () { qEl.value = qty() + 1; qtyPaint(); });
+  if (qEl) {
+    qEl.addEventListener('input', qtyPaint);
+    qEl.addEventListener('blur', qtyPaint);
+  }
+  qtyPaint();
+
   /* ---------------- add to cart ---------------- */
   document.getElementById('padd').addEventListener('click', function () {
     var s = state(), b = base();
@@ -117,11 +149,17 @@
        directly and then hunt for a #cartN that did not exist on these pages,
        which is why adding to the cart here gave the customer no feedback at all
        (Jeff caught it, 2026-07-29). */
-    HHCart.addKey(key, b + s.adds, s.quoted);
+    var n = qty();
+    HHCart.addKey(key, b + s.adds, s.quoted, n);
 
-    var btn = this, was = btn.textContent;
-    btn.textContent = 'Added to your cart';
+    var btn = this;
+    btn.dataset.busy = '1';
+    btn.textContent = n > 1 ? 'Added ' + n + ' to your cart' : 'Added to your cart';
     btn.disabled = true;
-    setTimeout(function () { btn.textContent = was; btn.disabled = false; }, 1400);
+    setTimeout(function () {
+      delete btn.dataset.busy;
+      btn.disabled = false;
+      qtyPaint();
+    }, 1400);
   });
 })();
