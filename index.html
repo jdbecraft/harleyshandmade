@@ -1,6 +1,26 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>
+/* Which home page you get, decided before anything paints.
+   Jeff, 2026-07-29: the flat page loads by default; the walk is a choice the
+   visitor makes and we remember. Runs in <head> and sets the class synchronously
+   so there is never a flash of the wrong page. */
+(function(){
+  var d = document.documentElement, want = null;
+  try { want = localStorage.getItem('hh_walk'); } catch(e){}
+  var able = !!(window.CSS && CSS.supports && CSS.supports('animation-timeline','scroll()'))
+          && !(window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches)
+          && !!(window.matchMedia && matchMedia('(min-width: 821px)').matches);
+  /* matchMedia, not window.innerWidth: innerWidth is unreliable while <head> is
+     still parsing - before the viewport meta is applied it can report the layout
+     width and wrongly mark a phone as walk-capable. A media query is evaluated
+     against the real viewport and is correct this early. Caught in testing at
+     390px, where the class came out "can-walk". */
+  if (!(want === 'on' && able)) d.className += ' flat';   /* opt-in only */
+  if (able) d.className += ' can-walk';                   /* only offer it if it works */
+})();
+</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Harley's Handmade — Custom Woodworking, Owingsville KY</title>
@@ -431,74 +451,102 @@ img{display:block;max-width:100%;height:auto}
   .station{opacity:1 !important;visibility:visible !important;transform:none !important}
 
 }
-@media (prefers-reduced-motion:reduce){
-  /* SYNC WITH THE @supports-not BLOCK ABOVE */
 
-  /* let the document flow normally again */
-  .walk{height:auto}
-  .cam{position:static;height:auto;perspective:none}
-  .world{position:static;transform:none;width:auto;height:auto}
+/* ============================================================================
+   THE FLAT PAGE — one copy, applied by the class the <head> script sets.
 
-  /* The walk's machinery has no meaning without the walk. Static, all of this
-     is five overlapping wood squares plus three sheets of haze over the text. */
-  .floor,.feat,.edge,.bulb,.dust,.spec,.spec2,.near,.haze,.lamp,
-  .prog,.cue,.boardhint,.phoneboard{display:none !important}
+   Jeff's direction 2026-07-29: this loads by DEFAULT and the walk is opt-in.
+   Every selector is written out individually and scoped by hand — an earlier
+   attempt scoped a block programmatically, split its multi-line selector lists,
+   and left display:none applying to the whole site. Explicit beats clever.
 
-  /* THE HERO: the board becomes a backdrop instead of a plane you walk along.
-     Same photograph, doing an honest job, darkened so cream type holds up. */
-  .open{position:static;inset:auto;height:auto;min-height:0;z-index:auto;pointer-events:auto;
-    display:block;text-align:center;
-    padding:clamp(60px,11vh,126px) 20px clamp(42px,7vh,76px);
-    background:linear-gradient(180deg,rgba(11,7,3,.70),rgba(11,7,3,.84) 62%,rgba(11,7,3,.96)),
-               url(assets/img/floor.webp) center/cover no-repeat}
-  .open::before{display:none}          /* vignette was sized for the 3D scene */
-  .open .stampWrap{position:static;display:grid;place-items:center;gap:clamp(14px,2.6vh,28px)}
-  .open .stamp{width:clamp(150px,19vw,290px);mix-blend-mode:normal;opacity:.96;
-    filter:contrast(1.15) brightness(.9) drop-shadow(0 2px 10px rgba(0,0,0,.5))}
-  .open h1{font-size:clamp(30px,5.2vw,68px)}
+   The @supports-not block further down stays as the no-JavaScript safety net.
+   ========================================================================== */
+html.flat .walk{height:auto}
+html.flat .cam{position:static;height:auto;perspective:none}
+html.flat .world{position:static;transform:none;width:auto;height:auto}
 
-  /* HIS INTRODUCTION - written for the phone and hidden inside the walk, which
-     means the flat page was throwing away the only paragraph that says who he
-     is. It belongs here more than anywhere. */
-  .phoneintro{display:block !important;max-width:58ch;margin:0 auto;
-    padding:clamp(34px,6vh,64px) 22px clamp(6px,1vh,14px);text-align:center;
-    font-size:clamp(16px,1.35vw,19px);line-height:1.78;color:#E4D8BF}
-  .phoneintro b{color:#F6ECD8}
+/* the walk's machinery is five overlapping wood squares and three sheets of
+   haze once nothing is driving it */
+html.flat .floor{display:none !important}
+html.flat .feat{display:none !important}
+html.flat .edge{display:none !important}
+html.flat .bulb{display:none !important}
+html.flat .dust{display:none !important}
+html.flat .spec{display:none !important}
+html.flat .spec2{display:none !important}
+html.flat .near{display:none !important}
+html.flat .haze{display:none !important}
+html.flat .lamp{display:none !important}
+html.flat .prog{display:none !important}
+html.flat .cue{display:none !important}
+html.flat .boardhint{display:none !important}
+html.flat .phoneboard{display:none !important}
 
-  /* THE FIVE SECTIONS: each was a flaw in the wood standing for part of the
-     shop. Without the walk they read as chapters, so give them a rule and air. */
-  .station{position:static;transform:none;opacity:1;visibility:visible;
-    width:auto;max-width:760px;margin:0 auto;padding:clamp(30px,5vh,56px) 22px;
-    border-top:1px solid rgba(246,236,216,.13)}
-  .station:first-of-type{border-top:0}
-  .station .card{transform:none;opacity:1}
+/* these are revealed by scroll-driven animations with fill-mode "both"; with
+   nothing driving them they sit frozen on their 0% keyframe, and animation
+   values outrank normal declarations, so cancel the animation at the source */
+html.flat .open{animation:none !important;animation-timeline:auto !important}
+html.flat .world{animation:none !important;animation-timeline:auto !important}
+html.flat .station{animation:none !important;animation-timeline:auto !important}
+html.flat .station .card{animation:none !important;animation-timeline:auto !important}
+html.flat .endcap{animation:none !important;animation-timeline:auto !important}
+html.flat .phoneintro{animation:none !important;animation-timeline:auto !important}
 
-  /* THE ENDCAP - dropped entirely by the old fallback, so the page simply
-     stopped after the last section with no mark and no way onward. */
-  .endcap{display:block !important;position:static;transform:none;opacity:1;visibility:visible;
-    height:auto;min-height:0;text-align:center;
-    padding:clamp(46px,8vh,100px) 22px clamp(60px,10vh,116px);
-    border-top:1px solid rgba(246,236,216,.13)}
-  .endcap .markwrap{position:static;display:grid;place-items:center}
-  .endcap .mark{width:clamp(120px,15vw,220px);opacity:.9}
-  /* "Walk it with me" promises an interaction this page does not have. Swap in
-     a line that is true here. Real markup rather than CSS content, so it stays
-     selectable and reads correctly to a screen reader. */
-  .subwalk{display:none !important}
-  .subflat{display:block !important}
+/* THE HERO — the board becomes a backdrop rather than a plane you walk */
+html.flat .open{position:static;inset:auto;height:auto;min-height:0;z-index:auto;
+  pointer-events:auto;display:block;text-align:center;
+  padding:clamp(60px,11vh,126px) 20px clamp(42px,7vh,76px);
+  background:linear-gradient(180deg,rgba(11,7,3,.70),rgba(11,7,3,.84) 62%,rgba(11,7,3,.96)),
+             url(assets/img/floor.webp) center/cover no-repeat}
+html.flat .open::before{display:none}
+html.flat .open .stampWrap{position:static;display:grid;place-items:center;gap:clamp(14px,2.6vh,28px)}
+html.flat .open .stamp{width:clamp(150px,19vw,290px);mix-blend-mode:normal;opacity:.96;
+  filter:contrast(1.15) brightness(.9) drop-shadow(0 2px 10px rgba(0,0,0,.5))}
+html.flat .open h1{font-size:clamp(30px,5.2vw,68px)}
+html.flat .subwalk{display:none}
+html.flat .subflat{display:block}
 
-  /* ROOT CAUSE, not a patch: every one of these is revealed by a scroll-driven
-     animation with fill-mode "both". When the animation never runs they sit on
-     their 0% keyframe - opacity 0, visibility hidden - and animation values
-     outrank normal declarations, which is why setting opacity:1 here quietly
-     lost. Cancel the animations and the elements simply exist again. */
-  .open,.world,.floor,.station,.station .card,.endcap,.endcap .markwrap,.endcap .mark,
-  .phoneintro,.near,.haze{animation:none !important;animation-timeline:auto !important}
-  .endcap{position:static !important;inset:auto !important;opacity:1 !important;
-    visibility:visible !important;height:auto !important;transform:none !important}
-  .station{opacity:1 !important;visibility:visible !important;transform:none !important}
+/* his written introduction — hidden inside the walk, essential here */
+html.flat .phoneintro{display:block;max-width:58ch;margin:0 auto;
+  padding:clamp(34px,6vh,64px) 22px clamp(6px,1vh,14px);text-align:center;
+  font-size:clamp(16px,1.35vw,19px);line-height:1.78;color:#E4D8BF}
+html.flat .phoneintro b{color:#F6ECD8}
 
-}
+/* the five sections read as chapters without the walk */
+html.flat .station{position:static;transform:none;opacity:1;visibility:visible;
+  width:auto;max-width:760px;margin:0 auto;padding:clamp(30px,5vh,56px) 22px;
+  border-top:1px solid rgba(246,236,216,.13)}
+html.flat .station:first-of-type{border-top:0}
+html.flat .station .card{transform:none;opacity:1}
+
+/* the endcap, which the old fallback dropped entirely */
+html.flat .endcap{display:block;position:static !important;inset:auto !important;
+  transform:none !important;opacity:1 !important;visibility:visible !important;
+  height:auto !important;min-height:0;text-align:center;
+  padding:clamp(46px,8vh,100px) 22px clamp(60px,10vh,116px);
+  border-top:1px solid rgba(246,236,216,.13)}
+html.flat .endcap .markwrap{position:static;display:grid;place-items:center}
+html.flat .endcap .mark{width:clamp(120px,15vw,220px);opacity:.9}
+
+/* ---------- CHOOSING THE WALK ---------- */
+.walkoffer{display:none}
+html.flat.can-walk .walkoffer{display:grid;justify-items:center;gap:9px;margin-top:clamp(22px,4vh,38px)}
+.walkoffer button{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;cursor:pointer;padding:14px 24px;min-height:46px;color:#F6ECD8;
+  background:rgba(246,236,216,.10);border:1px solid rgba(246,236,216,.5);border-radius:2px;
+  transition:background .2s,border-color .2s}
+.walkoffer button:hover{background:rgba(246,236,216,.2);border-color:#F6ECD8}
+.walkoffer button:focus-visible{outline:2px solid #B08456;outline-offset:3px}
+.wo-note{font-family:Lora,Georgia,serif;font-size:13px;color:rgba(232,220,196,.72);
+  max-width:34ch;line-height:1.5;text-align:center}
+.walkoff-link{display:none}
+html:not(.flat) .walkoff-link{display:block;width:100%;background:none;border:0;cursor:pointer;
+  font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(246,236,216,.5);padding:8px 0;text-align:right}
+html:not(.flat) .walkoff-link:hover{color:#F6ECD8}
+@media(max-width:820px){.walkoffer{display:none !important}.walkoff-link{display:none !important}}
+
 
 /* ============================================================
    PHONE — a different design, not the desktop dimmed down.
@@ -696,6 +744,10 @@ img{display:block;max-width:100%;height:auto}
           <h1>Everything here starts<br>with <em>one board.</em></h1>
           <p class="subwalk">Walk it with me. You&rsquo;ll see the whole shop.</p>
             <p class="subflat">Come have a look. You&rsquo;ll see the whole shop.</p>
+            <div class="walkoffer">
+              <button type="button" id="walkOn">Show me the walk <span aria-hidden="true">&rarr;</span></button>
+              <span class="wo-note">A guided 3D walk along one of my boards. Needs a mouse and a recent browser.</span>
+            </div>
         </div>
       </div>
       <div class="boardhint">Tap a mark in the wood</div>
@@ -796,6 +848,7 @@ img{display:block;max-width:100%;height:auto}
   <!-- a link, not a scroll target: there is no station on the board for this one -->
   <a class="nav" href="contact"><span class="lbl">Get in Touch</span><i></i></a>
   <div class="sep"></div>
+    <button type="button" id="walkOff" class="walkoff-link">Turn off the walk</button>
   <div class="contact">
     <a href="tel:+18597492814" aria-label="Call Harley on 859 749 2814">
       <span class="lbl">(859) 749-2814</span>
@@ -869,6 +922,16 @@ img{display:block;max-width:100%;height:auto}
     },{passive:true});
   }
 
+})();
+</script>
+<script>
+/* Store the choice and reload, so the page is always rendered by one code path
+   rather than patched into a second state after the fact. */
+(function(){
+  function set(v){ try{ localStorage.setItem('hh_walk', v); }catch(e){} location.reload(); }
+  var on = document.getElementById('walkOn'), off = document.getElementById('walkOff');
+  if (on)  on.addEventListener('click', function(){ set('on'); });
+  if (off) off.addEventListener('click', function(){ set('off'); });
 })();
 </script>
 </body>
