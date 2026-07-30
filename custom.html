@@ -26,6 +26,57 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,500..900,0..100,0..1&family=IBM+Plex+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/page.css">
 <link rel="stylesheet" href="assets/rail.css">
+<style>
+/* ---------- custom work gallery ----------
+   No captions, by Jeff's direction: a label under every photo turns a gallery
+   into a catalogue, and none of these are stock items to catalogue. Alt text is
+   still written on every image — that is accessibility, not a caption. */
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));
+  gap:clamp(9px,1.4vw,16px);margin:clamp(10px,2vh,24px) 0 0}
+.gitem{padding:0;border:1px solid rgba(74,46,29,.22);background:var(--parchment);cursor:zoom-in;
+  overflow:hidden;display:block;transition:transform .3s cubic-bezier(.2,.7,.2,1),box-shadow .3s}
+.gitem:hover{transform:translateY(-3px);box-shadow:0 14px 26px rgba(45,31,18,.18)}
+.gitem:focus-visible{outline:2px solid var(--saddle);outline-offset:3px}
+.gitem img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+@media (prefers-reduced-motion:reduce){.gitem{transition:none}.gitem:hover{transform:none}}
+
+/* lightbox */
+.glb{position:fixed;inset:0;z-index:120;background:rgba(12,7,3,.94);display:none;
+  place-items:center;padding:clamp(14px,3vw,40px)}
+.glb[data-open]{display:grid}
+.glb img{max-width:100%;max-height:86vh;object-fit:contain;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.glb-x{position:absolute;top:12px;right:14px;background:none;border:1px solid rgba(246,236,216,.45);
+  color:#F6ECD8;font-size:22px;line-height:1;cursor:pointer;min-width:46px;min-height:46px;
+  display:grid;place-items:center;border-radius:3px}
+.glb-x:hover{background:rgba(246,236,216,.14)}
+.glb-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(246,236,216,.12);
+  border:1px solid rgba(246,236,216,.4);color:#F6ECD8;font-size:26px;line-height:1;cursor:pointer;
+  min-width:48px;min-height:48px;display:grid;place-items:center;border-radius:3px}
+.glb-prev{left:clamp(8px,2vw,26px)}
+.glb-next{right:clamp(8px,2vw,26px)}
+.glb-nav:hover{background:rgba(246,236,216,.24)}
+
+/* enquiry form */
+.askbox{border:1px solid rgba(74,46,29,.24);background:var(--parchment);
+  padding:clamp(22px,4vw,42px);margin-top:clamp(24px,4vh,44px)}
+.gform{margin-top:20px}
+.grow{margin-bottom:14px}
+.gfl{display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--oak);margin-bottom:7px}
+.opt-lite{text-transform:none;letter-spacing:0;font-family:Lora,Georgia,serif;opacity:.72}
+.gform input,.gform textarea{width:100%;font-family:Lora,Georgia,serif;font-size:16px;
+  padding:13px 14px;border:1px solid rgba(74,46,29,.34);background:#fff;color:var(--espresso);
+  min-height:48px;border-radius:0}
+.gform textarea{min-height:120px;resize:vertical;line-height:1.55}
+.gform input:focus,.gform textarea:focus{outline:2px solid var(--saddle);outline-offset:-1px}
+.gsend{width:100%;padding:16px;border:0;cursor:pointer;background:var(--walnut);color:var(--linen);
+  font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  min-height:50px;transition:background .2s}
+.gsend:hover{background:var(--espresso)}
+.gsend:disabled{opacity:.55;cursor:default}
+.gmsg{margin-top:12px;font-size:15.5px;line-height:1.6}
+.gnote{margin-top:13px;font-size:14px;line-height:1.6;color:rgba(45,31,18,.72)}
+</style>
 </head>
 <body>
 
@@ -83,18 +134,56 @@
 </section>
 
 <section class="wrap narrow" data-rise>
-  <div class="eyebrow">What I've built</div>
-  <h2>Some of it isn't in the shop.</h2>
-  <p>Full-size porch swings and A-frame stands. Engraved family signs, torched and finished by hand. Pet silhouettes cut to your dog. Picture frames built around whatever you've got. Furniture, when somebody asks for it.</p>
-  <p>If you've seen something like it and want your own version, bring me a photo. If nobody makes what you're after, that's usually a better reason to call.</p>
-  <figure class="fig">
-    <img src="assets/img/sign.webp" alt="An engraved oval sign with a wolf, script lettering and a dragonfly, made to order" width="1000" height="1000">
-  </figure>
-  <div class="cap">Fig. 01 — Engraved and torched by hand, made to order</div>
-  <figure class="fig">
-    <img src="assets/img/feeder.webp" alt="A cedar swing with two dachshund silhouettes cut into the back panel, hung on rope" loading="lazy" decoding="async" width="1000" height="1000">
-  </figure>
-  <div class="cap">Fig. 02 — Somebody's two dachshunds, cut into the back of a swing</div>
+  <div class="eyebrow">What I&rsquo;ve built</div>
+  <h2>Some of it isn&rsquo;t in the shop.</h2>
+  <p>Full-size porch swings and A-frame stands. Engraved family signs, torched and finished by hand. Pet silhouettes cut to your dog. Hand-carved birds. Picture frames built around whatever you&rsquo;ve got. Furniture, when somebody asks for it.</p>
+  <p>These are pieces I&rsquo;ve already made for people. <b>None of them are stock</b> &mdash; each one was drawn, measured and cut for whoever asked. If you see something here you&rsquo;d like your own version of, tell me and I&rsquo;ll price it.</p>
+</section>
+
+<section class="wrap" data-rise>
+  <div class="gallery" id="gallery">
+    <button type="button" class="gitem" data-full="assets/img/p/sign-1.webp"><img src="assets/img/p/sign-1.webp" alt="Engraved oval sign with script lettering, torched and finished by hand" loading="lazy" decoding="async" width="1000" height="1000"></button>
+    <button type="button" class="gitem" data-full="assets/img/p/sign-2.webp"><img src="assets/img/p/sign-2.webp" alt="Engraved wooden sign, close on the burnt lettering" loading="lazy" decoding="async" width="1000" height="1000"></button>
+    <button type="button" class="gitem" data-full="assets/img/p/cardinal-1.webp"><img src="assets/img/p/cardinal-1.webp" alt="Hand-carved red cardinal on a live-edge wooden perch" loading="lazy" decoding="async" width="1000" height="1000"></button>
+    <button type="button" class="gitem" data-full="assets/img/p/cardinal-2.webp"><img src="assets/img/p/cardinal-2.webp" alt="Hand-carved cardinal seen from the side, showing the painted feathers" loading="lazy" decoding="async" width="1000" height="1000"></button>
+    <button type="button" class="gitem" data-full="assets/img/p/cardinal-3.webp"><img src="assets/img/p/cardinal-3.webp" alt="Hand-carved cardinal from above, on its perch" loading="lazy" decoding="async" width="1000" height="1000"></button>
+    <button type="button" class="gitem" data-full="assets/img/p/cardinal-4.webp"><img src="assets/img/p/cardinal-4.webp" alt="Hand-carved cardinal, close on the beak and eye" loading="lazy" decoding="async" width="1000" height="1000"></button>
+    <button type="button" class="gitem" data-full="assets/img/p/frame-1.webp"><img src="assets/img/p/frame-1.webp" alt="Custom wooden picture frame with engraved lettering, on the workbench" loading="lazy" decoding="async" width="1000" height="1000"></button>
+    <button type="button" class="gitem" data-full="assets/img/p/frame-2.webp"><img src="assets/img/p/frame-2.webp" alt="Custom picture frame, close on the joined corner" loading="lazy" decoding="async" width="1000" height="1000"></button>
+    <button type="button" class="gitem" data-full="assets/img/p/frame-3.webp"><img src="assets/img/p/frame-3.webp" alt="Custom picture frame built to size, seen straight on" loading="lazy" decoding="async" width="1000" height="1000"></button>
+    <button type="button" class="gitem" data-full="assets/img/p/frame-4.webp"><img src="assets/img/p/frame-4.webp" alt="Custom picture frame with engraved detail along the base" loading="lazy" decoding="async" width="1000" height="1000"></button>
+    <button type="button" class="gitem" data-full="assets/img/feeder.webp"><img src="assets/img/feeder.webp" alt="Cedar swing with two dachshund silhouettes cut into the back panel" loading="lazy" decoding="async" width="1000" height="1000"></button>
+    <button type="button" class="gitem" data-full="assets/img/sign.webp"><img src="assets/img/sign.webp" alt="Engraved oval sign with a wolf, script lettering and a dragonfly" loading="lazy" decoding="async" width="1000" height="1000"></button>
+  </div>
+</section>
+
+<section class="wrap narrow" data-rise>
+  <div class="askbox">
+    <div class="eyebrow">See something you like?</div>
+    <h2>Tell me which one.</h2>
+    <p>Every piece above was made for somebody. I can build you your own version &mdash; your name, your size, your dog, your wood. Send me a note and I&rsquo;ll come back with a price before anything gets cut.</p>
+    <form class="gform" id="gform">
+      <div class="grow">
+        <label class="gfl" for="gname">Your name</label>
+        <input id="gname" name="Name" type="text" autocomplete="name" required>
+      </div>
+      <div class="grow">
+        <label class="gfl" for="gemail">Email</label>
+        <input id="gemail" name="Email" type="email" inputmode="email" autocomplete="email" required>
+      </div>
+      <div class="grow">
+        <label class="gfl" for="gphone">Phone <span class="opt-lite">(if you&rsquo;d rather I call)</span></label>
+        <input id="gphone" name="Phone" type="tel" inputmode="tel" autocomplete="tel">
+      </div>
+      <div class="grow">
+        <label class="gfl" for="gwhat">What caught your eye, and what you want</label>
+        <textarea id="gwhat" name="Details" required placeholder="Which piece above, and what you would want changed &mdash; a name, a size, a different wood, your own design."></textarea>
+      </div>
+      <button class="gsend" type="submit">Send it to Harley</button>
+      <p class="gmsg" id="gmsg" hidden></p>
+      <p class="gnote">Goes straight to me, not to a company. I answer within a day or two &mdash; I run this alongside a day job, so I won&rsquo;t promise instant. Or just call <a href="tel:+18597492814">(859) 749-2814</a>.</p>
+    </form>
+  </div>
 </section>
 
 <section class="cta wrap narrow rule">
@@ -130,5 +219,95 @@
 </div>
 
 <script src="assets/gate.js"></script>
+<div class="glb" id="glb" role="dialog" aria-modal="true" aria-label="Photo">
+  <button class="glb-x" type="button" id="glbX" aria-label="Close">&times;</button>
+  <button class="glb-nav glb-prev" type="button" id="glbPrev" aria-label="Previous photo">&lsaquo;</button>
+  <img id="glbImg" src="" alt="">
+  <button class="glb-nav glb-next" type="button" id="glbNext" aria-label="Next photo">&rsaquo;</button>
+</div>
+<script>
+/* Gallery lightbox + enquiry form. Keyboard works: Escape closes, arrows move. */
+(function(){
+  var items = [].slice.call(document.querySelectorAll('.gitem'));
+  var lb = document.getElementById('glb');
+  var img = document.getElementById('glbImg');
+  var at = 0, opener = null;
+  if (items.length && lb) {
+    var show = function(i){
+      at = (i + items.length) % items.length;
+      var b = items[at], inner = b.querySelector('img');
+      img.src = b.getAttribute('data-full');
+      img.alt = inner ? inner.alt : '';
+    };
+    var open = function(i){
+      opener = document.activeElement;
+      show(i);
+      lb.setAttribute('data-open','1');
+      document.documentElement.style.overflow = 'hidden';
+      document.getElementById('glbX').focus();
+    };
+    var close = function(){
+      lb.removeAttribute('data-open');
+      document.documentElement.style.overflow = '';
+      if (opener && opener.focus) opener.focus();
+    };
+    items.forEach(function(b,i){ b.addEventListener('click', function(){ open(i); }); });
+    document.getElementById('glbX').addEventListener('click', close);
+    document.getElementById('glbPrev').addEventListener('click', function(){ show(at-1); });
+    document.getElementById('glbNext').addEventListener('click', function(){ show(at+1); });
+    lb.addEventListener('click', function(e){ if (e.target === lb) close(); });
+    document.addEventListener('keydown', function(e){
+      if (!lb.hasAttribute('data-open')) return;
+      if (e.key === 'Escape') close();
+      else if (e.key === 'ArrowLeft') show(at-1);
+      else if (e.key === 'ArrowRight') show(at+1);
+    });
+  }
+
+  /* Same never-silently-fail guard as the rest of the site: with no access key
+     the message is handed to the customer's own mail client, pre-filled, rather
+     than the form pretending to have sent it. */
+  var KEY = 'REPLACE-WITH-HARLEYS-WEB3FORMS-KEY';
+  var f = document.getElementById('gform');
+  var msg = document.getElementById('gmsg');
+  if (!f) return;
+  f.addEventListener('submit', function(e){
+    e.preventDefault();
+    if (!f.reportValidity()) return;
+    var btn = f.querySelector('.gsend');
+    var get = function(n){ var el = f.querySelector('[name="'+n+'"]'); return el ? el.value.trim() : ''; };
+    var body = 'Name: ' + get('Name') + '\nEmail: ' + get('Email') + '\nPhone: ' + get('Phone') +
+               '\n\nWhat they want:\n' + get('Details');
+    msg.hidden = false;
+    if (KEY.indexOf('REPLACE-WITH') === 0) {
+      msg.textContent = 'Opening your email app so you can send it to me — hit send and I have got it.';
+      window.location.href = 'mailto:harley@harleyshandmadeky.com?subject=' +
+        encodeURIComponent('Custom work enquiry from the gallery') + '&body=' + encodeURIComponent(body);
+      return;
+    }
+    btn.disabled = true;
+    msg.textContent = 'Sending…';
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        access_key: KEY,
+        subject: 'Custom work enquiry from the gallery',
+        from_name: 'Harleys Handmade website',
+        Name: get('Name'), Email: get('Email'), Phone: get('Phone'), Details: get('Details')
+      })
+    }).then(function(r){ return r.json(); }).then(function(j){
+      btn.disabled = false;
+      msg.textContent = j.success
+        ? 'Got it — I will come back to you with a price. Thanks.'
+        : 'That did not go through. Call or text me on (859) 749-2814 and I will sort it.';
+      if (j.success) f.reset();
+    }).catch(function(){
+      btn.disabled = false;
+      msg.textContent = 'That did not go through. Call or text me on (859) 749-2814 and I will sort it.';
+    });
+  });
+})();
+</script>
 </body>
 </html>
