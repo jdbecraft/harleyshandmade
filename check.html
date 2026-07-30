@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Site check</title>
+<style>
+  /* Deliberately plain and self-contained: this page must render correctly even
+     on the browser that is failing, so it uses nothing newer than flexbox. */
+  body{margin:0;padding:22px 18px;background:#faf4e6;color:#2d1f12;
+       font:16px/1.5 -apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:620px;margin:0 auto}
+  h1{font-size:21px;margin:0 0 4px}
+  .sub{color:#6b5b4a;font-size:14px;margin-bottom:20px}
+  .verdict{padding:16px 18px;border-radius:8px;font-size:17px;font-weight:700;line-height:1.4;margin-bottom:20px}
+  .ok{background:#dff3e0;border:2px solid #3f8a4a;color:#1e5427}
+  .bad{background:#fde8e4;border:2px solid #c0432c;color:#7d2617}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:9px 8px;border-bottom:1px solid #e0d5bf;vertical-align:top}
+  td.k{color:#6b5b4a;width:52%}
+  td.v{font-weight:700;text-align:right}
+  .big{font-size:19px}
+  .note{margin-top:22px;padding:14px 16px;background:#fff;border:1px solid #e0d5bf;
+        border-radius:8px;font-size:14px;color:#4a3b2a;line-height:1.6}
+  code{background:#f1e6cc;padding:1px 5px;border-radius:3px;font-size:13px}
+</style></head>
+<body>
+<div class="wrap">
+  <h1>Harley's Handmade — site check</h1>
+  <p class="sub">Nothing to do here. Just send Jeff a screenshot of this page.</p>
+
+  <div id="verdict" class="verdict">Checking…</div>
+
+  <table id="rows"></table>
+
+  <div class="note">
+    This page only reads settings your browser already reports to every website.
+    It doesn't collect anything, doesn't send anything anywhere, and nothing is saved.
+  </div>
+</div>
+
+<script>
+(function(){
+  var W   = window.innerWidth;
+  var DPR = window.devicePixelRatio || 1;
+  var SCROLL_ANIM = (window.CSS && CSS.supports) ? CSS.supports('animation-timeline','scroll()') : false;
+  var REDUCED = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)').matches : false;
+  var COARSE  = window.matchMedia ? matchMedia('(pointer: coarse)').matches : false;
+  var TOO_NARROW = W <= 820;
+
+  /* Pull the Chromium version out of the UA - the 3D walk needs 115 or newer */
+  var m = navigator.userAgent.match(/Chrome\/(\d+)/);
+  var CHROMIUM = m ? parseInt(m[1],10) : null;
+  var BROWSER = /Edg\//.test(navigator.userAgent) ? 'Edge'
+              : /Firefox\//.test(navigator.userAgent) ? 'Firefox'
+              : /Chrome\//.test(navigator.userAgent) ? 'Chrome'
+              : /Safari\//.test(navigator.userAgent) ? 'Safari' : 'Other';
+
+  var rows = [
+    ['Browser', BROWSER + (CHROMIUM ? ' ' + CHROMIUM : '')],
+    ['Window width the site sees', W + ' px' + (TOO_NARROW ? '  ← TOO NARROW' : '  ✓'), true],
+    ['Screen resolution', screen.width + ' × ' + screen.height],
+    ['Zoom / display scaling', Math.round(DPR*100) + '%' + (DPR > 1.3 ? '  ← high' : '')],
+    ['Supports the 3D scroll effect', SCROLL_ANIM ? 'Yes ✓' : 'NO  ← this is it', true],
+    ['"Reduce animations" turned on', REDUCED ? 'YES  ← this is it' : 'No ✓', true],
+    ['Touch screen', COARSE ? 'Yes' : 'No']
+  ];
+
+  var t = document.getElementById('rows');
+  for (var i=0;i<rows.length;i++){
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td class="k">'+rows[i][0]+'</td><td class="v'+(rows[i][2]?' big':'')+'">'+rows[i][1]+'</td>';
+    t.appendChild(tr);
+  }
+
+  /* One clear answer, in plain words, in priority order */
+  var v = document.getElementById('verdict'), msg, cls='bad';
+  if (!SCROLL_ANIM) {
+    msg = "Found it: this browser can't run the 3D effect."
+        + (CHROMIUM ? " It's version " + CHROMIUM + " and needs 115 or newer." : "")
+        + " Updating the browser should fix it.";
+  } else if (REDUCED) {
+    msg = "Found it: this computer has “reduce animations” switched on in Windows settings, "
+        + "so the 3D walk is being skipped on purpose.";
+  } else if (TOO_NARROW) {
+    msg = "Found it: the window is only " + W + " pixels wide, and the 3D version needs more than 820. "
+        + "Try pressing Ctrl and 0 together to reset zoom, then maximise the window.";
+  } else {
+    cls='ok';
+    msg = "Everything checks out on this browser — it should be showing the full 3D version. "
+        + "If it isn't, send Jeff this screenshot anyway.";
+  }
+  v.className = 'verdict ' + cls;
+  v.textContent = msg;
+})();
+</script>
+</body></html>
