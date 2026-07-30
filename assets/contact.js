@@ -61,7 +61,7 @@
     }
     var body = encodeURIComponent(
       fields() + extra + '\n\n—\nSent from the contact form on harleyshandmade.com');
-    window.location.href = 'mailto:hlritchie26@gmail.com'
+    window.location.href = 'mailto:harley@harleyshandmadeky.com'
       + '?subject=' + encodeURIComponent('Inquiry from your website')
       + '&body=' + body;
     if (sent) {

@@ -198,7 +198,7 @@ window.HHCart = (function () {
       /* No key: hand it to his mail client, fully written, and say so. A mailto
          is not elegant but it cannot silently drop an address. */
       var b = encodeURIComponent((extra ? extra + '\n\n' : '') + 'My email: ' + email);
-      window.location.href = 'mailto:hlritchie26@gmail.com?subject='
+      window.location.href = 'mailto:harley@harleyshandmadeky.com?subject='
         + encodeURIComponent(subject) + '&body=' + b;
       done(true, 'unwired');
       return;
