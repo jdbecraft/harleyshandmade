@@ -73,7 +73,32 @@ function isSandboxHost(host) {
       || host === '127.0.0.1' || host.startsWith('127.0.0.1:');
 }
 
-let sandboxLocationCache = null;
+/* Resolved per environment and cached for the isolate's life. */
+const locationCache = {};
+
+/* The configured ID is a string a human copied out of a dashboard, and the
+   first production probe proved that assumption wrong: Square returned
+   INVALID_VALUE (400) — token fine, location rejected. So the token, which
+   is the thing that cannot be mistyped without failing loudly, is used to
+   ask Square which locations actually exist. A configured ID that checks
+   out is honoured; anything else falls back to the active location rather
+   than failing a customer's checkout over a typo. */
+async function resolveLocation(api, token, configured, envKey) {
+  if (locationCache[envKey]) return locationCache[envKey];
+  const r = await fetch(api + '/v2/locations', { headers: { Authorization: 'Bearer ' + token } });
+  const j = await r.json().catch(() => null);
+  const locs = (j && j.locations) || [];
+  if (!locs.length) return null;
+  const match = configured && locs.find(l => l.id === configured);
+  const chosen = match || locs.find(l => l.status === 'ACTIVE') || locs[0];
+  if (!match && configured) {
+    console.warn('SQUARE_LOCATION_ID', configured, 'is not a location on this account;',
+      'falling back to', chosen.id, '(' + (chosen.name || 'unnamed') + ').',
+      'Locations available:', locs.length);
+  }
+  locationCache[envKey] = chosen.id;
+  return chosen.id;
+}
 
 export async function onRequestPost(context) {
   const req = context.request, env = context.env;
@@ -133,23 +158,11 @@ export async function onRequestPost(context) {
   if (totalCents < 100 || totalCents > MAX_TOTAL_CENTS)
     return json(400, { error: 'Order total out of range.' });
 
-  /* Location: production uses the configured ID; sandbox discovers its own
-     (the sandbox account has different location IDs, and asking Jeff for
-     one more ID wasn't worth his evening). */
-  let locationId = env.SQUARE_LOCATION_ID;
-  if (sandbox) {
-    if (!sandboxLocationCache) {
-      const lr = await fetch(api + '/v2/locations', {
-        headers: { Authorization: 'Bearer ' + token } });
-      const lj = await lr.json().catch(() => null);
-      const locs = (lj && lj.locations) || [];
-      const active = locs.find(l => l.status === 'ACTIVE') || locs[0];
-      if (!active) return json(502, { error: 'Sandbox has no locations — check the Square developer app.' });
-      sandboxLocationCache = active.id;
-    }
-    locationId = sandboxLocationCache;
-  }
-  if (!locationId) return json(503, { error: 'SQUARE_LOCATION_ID is not set in Cloudflare Pages.' });
+  /* Same path for both environments — the token decides which account we
+     are talking to, and Square decides which locations are real. */
+  const locationId = await resolveLocation(
+    api, token, sandbox ? null : env.SQUARE_LOCATION_ID, sandbox ? 'sandbox' : 'prod');
+  if (!locationId) return json(502, { error: 'This Square account has no location to sell from.' });
 
   const sq = await fetch(api + '/v2/online-checkout/payment-links', {
     method: 'POST',
