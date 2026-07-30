@@ -27,6 +27,15 @@
    ========================================================================== */
 var CHECKOUT_API = '/api/checkout';
 
+/* Flat shipping. Harley's own figures (2026-07-30): heaviest shop item ~3 lb,
+   $7 packaging per order; a 3 lb label runs ~$8.50–$15.75 depending how far
+   it goes. Display only — the SERVER sets the amount actually charged, and
+   the two must be changed together (functions/api/checkout.js). */
+var SHIP_FLAT = 18;
+/* Kentucky taxes delivery, postage, handling and packaging as part of the
+   sales price (KRS 139.010), so tax is figured on goods PLUS shipping. */
+var KY_TAX = 0.06;
+
 /* Harley's Web3Forms access key — the SAME key that's in contact.html's hidden
    input and in custom.html's gallery enquiry form.
    ✅ LIVE 2026-07-30 (Harley's own key, supplied by Jeff). Public by design —
@@ -209,25 +218,25 @@ window.HHCart = (function () {
         + '<label><input type="radio" name="hhFul" value="pickup"' + (ful === 'pickup' ? ' checked' : '')
         + '> Free pickup &mdash; Owingsville, Winchester, Mt.&nbsp;Sterling or Morehead</label>'
         + '<label><input type="radio" name="hhFul" value="ship"' + (ful === 'ship' ? ' checked' : '')
-        + '> Ship it &mdash; I confirm the shipping cost before you pay anything</label>'
+        + '> Ship it &mdash; flat ' + money(SHIP_FLAT) + ', anywhere in the US</label>'
         + '</div>'
         + (payMsg ? '<p class="cart-payerr" role="alert">' + payMsg + '</p>' : '')
-        + (ful === 'pickup'
-          ? '<button class="cart-cta" type="button" id="cartPay">Pay with card</button>'
-            + '<button class="cart-cta alt" type="button" id="cartSend">Or send me the order instead</button>'
-          : '<div class="cart-pending">Shipping\'s a flat rate I confirm up front &mdash; send me the order and '
-            + 'I\'ll reply with the total including shipping, and how to pay. Usually the same day.</div>'
-            + '<button class="cart-cta" type="button" id="cartSend">Send this order to Harley</button>');
+        + '<button class="cart-cta" type="button" id="cartPay">Pay with card</button>'
+        + '<button class="cart-cta alt" type="button" id="cartSend">Or send me the order instead</button>';
     }
 
-    /* All prices are whole dollars, so 6% is always exact to the cent and
-       this figure matches Square's checkout to the penny. */
+    /* Every price is a whole dollar and shipping is a whole dollar, so the 6%
+       lands exactly on the cent and matches Square's own checkout figure. */
+    var ship = (!anyQuoted && ful === 'ship') ? SHIP_FLAT : 0;
+    var taxed = total() + ship;
     foot.innerHTML =
         '<div class="cart-sub"><span>Subtotal</span><span>' + money(total()) + '</span></div>'
-      + '<div class="cart-sub"><span>KY sales tax (6%)</span><span>' + money(total() * 0.06) + '</span></div>'
-      + '<div class="cart-tot"><span>' + (anyQuoted ? 'Total so far' : 'Total') + '</span><span>' + money(total() * 1.06) + '</span></div>'
+      + (ship ? '<div class="cart-sub"><span>Shipping &mdash; flat rate</span><span>' + money(ship) + '</span></div>' : '')
+      + '<div class="cart-sub"><span>KY sales tax (6%)</span><span>' + money(taxed * KY_TAX) + '</span></div>'
+      + '<div class="cart-tot"><span>' + (anyQuoted ? 'Total so far' : 'Total') + '</span><span>'
+        + money(taxed * (1 + KY_TAX)) + '</span></div>'
       + (anyQuoted
-          ? '<p class="cart-note">Shipping is a flat rate and gets added on top&nbsp;— free if you collect. '
+          ? '<p class="cart-note">Shipping is a flat ' + money(SHIP_FLAT) + '&nbsp;— free if you collect. '
             + 'The quoted items above aren\'t counted in this figure yet.</p>'
           : '')
       + pay
@@ -343,7 +352,7 @@ window.HHCart = (function () {
     fetch(CHECKOUT_API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ lines: lines, fulfillment: 'pickup' })
+      body: JSON.stringify({ lines: lines, fulfillment: ful })
     }).then(function (r) {
       return r.json().then(function (j) { return { ok: r.ok, j: j }; });
     }).then(function (res) {
@@ -368,10 +377,12 @@ window.HHCart = (function () {
       if (s.opts) lines.push('    ' + s.opts);
       if (it.quoted && it.quoted.length) lines.push('    (to be quoted: ' + it.quoted.join(', ') + ')');
     }
-    lines.push('',
-      'Subtotal: ' + money(total()),
-      'KY sales tax (6%): ' + money(total() * 0.06),
-      'Total before shipping: ' + money(total() * 1.06));
+    var ship = (ful === 'ship') ? SHIP_FLAT : 0;
+    var taxed = total() + ship;
+    lines.push('', 'Subtotal: ' + money(total()));
+    lines.push(ship ? 'Shipping (flat rate): ' + money(ship) : 'Pickup — no shipping');
+    lines.push('KY sales tax (6%): ' + money(taxed * KY_TAX),
+               'Total: ' + money(taxed * (1 + KY_TAX)));
     try { localStorage.setItem('hh_order_msg', lines.join('\n')); } catch (e) {}
     location.href = 'contact?order=1';
   }
