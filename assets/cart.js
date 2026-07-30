@@ -22,13 +22,16 @@
 var SQUARE_CHECKOUT_URL = "";   // <-- Harley's Square checkout link
 
 /* Harley's Web3Forms access key — the SAME key that's in contact.html's hidden
-   input. Free, 30 seconds, made against his own email.
-   ⚠️ TWO PLACES TO UPDATE when it exists: here, and contact.html.
-   Until then every email capture on this site falls back to a pre-filled mailto
+   input and in custom.html's gallery enquiry form.
+   ✅ LIVE 2026-07-30 (Harley's own key, supplied by Jeff). Public by design —
+   Web3Forms keys live in client-side code and their own dashboard says so.
+   ⚠️ THREE PLACES hold this key: here, contact.html, custom.html.
+   The mailto fallback below stays in place for good: if a key is ever removed or
+   revoked, every capture hands the message to the customer's own mail client
    rather than pretending to have sent something. That fallback is not a nicety:
    FCR once shipped a form that loaded a thank-you page and sent nothing, and the
    business never learned it was losing customers. */
-var WEB3FORMS_KEY = "REPLACE-WITH-HARLEYS-WEB3FORMS-KEY";
+var WEB3FORMS_KEY = "1d4b19cb-b82d-4b63-9479-25526d9be5f9";
 var WEB3FORMS_PLACEHOLDER = "REPLACE-WITH-HARLEYS-WEB3FORMS-KEY";
 
 window.HHCart = (function () {
