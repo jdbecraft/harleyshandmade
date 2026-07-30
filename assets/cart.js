@@ -68,8 +68,15 @@ window.HHCart = (function () {
 .cart-li{padding:.85rem 0;border-bottom:1px solid rgba(45,31,18,.12)}
 .cart-li b{display:block;font-size:.98rem}
 .cart-li .o{font-size:.82rem;opacity:.75;margin-top:.2rem;line-height:1.5}
-.cart-li .r{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin-top:.4rem;font-variant-numeric:tabular-nums}
+.cart-li .r{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:.4rem;font-variant-numeric:tabular-nums}
 .cart-li .q{font-size:.82rem;opacity:.7}
+.cart-li .qwrap{display:inline-flex;align-items:center;gap:.5rem}
+.cart-li .cart-qn{min-width:1.4em;text-align:center;font-variant-numeric:tabular-nums}
+.cart-step{min-width:34px;min-height:34px;border:1px solid rgba(45,31,18,.3);background:none;cursor:pointer;
+  font-size:1.05rem;line-height:1;color:inherit;display:inline-grid;place-items:center}
+.cart-step:hover{background:rgba(176,132,86,.16)}
+.cart-step:disabled{opacity:.35;cursor:default}
+@media(max-width:820px){.cart-step{min-width:44px;min-height:44px}}
 .cart-rm{background:none;border:0;font-size:.78rem;text-decoration:underline;cursor:pointer;padding:.4rem 0;color:inherit;opacity:.65;min-height:32px}
 .cart-q{font-size:.82rem;background:rgba(176,132,86,.16);border-left:3px solid #b08456;padding:.6rem .75rem;margin-top:.55rem;border-radius:3px;line-height:1.5}
 .cart-ft{border-top:1px solid rgba(45,31,18,.16);padding:1.15rem 1.25rem;display:grid;gap:.8rem}
@@ -177,12 +184,17 @@ window.HHCart = (function () {
       var q = (it.quoted && it.quoted.length) ? (anyQuoted = true,
         '<div class="cart-q"><b>' + it.quoted.join(' · ') + '</b> — Harley prices this once he\'s seen it, '
         + 'and tells you the number before you pay. It\'s not in the total below.</div>') : '';
+      var ek = encodeURIComponent(k);
       return '<div class="cart-li"><b>' + s.name + '</b>'
         + (s.opts ? '<div class="o">' + s.opts + '</div>' : '')
-        + '<div class="r"><span class="q">Qty ' + it.q + ' · ' + money(it.p) + ' each</span>'
+        + '<div class="r"><span class="qwrap">'
+        + '<button class="cart-step" type="button" data-dec="' + ek + '" aria-label="One fewer"' + (it.q <= 1 ? ' disabled' : '') + '>&minus;</button>'
+        + '<b class="cart-qn">' + it.q + '</b>'
+        + '<button class="cart-step" type="button" data-inc="' + ek + '" aria-label="One more"' + (it.q >= 25 ? ' disabled' : '') + '>+</button>'
+        + '<span class="q">' + money(it.p) + ' each</span></span>'
         + '<span>' + money(it.p * it.q) + '</span></div>'
         + q
-        + '<div class="r"><button class="cart-rm" type="button" data-rm="' + encodeURIComponent(k) + '">Remove</button><span></span></div>'
+        + '<div class="r"><button class="cart-rm" type="button" data-rm="' + ek + '">Remove</button><span></span></div>'
         + '</div>';
     }).join('');
 
@@ -400,9 +412,14 @@ window.HHCart = (function () {
     if (e.target.name === 'hhFul') { ful = e.target.value; payMsg = ''; render(); }
   });
   body.addEventListener('click', function (e) {
-    var t = e.target.getAttribute && e.target.getAttribute('data-rm');
-    if (!t) return;
-    delete cart[decodeURIComponent(t)];
+    var el = e.target.closest ? e.target.closest('[data-rm],[data-inc],[data-dec]') : e.target;
+    if (!el || !el.getAttribute) return;
+    var rm = el.getAttribute('data-rm'), inc = el.getAttribute('data-inc'), dec = el.getAttribute('data-dec');
+    if (rm) { delete cart[decodeURIComponent(rm)]; }
+    else if (inc) { var ki = decodeURIComponent(inc); if (cart[ki] && cart[ki].q < 25) cart[ki].q++; }
+    else if (dec) { var kd = decodeURIComponent(dec); if (cart[kd] && cart[kd].q > 1) cart[kd].q--; }
+    else return;
+    payMsg = '';
     save(); refresh(); render();
   });
 
@@ -418,10 +435,13 @@ window.HHCart = (function () {
     /* Both callers go through here so there is one writer, not two.
        shop.html passes a plain product name; product.js passes a key that
        already encodes the chosen options, plus any quoted extras. */
-    addKey: function (key, price, quoted) {
+    addKey: function (key, price, quoted, n) {
       if (!cart[key]) cart[key] = { p: price, q: 0, quoted: quoted || [] };
       else if (quoted && quoted.length) cart[key].quoted = quoted;
-      cart[key].q++;
+      /* n is the product page's "how many"; absent (shop quick-add) it's 1.
+         25 matches the checkout function's MAX_QTY — the two move together. */
+      var add = (typeof n === 'number' && n >= 1) ? Math.floor(n) : 1;
+      cart[key].q = Math.min(25, cart[key].q + add);
       save(); refresh();
     },
     refresh: refresh,

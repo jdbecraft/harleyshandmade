@@ -90,6 +90,23 @@
 .total .quoted{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;
   text-transform:uppercase;color:var(--walnut)}
 
+/* how many — between the total and the add button (Jeff, 7/30: customers
+   buy multiples; the cart panel carries matching steppers) */
+.qtyrow{display:flex;justify-content:space-between;align-items:center;gap:14px;
+  padding:14px 18px;background:rgba(176,132,86,.16);border-top:1px solid rgba(74,46,29,.14)}
+.qtyrow .k{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--oak)}
+.qctl{display:flex;align-items:center;border:1px solid rgba(74,46,29,.34);background:#fff}
+.qctl button{width:46px;height:46px;border:0;background:none;cursor:pointer;font-size:20px;
+  color:var(--espresso);line-height:1}
+.qctl button:hover{background:rgba(176,132,86,.18)}
+.qctl button:focus-visible{outline:2px solid var(--saddle);outline-offset:-2px}
+.qctl button:disabled{opacity:.4;cursor:default}
+.qctl input{width:52px;text-align:center;border:0;border-left:1px solid rgba(74,46,29,.2);
+  border-right:1px solid rgba(74,46,29,.2);font-family:Fraunces,Georgia,serif;font-weight:800;
+  font-size:18px;color:var(--ink);min-height:46px;padding:0}
+.qctl input:focus{outline:2px solid var(--saddle);outline-offset:-2px}
+
 .padd{display:block;width:100%;margin-top:16px;padding:18px;border:0;cursor:pointer;
   background:var(--walnut);color:var(--linen);
   font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;

@@ -82,6 +82,14 @@
           <div class="row big"><span>Total</span><span class="v" id="sumTotal">$75</span></div>
           <p class="quoted" id="sumQuote" hidden></p>
         </div>
+        <div class="qtyrow">
+          <span class="k">How many?</span>
+          <div class="qctl">
+            <button type="button" id="pqm" aria-label="One fewer">&minus;</button>
+            <input id="pqty" value="1" inputmode="numeric" pattern="[0-9]*" aria-label="How many">
+            <button type="button" id="pqp" aria-label="One more">+</button>
+          </div>
+        </div>
         <button class="padd" type="button" id="padd">Add to cart</button>
       </form>
       <p class="pask">Not sure? <a href="tel:+18597492814">Call me on (859) 749-2814</a> — you'll get me, not somebody taking a message.</p>
