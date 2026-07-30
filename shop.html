@@ -109,8 +109,13 @@ a{color:inherit}
 .acts .s{border:1px solid rgba(74,46,29,.45)}
 .acts .s:hover{background:rgba(74,46,29,.08)}
 
-.callbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:grid;grid-template-columns:1fr 1fr;
+/* Phones only. This page had its own copy of the callbar CSS with an
+   unconditional display:grid, so the pinned bar was showing on desktop where
+   the rail already carries the phone number — every other page either uses
+   page.css or gates it the same way index.html does. */
+.callbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:none;grid-template-columns:1fr 1fr;
   border-top:1px solid rgba(74,46,29,.35)}
+@media(max-width:820px){ .callbar{display:grid} }
 .callbar a{padding:14px;text-align:center;text-decoration:none;font-family:'IBM Plex Mono',monospace;
   font-size:11px;letter-spacing:.12em;text-transform:uppercase}
 .callbar .c1{background:var(--walnut);color:var(--linen)}
