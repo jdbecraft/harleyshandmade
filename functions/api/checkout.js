@@ -179,9 +179,19 @@ export async function onRequestPost(context) {
   const out = await sq.json().catch(() => null);
   if (!sq.ok || !out || !out.payment_link || !out.payment_link.url) {
     /* Full detail to the function log (Cloudflare dashboard), a calm
-       sentence to the customer — the cart falls back to send-the-order. */
+       sentence to the customer — the cart falls back to send-the-order.
+       `code` carries Square's own error category (UNAUTHORIZED,
+       INVALID_LOCATION…) — no secret material, and it is the difference
+       between diagnosing this in one request and guessing at it. The cart
+       never shows it; it exists for whoever is debugging. */
     console.error('Square CreatePaymentLink failed', sq.status, JSON.stringify(out));
-    return json(502, { error: 'Square didn’t accept the checkout just now.' });
+    const e = out && out.errors && out.errors[0];
+    return json(502, {
+      error: 'Square didn’t accept the checkout just now.',
+      code: e ? (e.code || e.category || 'UNKNOWN') : 'NO_BODY',
+      field: e && e.field ? e.field : undefined,
+      httpStatus: sq.status,
+    });
   }
   return json(200, { url: out.payment_link.url });
 }
