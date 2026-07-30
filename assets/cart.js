@@ -73,6 +73,7 @@ window.HHCart = (function () {
 .cart-rm{background:none;border:0;font-size:.78rem;text-decoration:underline;cursor:pointer;padding:.4rem 0;color:inherit;opacity:.65;min-height:32px}
 .cart-q{font-size:.82rem;background:rgba(176,132,86,.16);border-left:3px solid #b08456;padding:.6rem .75rem;margin-top:.55rem;border-radius:3px;line-height:1.5}
 .cart-ft{border-top:1px solid rgba(45,31,18,.16);padding:1.15rem 1.25rem;display:grid;gap:.8rem}
+.cart-sub{display:flex;justify-content:space-between;font-size:.88rem;opacity:.85;font-variant-numeric:tabular-nums;margin:0 0 -.5rem}
 .cart-tot{display:flex;justify-content:space-between;font-weight:700;font-size:1.12rem;font-variant-numeric:tabular-nums}
 .cart-note{font-size:.8rem;opacity:.75;line-height:1.55}
 .cart-cta{display:block;text-align:center;padding:.9rem 1rem;border-radius:4px;background:#2d1f12;color:#f1e6cc;
@@ -207,8 +208,12 @@ window.HHCart = (function () {
             + '<button class="cart-cta" type="button" id="cartSend">Send this order to Harley</button>');
     }
 
+    /* All prices are whole dollars, so 6% is always exact to the cent and
+       this figure matches Square's checkout to the penny. */
     foot.innerHTML =
-        '<div class="cart-tot"><span>' + (anyQuoted ? 'Total so far' : 'Total') + '</span><span>' + money(total()) + '</span></div>'
+        '<div class="cart-sub"><span>Subtotal</span><span>' + money(total()) + '</span></div>'
+      + '<div class="cart-sub"><span>KY sales tax (6%)</span><span>' + money(total() * 0.06) + '</span></div>'
+      + '<div class="cart-tot"><span>' + (anyQuoted ? 'Total so far' : 'Total') + '</span><span>' + money(total() * 1.06) + '</span></div>'
       + (anyQuoted
           ? '<p class="cart-note">Shipping is a flat rate and gets added on top&nbsp;— free if you collect. '
             + 'The quoted items above aren\'t counted in this figure yet.</p>'
@@ -351,7 +356,10 @@ window.HHCart = (function () {
       if (s.opts) lines.push('    ' + s.opts);
       if (it.quoted && it.quoted.length) lines.push('    (to be quoted: ' + it.quoted.join(', ') + ')');
     }
-    lines.push('', 'Total so far: ' + money(total()) + ' plus shipping.');
+    lines.push('',
+      'Subtotal: ' + money(total()),
+      'KY sales tax (6%): ' + money(total() * 0.06),
+      'Total before shipping: ' + money(total() * 1.06));
     try { localStorage.setItem('hh_order_msg', lines.join('\n')); } catch (e) {}
     location.href = 'contact?order=1';
   }

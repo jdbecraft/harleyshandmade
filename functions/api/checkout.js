@@ -156,7 +156,17 @@ export async function onRequestPost(context) {
     headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       idempotency_key: crypto.randomUUID(),
-      order: { location_id: locationId, line_items: items },
+      order: {
+        location_id: locationId,
+        line_items: items,
+        /* Jeff, 2026-07-30: "all items are + 6% sales tax." Kentucky is a
+           flat statewide 6%, ADDITIVE at checkout — never buried in the item
+           price — so the receipt shows the customer the same split the cart
+           panel showed, and Harley's dashboard reports collected tax for his
+           KY filing. The cart panel computes the identical 6% (all prices
+           are whole dollars, so the cent math is exact on both sides). */
+        taxes: [{ uid: 'ky-sales-tax', name: 'KY sales tax', type: 'ADDITIVE', percentage: '6', scope: 'ORDER' }],
+      },
       checkout_options: {
         ask_for_shipping_address: false,
         merchant_support_email: SUPPORT_EMAIL,
