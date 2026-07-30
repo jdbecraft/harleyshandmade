@@ -131,6 +131,7 @@ img{display:block;max-width:100%;height:auto}
 .open h1{color:rgba(246,236,216,.74)}
 .open h1 em{font-style:normal;color:#FFF7E4;
   text-shadow:0 2px 2px rgba(10,6,2,.95),0 6px 26px rgba(10,6,2,.9),0 0 60px rgba(255,196,120,.28)}
+.subflat{display:none}
 .open p{margin-top:16px;font-size:clamp(15px,2.1vw,25px);color:#F2E6CE;max-width:36ch;font-style:italic;
   text-shadow:0 2px 4px rgba(10,6,2,.98),0 4px 22px rgba(10,6,2,.95)}
 .cue{position:absolute;bottom:9vh;left:0;right:0;text-align:center;font-size:10px;
@@ -380,7 +381,7 @@ img{display:block;max-width:100%;height:auto}
   .open{position:static;inset:auto;height:auto;min-height:0;z-index:auto;pointer-events:auto;
     display:block;text-align:center;
     padding:clamp(60px,11vh,126px) 20px clamp(42px,7vh,76px);
-    background:linear-gradient(180deg,rgba(11,7,3,.60),rgba(11,7,3,.80) 62%,rgba(11,7,3,.95)),
+    background:linear-gradient(180deg,rgba(11,7,3,.70),rgba(11,7,3,.84) 62%,rgba(11,7,3,.96)),
                url(assets/img/floor.webp) center/cover no-repeat}
   .open::before{display:none}          /* vignette was sized for the 3D scene */
   .open .stampWrap{position:static;display:grid;place-items:center;gap:clamp(14px,2.6vh,28px)}
@@ -412,6 +413,12 @@ img{display:block;max-width:100%;height:auto}
     border-top:1px solid rgba(246,236,216,.13)}
   .endcap .markwrap{position:static;display:grid;place-items:center}
   .endcap .mark{width:clamp(120px,15vw,220px);opacity:.9}
+  /* "Walk it with me" promises an interaction this page does not have. Swap in
+     a line that is true here. Real markup rather than CSS content, so it stays
+     selectable and reads correctly to a screen reader. */
+  .subwalk{display:none !important}
+  .subflat{display:block !important}
+
   /* ROOT CAUSE, not a patch: every one of these is revealed by a scroll-driven
      animation with fill-mode "both". When the animation never runs they sit on
      their 0% keyframe - opacity 0, visibility hidden - and animation values
@@ -442,7 +449,7 @@ img{display:block;max-width:100%;height:auto}
   .open{position:static;inset:auto;height:auto;min-height:0;z-index:auto;pointer-events:auto;
     display:block;text-align:center;
     padding:clamp(60px,11vh,126px) 20px clamp(42px,7vh,76px);
-    background:linear-gradient(180deg,rgba(11,7,3,.60),rgba(11,7,3,.80) 62%,rgba(11,7,3,.95)),
+    background:linear-gradient(180deg,rgba(11,7,3,.70),rgba(11,7,3,.84) 62%,rgba(11,7,3,.96)),
                url(assets/img/floor.webp) center/cover no-repeat}
   .open::before{display:none}          /* vignette was sized for the 3D scene */
   .open .stampWrap{position:static;display:grid;place-items:center;gap:clamp(14px,2.6vh,28px)}
@@ -474,6 +481,12 @@ img{display:block;max-width:100%;height:auto}
     border-top:1px solid rgba(246,236,216,.13)}
   .endcap .markwrap{position:static;display:grid;place-items:center}
   .endcap .mark{width:clamp(120px,15vw,220px);opacity:.9}
+  /* "Walk it with me" promises an interaction this page does not have. Swap in
+     a line that is true here. Real markup rather than CSS content, so it stays
+     selectable and reads correctly to a screen reader. */
+  .subwalk{display:none !important}
+  .subflat{display:block !important}
+
   /* ROOT CAUSE, not a patch: every one of these is revealed by a scroll-driven
      animation with fill-mode "both". When the animation never runs they sit on
      their 0% keyframe - opacity 0, visibility hidden - and animation values
@@ -681,7 +694,8 @@ img{display:block;max-width:100%;height:auto}
         </picture>
         <div>
           <h1>Everything here starts<br>with <em>one board.</em></h1>
-          <p>Walk it with me. You'll see the whole shop.</p>
+          <p class="subwalk">Walk it with me. You&rsquo;ll see the whole shop.</p>
+            <p class="subflat">Come have a look. You&rsquo;ll see the whole shop.</p>
         </div>
       </div>
       <div class="boardhint">Tap a mark in the wood</div>
