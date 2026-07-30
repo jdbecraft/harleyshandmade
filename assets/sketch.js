@@ -8,15 +8,22 @@
    HOW THE DRAWING ACTUALLY REACHES HIM — the part that matters:
 
    1. The canvas is exported to a PNG and pushed into a real <input type="file">
-      using DataTransfer, so the form posts it as multipart/form-data. Web3Forms
-      takes file uploads that way, so once Harley's key is in, the sketch rides
-      along with the message as an attachment. Nothing for the customer to do.
+      using DataTransfer, so the form can post it as multipart/form-data. That
+      path is BUILT AND DORMANT: Web3Forms only accepts file uploads on its PRO
+      plan ($158/yr, checked 2026-07-30), and Harley's account is free. The day
+      that changes it is one flag in contact.js and the sketch rides along with
+      the message automatically, with nothing for the customer to do.
 
-   2. Until the key exists the form falls back to a pre-filled email, and a
-      mailto: cannot carry an attachment — no amount of cleverness changes that.
-      So in that case the PNG is DOWNLOADED to their machine and the email body
-      says, in plain words, to attach the file that just landed in Downloads.
-      Not elegant. It is honest, and the drawing gets there.
+   2. On the free plan — and whenever no key exists at all — the form falls back
+      to a pre-filled email, and a mailto: cannot carry an attachment; no amount
+      of cleverness changes that. So the PNG is DOWNLOADED to their machine and
+      the email body says, in plain words, to attach the file that just landed
+      in Downloads. Not elegant. It is honest, and the drawing gets there.
+
+   Which of the two is running is NOT this file's decision — contact.js owns the
+   plan knowledge and tells us via setDelivery(). The badge on the pad has to say
+   whichever one is true, because "this drawing will be sent with your message"
+   is a promise, and a promise the page cannot keep is worse than no pad at all.
 
    3. Either way the words always get through on their own. If the picture fails
       for any reason, Harley still receives the message.
@@ -124,10 +131,20 @@
 
   /* ---------- state shown to the customer ---------- */
   var badge = document.getElementById('padState');
+
+  /* 'attach'   — the drawing posts with the form, customer does nothing (PRO)
+     'download' — the drawing downloads and they attach it to the email (free)
+     Defaults to 'download' deliberately: if contact.js never runs, the sentence
+     on screen is still one the page can actually keep. */
+  var deliverBy = 'download';
+
   function mark() {
     if (!badge) return;
-    badge.textContent = inked ? 'This drawing will be sent with your message'
-                              : 'Nothing drawn yet — the pad is optional';
+    badge.textContent = !inked
+      ? 'Nothing drawn yet — the pad is optional'
+      : (deliverBy === 'attach'
+          ? 'This drawing will be sent with your message'
+          : 'Your drawing will download so you can attach it — I get both');
     badge.className = 'padstate' + (inked ? ' on' : '');
   }
   mark();
@@ -170,6 +187,12 @@
   window.hhSketch = {
     hasInk: function () { return inked; },
     attach: attach,
-    download: download
+    download: download,
+    /* contact.js calls this once on load — it is the only thing that knows
+       whether the form's plan can carry a file. */
+    setDelivery: function (mode) {
+      deliverBy = (mode === 'attach') ? 'attach' : 'download';
+      mark();
+    }
   };
 })();

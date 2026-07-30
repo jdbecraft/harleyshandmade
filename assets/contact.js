@@ -18,8 +18,37 @@
   var PLACEHOLDER = 'REPLACE-WITH-HARLEYS-WEB3FORMS-KEY';
   var key = (form.querySelector('input[name=access_key]') || {}).value;
   var wired = key && key !== PLACEHOLDER;
+
+  /* ------------------------------------------------------------------------
+     HAVING A KEY IS NOT THE SAME AS BEING ABLE TO SEND A FILE.
+
+     Web3Forms puts file uploads behind its PRO plan — $13/mo billed yearly,
+     $158/yr, verified against their own pricing table 2026-07-30. Harley's
+     account is the free tier: 250 submissions a month, no attachments. That
+     ceiling is far above his real volume (5-10 orders/month), so free is the
+     right plan; the attachment is the one thing it costs us.
+
+     Jeff's call, 2026-07-30: not worth $158/yr against a $50/mo retainer for a
+     sketch pad. So the drawing goes by the download-and-attach route instead.
+
+     Why this is its own flag rather than folded into `wired`: the two facts are
+     genuinely independent, and conflating them is what broke this earlier today
+     — the moment the key went in, the form started trying to POST the PNG to a
+     plan that will not take it, while the pad told the customer their drawing
+     was on its way. Whether that ends in an error or a silently dropped file, it
+     is the exact defect this file exists to prevent.
+
+     TO TURN IT ON: upgrade the Web3Forms account, set this to true, done.
+     ------------------------------------------------------------------------ */
+  var FILE_UPLOADS_ENABLED = false;
+
   var btn = document.getElementById('csend');
   var sent = document.getElementById('sent');
+
+  /* Tell the pad which promise it is allowed to make. */
+  if (window.hhSketch && window.hhSketch.setDelivery) {
+    window.hhSketch.setDelivery(wired && FILE_UPLOADS_ENABLED ? 'attach' : 'download');
+  }
 
   function fields() {
     var out = [];
@@ -34,23 +63,33 @@
     var sk = window.hhSketch;
     var hasDrawing = !!(sk && sk.hasInk());
 
-    if (wired) {
-      /* Real key. Push the PNG into the file input FIRST, then let the form go —
-         Web3Forms takes it as multipart, so Harley gets it as an attachment and
-         the customer does nothing. toBlob is async, hence the re-submit. */
+    /* Post through Web3Forms ONLY when it can carry everything the customer
+       gave us. Words alone: fine on any plan. Words plus a drawing on the free
+       plan: the words would arrive and the picture would not, which is a worse
+       outcome than the extra step below, because nobody would ever know. */
+    var useForm = wired && !(hasDrawing && !FILE_UPLOADS_ENABLED);
+
+    if (useForm) {
+      /* Push the PNG into the file input FIRST, then let the form go — Web3Forms
+         takes it as multipart, so Harley gets it as an attachment and the
+         customer does nothing. toBlob is async, hence the re-submit.
+         Dormant until FILE_UPLOADS_ENABLED; kept whole so the upgrade is a flag. */
       if (hasDrawing && !form.dataset.sketchReady) {
         e.preventDefault();
         sk.attach(function () {
           form.dataset.sketchReady = '1';
           form.submit();
         });
+        return;
       }
+      if (btn) { btn.textContent = 'Sending…'; btn.disabled = true; }
       return;
     }
 
-    /* No key yet, so this falls back to a pre-filled email — and a mailto cannot
-       carry an attachment, no matter how it's dressed up. So: download the
-       drawing and say so plainly, in the message and on the page. */
+    /* Either no key, or a drawing the plan cannot carry. Fall back to a
+       pre-filled email — and a mailto cannot carry an attachment, no matter how
+       it's dressed up. So: download the drawing and say so plainly, in the
+       message and on the page. */
     e.preventDefault();
     if (!form.reportValidity()) return;
     var extra = '';
@@ -77,13 +116,13 @@
     if (btn) btn.textContent = 'Opening your email…';
   });
 
-  /* Web3Forms redirects on success by default; if it ever posts back in place,
-     show the confirmation rather than leaving the customer wondering. */
-  if (wired) {
-    form.addEventListener('submit', function () {
-      if (btn) { btn.textContent = 'Sending…'; btn.disabled = true; }
-    });
-  }
+  /* The "Sending…" state used to live here as a SECOND submit listener that ran
+     whenever a key existed. That is now wrong and would have been a real bug: on
+     a free plan with a drawing we take the mailto route, and this listener would
+     have fired anyway — disabling the button and overwriting "Opening your
+     email…" with "Sending…", telling the customer the opposite of what happened.
+     It moved into the useForm branch above, where it can only run on the path it
+     actually describes. */
 
   /* ------------------------------------------------------------------------
      THE ORDER HANDOFF — the receiving end of the cart's "Send this order".
