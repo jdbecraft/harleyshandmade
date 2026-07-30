@@ -346,21 +346,145 @@ img{display:block;max-width:100%;height:auto}
 
 
 /* ---------- fallback: plain readable page ---------- */
+/* ============================================================================
+   THE FLAT PAGE - what a visitor gets when the walk cannot run.
+
+   Two conditions land here and together they cover a real share of visitors: a
+   browser older than Chromium 115, and "reduce animations" enabled in the OS
+   (Windows battery saver can switch that on by itself). Harley hit it on his own
+   laptop, in both Chrome and Edge.
+
+   The previous fallback only un-positioned things, which left five wood planes
+   stacked on top of each other, three full-page overlays over the content,
+   "Scroll to walk the board" printed where there is no walk, and it hid BOTH
+   his written introduction AND the entire closing section.
+
+   ⚠️ DUPLICATED into the two guard blocks below because CSS cannot share one
+   rule list across two at-rules. KEEP THEM IN SYNC. Proper fix is to invert the
+   architecture so this is the base and the walk is the enhancement.
+   ========================================================================== */
 @supports not (animation-timeline: scroll()){
-  .walk{height:auto}.cam{position:static;height:auto;perspective:none}
-  .world,.floor,.edge{position:static;transform:none;width:auto;height:auto}
-  .floor{background:#1d1409;min-height:0}.edge{display:none}
-  .open{position:static;padding:14vh 20px}
-  .station{position:static;transform:none;opacity:1;visibility:visible;width:auto;max-width:720px;margin:0 auto;padding:30px 20px}
-  .haze,.lamp{display:none}
+
+  /* let the document flow normally again */
+  .walk{height:auto}
+  .cam{position:static;height:auto;perspective:none}
+  .world{position:static;transform:none;width:auto;height:auto}
+
+  /* The walk's machinery has no meaning without the walk. Static, all of this
+     is five overlapping wood squares plus three sheets of haze over the text. */
+  .floor,.feat,.edge,.bulb,.dust,.spec,.spec2,.near,.haze,.lamp,
+  .prog,.cue,.boardhint,.phoneboard{display:none !important}
+
+  /* THE HERO: the board becomes a backdrop instead of a plane you walk along.
+     Same photograph, doing an honest job, darkened so cream type holds up. */
+  .open{position:static;inset:auto;height:auto;min-height:0;z-index:auto;pointer-events:auto;
+    display:block;text-align:center;
+    padding:clamp(60px,11vh,126px) 20px clamp(42px,7vh,76px);
+    background:linear-gradient(180deg,rgba(11,7,3,.60),rgba(11,7,3,.80) 62%,rgba(11,7,3,.95)),
+               url(assets/img/floor.webp) center/cover no-repeat}
+  .open::before{display:none}          /* vignette was sized for the 3D scene */
+  .open .stampWrap{position:static;display:grid;place-items:center;gap:clamp(14px,2.6vh,28px)}
+  .open .stamp{width:clamp(150px,19vw,290px);mix-blend-mode:normal;opacity:.96;
+    filter:contrast(1.15) brightness(.9) drop-shadow(0 2px 10px rgba(0,0,0,.5))}
+  .open h1{font-size:clamp(30px,5.2vw,68px)}
+
+  /* HIS INTRODUCTION - written for the phone and hidden inside the walk, which
+     means the flat page was throwing away the only paragraph that says who he
+     is. It belongs here more than anywhere. */
+  .phoneintro{display:block !important;max-width:58ch;margin:0 auto;
+    padding:clamp(34px,6vh,64px) 22px clamp(6px,1vh,14px);text-align:center;
+    font-size:clamp(16px,1.35vw,19px);line-height:1.78;color:#E4D8BF}
+  .phoneintro b{color:#F6ECD8}
+
+  /* THE FIVE SECTIONS: each was a flaw in the wood standing for part of the
+     shop. Without the walk they read as chapters, so give them a rule and air. */
+  .station{position:static;transform:none;opacity:1;visibility:visible;
+    width:auto;max-width:760px;margin:0 auto;padding:clamp(30px,5vh,56px) 22px;
+    border-top:1px solid rgba(246,236,216,.13)}
+  .station:first-of-type{border-top:0}
+  .station .card{transform:none;opacity:1}
+
+  /* THE ENDCAP - dropped entirely by the old fallback, so the page simply
+     stopped after the last section with no mark and no way onward. */
+  .endcap{display:block !important;position:static;transform:none;opacity:1;visibility:visible;
+    height:auto;min-height:0;text-align:center;
+    padding:clamp(46px,8vh,100px) 22px clamp(60px,10vh,116px);
+    border-top:1px solid rgba(246,236,216,.13)}
+  .endcap .markwrap{position:static;display:grid;place-items:center}
+  .endcap .mark{width:clamp(120px,15vw,220px);opacity:.9}
+  /* ROOT CAUSE, not a patch: every one of these is revealed by a scroll-driven
+     animation with fill-mode "both". When the animation never runs they sit on
+     their 0% keyframe - opacity 0, visibility hidden - and animation values
+     outrank normal declarations, which is why setting opacity:1 here quietly
+     lost. Cancel the animations and the elements simply exist again. */
+  .open,.world,.floor,.station,.station .card,.endcap,.endcap .markwrap,.endcap .mark,
+  .phoneintro,.near,.haze{animation:none !important;animation-timeline:auto !important}
+  .endcap{position:static !important;inset:auto !important;opacity:1 !important;
+    visibility:visible !important;height:auto !important;transform:none !important}
+  .station{opacity:1 !important;visibility:visible !important;transform:none !important}
+
 }
 @media (prefers-reduced-motion:reduce){
-  .walk{height:auto}.cam{position:static;height:auto;perspective:none}
-  .world,.floor,.edge{position:static;transform:none;width:auto;height:auto}
-  .floor{background:#1d1409}.edge{display:none}
-  .open{position:static;padding:12vh 20px}
-  .station{position:static;transform:none;opacity:1;visibility:visible;width:auto;max-width:720px;margin:0 auto;padding:28px 20px}
-  .haze,.lamp{display:none}
+  /* SYNC WITH THE @supports-not BLOCK ABOVE */
+
+  /* let the document flow normally again */
+  .walk{height:auto}
+  .cam{position:static;height:auto;perspective:none}
+  .world{position:static;transform:none;width:auto;height:auto}
+
+  /* The walk's machinery has no meaning without the walk. Static, all of this
+     is five overlapping wood squares plus three sheets of haze over the text. */
+  .floor,.feat,.edge,.bulb,.dust,.spec,.spec2,.near,.haze,.lamp,
+  .prog,.cue,.boardhint,.phoneboard{display:none !important}
+
+  /* THE HERO: the board becomes a backdrop instead of a plane you walk along.
+     Same photograph, doing an honest job, darkened so cream type holds up. */
+  .open{position:static;inset:auto;height:auto;min-height:0;z-index:auto;pointer-events:auto;
+    display:block;text-align:center;
+    padding:clamp(60px,11vh,126px) 20px clamp(42px,7vh,76px);
+    background:linear-gradient(180deg,rgba(11,7,3,.60),rgba(11,7,3,.80) 62%,rgba(11,7,3,.95)),
+               url(assets/img/floor.webp) center/cover no-repeat}
+  .open::before{display:none}          /* vignette was sized for the 3D scene */
+  .open .stampWrap{position:static;display:grid;place-items:center;gap:clamp(14px,2.6vh,28px)}
+  .open .stamp{width:clamp(150px,19vw,290px);mix-blend-mode:normal;opacity:.96;
+    filter:contrast(1.15) brightness(.9) drop-shadow(0 2px 10px rgba(0,0,0,.5))}
+  .open h1{font-size:clamp(30px,5.2vw,68px)}
+
+  /* HIS INTRODUCTION - written for the phone and hidden inside the walk, which
+     means the flat page was throwing away the only paragraph that says who he
+     is. It belongs here more than anywhere. */
+  .phoneintro{display:block !important;max-width:58ch;margin:0 auto;
+    padding:clamp(34px,6vh,64px) 22px clamp(6px,1vh,14px);text-align:center;
+    font-size:clamp(16px,1.35vw,19px);line-height:1.78;color:#E4D8BF}
+  .phoneintro b{color:#F6ECD8}
+
+  /* THE FIVE SECTIONS: each was a flaw in the wood standing for part of the
+     shop. Without the walk they read as chapters, so give them a rule and air. */
+  .station{position:static;transform:none;opacity:1;visibility:visible;
+    width:auto;max-width:760px;margin:0 auto;padding:clamp(30px,5vh,56px) 22px;
+    border-top:1px solid rgba(246,236,216,.13)}
+  .station:first-of-type{border-top:0}
+  .station .card{transform:none;opacity:1}
+
+  /* THE ENDCAP - dropped entirely by the old fallback, so the page simply
+     stopped after the last section with no mark and no way onward. */
+  .endcap{display:block !important;position:static;transform:none;opacity:1;visibility:visible;
+    height:auto;min-height:0;text-align:center;
+    padding:clamp(46px,8vh,100px) 22px clamp(60px,10vh,116px);
+    border-top:1px solid rgba(246,236,216,.13)}
+  .endcap .markwrap{position:static;display:grid;place-items:center}
+  .endcap .mark{width:clamp(120px,15vw,220px);opacity:.9}
+  /* ROOT CAUSE, not a patch: every one of these is revealed by a scroll-driven
+     animation with fill-mode "both". When the animation never runs they sit on
+     their 0% keyframe - opacity 0, visibility hidden - and animation values
+     outrank normal declarations, which is why setting opacity:1 here quietly
+     lost. Cancel the animations and the elements simply exist again. */
+  .open,.world,.floor,.station,.station .card,.endcap,.endcap .markwrap,.endcap .mark,
+  .phoneintro,.near,.haze{animation:none !important;animation-timeline:auto !important}
+  .endcap{position:static !important;inset:auto !important;opacity:1 !important;
+    visibility:visible !important;height:auto !important;transform:none !important}
+  .station{opacity:1 !important;visibility:visible !important;transform:none !important}
+
 }
 
 /* ============================================================
