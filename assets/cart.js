@@ -15,11 +15,17 @@
    button only if the page doesn't already have one, so shop.html keeps its
    existing header button and the product pages get one for free.
 
-   TO SWITCH ON CARD PAYMENT: put Harley's Square checkout link in
-   SQUARE_CHECKOUT_URL below. The pending notice is replaced by a real Pay
-   button. That is the only edit. (Board order O-030.)
+   CARD PAYMENT (2026-07-30, supersedes the SQUARE_CHECKOUT_URL plan): the
+   Pay button POSTs the cart to /api/checkout — a Cloudflare Pages Function
+   (functions/api/checkout.js) that asks Square for a hosted checkout with
+   the EXACT total and itemised lines, then sends the customer there. No
+   typed amounts, no card data on this site, and the function re-validates
+   every price server-side. Pickup orders pay by card today; shipping goes
+   by "send the order" until Harley confirms the flat rate. If the API call
+   fails for any reason the cart says so and falls back to send-the-order —
+   checkout degrades, never dies. (Board order O-030's go-live, upgraded.)
    ========================================================================== */
-var SQUARE_CHECKOUT_URL = "";   // <-- Harley's Square checkout link
+var CHECKOUT_API = '/api/checkout';
 
 /* Harley's Web3Forms access key — the SAME key that's in contact.html's hidden
    input and in custom.html's gallery enquiry form.
@@ -73,6 +79,11 @@ window.HHCart = (function () {
   text-decoration:none;font-weight:700;letter-spacing:.02em;border:0;cursor:pointer;width:100%;font-size:.95rem;min-height:46px;font-family:inherit}
 .cart-cta.alt{background:none;border:1px solid rgba(45,31,18,.4);color:inherit;font-weight:600}
 .cart-pending{font-size:.84rem;background:rgba(45,31,18,.07);border:1px dashed rgba(45,31,18,.32);padding:.75rem .85rem;border-radius:4px;line-height:1.55}
+.cart-ful{display:grid;gap:.4rem}
+.cart-ful label{display:flex;gap:.55rem;align-items:flex-start;font-size:.86rem;line-height:1.5;cursor:pointer;padding:.15rem 0}
+.cart-ful input{margin-top:.18rem;width:18px;height:18px;accent-color:#2d1f12;flex:none}
+@media(max-width:820px){.cart-ful label{min-height:44px}}
+.cart-payerr{font-size:.84rem;background:rgba(160,40,30,.08);border-left:3px solid #a0281e;padding:.6rem .75rem;margin:0;border-radius:3px;line-height:1.5}
 .cart-empty{text-align:center;opacity:.7;padding:2.5rem 1rem;font-size:.95rem;line-height:1.6}
 /* "hold my cart" capture — asked at the moment of hesitation, not at the door */
 .cart-hold{border-top:1px solid rgba(45,31,18,.16);padding-top:.85rem;margin-top:.2rem}
@@ -131,7 +142,11 @@ window.HHCart = (function () {
 
   var body = panel.querySelector('#cartBody'),
       foot = panel.querySelector('#cartFoot'),
-      opener = null;
+      opener = null,
+      /* pickup pays by card now; ship goes by reply until the flat rate is
+         confirmed by Harley — the chooser below routes between the two. */
+      ful = 'pickup',
+      payMsg = '';
 
   function count() { var t = 0; for (var k in cart) t += cart[k].q; return t; }
   function total() { var t = 0; for (var k in cart) t += cart[k].p * cart[k].q; return t; }
@@ -170,17 +185,34 @@ window.HHCart = (function () {
         + '</div>';
     }).join('');
 
-    var pay = SQUARE_CHECKOUT_URL
-      ? '<a class="cart-cta" href="' + SQUARE_CHECKOUT_URL + '" rel="noopener">Pay with card</a>'
-      : '<div class="cart-pending"><b>Card checkout isn\'t switched on yet.</b> I\'m still getting that set up, '
-        + 'so for now send me the order and I\'ll reply with the total including shipping, and how to pay. '
-        + 'Usually the same day.</div>'
+    var pay;
+    if (anyQuoted) {
+      /* The card path never touches a total that says "so far". */
+      pay = '<div class="cart-pending"><b>Part of this order needs my eyes before it has a price.</b> '
+        + 'Send it over and I\'ll reply with the full number and how to pay. Usually the same day.</div>'
         + '<button class="cart-cta" type="button" id="cartSend">Send this order to Harley</button>';
+    } else {
+      pay = '<div class="cart-ful" role="radiogroup" aria-label="Pickup or shipping">'
+        + '<label><input type="radio" name="hhFul" value="pickup"' + (ful === 'pickup' ? ' checked' : '')
+        + '> Free pickup &mdash; Owingsville, Winchester, Mt.&nbsp;Sterling or Morehead</label>'
+        + '<label><input type="radio" name="hhFul" value="ship"' + (ful === 'ship' ? ' checked' : '')
+        + '> Ship it &mdash; I confirm the shipping cost before you pay anything</label>'
+        + '</div>'
+        + (payMsg ? '<p class="cart-payerr" role="alert">' + payMsg + '</p>' : '')
+        + (ful === 'pickup'
+          ? '<button class="cart-cta" type="button" id="cartPay">Pay with card</button>'
+            + '<button class="cart-cta alt" type="button" id="cartSend">Or send me the order instead</button>'
+          : '<div class="cart-pending">Shipping\'s a flat rate I confirm up front &mdash; send me the order and '
+            + 'I\'ll reply with the total including shipping, and how to pay. Usually the same day.</div>'
+            + '<button class="cart-cta" type="button" id="cartSend">Send this order to Harley</button>');
+    }
 
     foot.innerHTML =
         '<div class="cart-tot"><span>' + (anyQuoted ? 'Total so far' : 'Total') + '</span><span>' + money(total()) + '</span></div>'
-      + '<p class="cart-note">Shipping is a flat rate and gets added on top&nbsp;— free if you collect in Owingsville.'
-      + (anyQuoted ? ' The quoted items above aren\'t counted in this figure yet.' : '') + '</p>'
+      + (anyQuoted
+          ? '<p class="cart-note">Shipping is a flat rate and gets added on top&nbsp;— free if you collect. '
+            + 'The quoted items above aren\'t counted in this figure yet.</p>'
+          : '')
       + pay
       + '<a class="cart-cta alt" href="shop">Keep looking</a>'
       + holdBlock();
@@ -282,6 +314,33 @@ window.HHCart = (function () {
     el.querySelector('.x').addEventListener('click', bye);
   }
 
+  /* The card path. POST the cart to the checkout function; it re-validates
+     every price, asks Square for a hosted checkout with the exact itemised
+     total, and we send the customer there. Any failure becomes a plain
+     sentence and the send-the-order path — the customer is never stranded. */
+  function payNow() {
+    var b = foot.querySelector('#cartPay');
+    if (b) { b.disabled = true; b.textContent = 'Opening secure payment…'; }
+    var lines = [];
+    for (var k in cart) lines.push({ key: k, p: cart[k].p, q: cart[k].q, quoted: cart[k].quoted || [] });
+    fetch(CHECKOUT_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lines: lines, fulfillment: 'pickup' })
+    }).then(function (r) {
+      return r.json().then(function (j) { return { ok: r.ok, j: j }; });
+    }).then(function (res) {
+      if (res.ok && res.j && res.j.url) { location.href = res.j.url; return; }
+      payMsg = ((res.j && res.j.error) || 'Card payment hiccuped just now.')
+        + ' You can send me the order instead and I\'ll reply with how to pay.';
+      render();
+    }).catch(function () {
+      payMsg = 'Card payment couldn\'t reach Square just now. Send me the order instead '
+        + 'and I\'ll reply with how to pay — usually the same day.';
+      render();
+    });
+  }
+
   /* Hands the order to the contact page as written text. No payment, no card,
      no pretending — but the customer leaves having actually ordered. */
   function sendOrder() {
@@ -325,7 +384,13 @@ window.HHCart = (function () {
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && panel.dataset.open) close();
   });
-  foot.addEventListener('click', function (e) { if (e.target.id === 'cartSend') sendOrder(); });
+  foot.addEventListener('click', function (e) {
+    if (e.target.id === 'cartSend') sendOrder();
+    if (e.target.id === 'cartPay') payNow();
+  });
+  foot.addEventListener('change', function (e) {
+    if (e.target.name === 'hhFul') { ful = e.target.value; payMsg = ''; render(); }
+  });
   body.addEventListener('click', function (e) {
     var t = e.target.getAttribute && e.target.getAttribute('data-rm');
     if (!t) return;

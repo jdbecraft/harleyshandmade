@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- Post-payment landing. Square's checkout redirects here after a card
+     payment goes through. Stays noindex forever — a thank-you page in
+     search results helps nobody. Deliberately NOT in the sitemap. -->
+<meta name="robots" content="noindex">
+<title>Order placed — Harley's Handmade</title>
+<meta name="description" content="Your order's in. I'll be in touch about pickup — usually the same day.">
+<meta name="theme-color" content="#2D1F12">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,500..900,0..100,0..1&family=IBM+Plex+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/page.css">
+<link rel="stylesheet" href="assets/rail.css">
+<script>
+/* The customer just paid for this cart — empty it, or the site greets a
+   paying customer with "you've still got things in your cart." Only on a
+   real return from checkout (?paid=1), so a stray visit clears nothing. */
+try {
+  if (/[?&]paid=1/.test(location.search)) {
+    localStorage.removeItem('hh_cart_v1');
+    localStorage.removeItem('hh_order_msg');
+  }
+} catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="board"></div><div class="fade"></div>
+  <div class="inner wrap" data-rise>
+    <a class="back" href="/">&larr; Back to the board</a>
+    <h1>Order<br>placed.</h1>
+    <p class="lede">Thank you — genuinely. Square's emailing your card receipt now, and your order
+    is already on my bench list. I'll be in touch about pickup, usually the same day.</p>
+  </div>
+</header>
+
+<section class="cta wrap narrow rule">
+  <h2>Need me sooner?</h2>
+  <p>Call or text and I'll pick up when I'm not covered in sawdust.</p>
+  <div class="acts">
+    <a class="p" href="tel:+18597492814">Call &mdash; (859) 749-2814</a>
+    <a class="s" href="shop">Back to the shop</a>
+    <a class="s" href="/">Start at the board</a>
+  </div>
+</section>
+
+</body>
+</html>
