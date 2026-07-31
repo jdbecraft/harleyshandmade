@@ -238,7 +238,11 @@
 <div class="glb" id="glb" role="dialog" aria-modal="true" aria-label="Photo">
   <button class="glb-x" type="button" id="glbX" aria-label="Close">&times;</button>
   <button class="glb-nav glb-prev" type="button" id="glbPrev" aria-label="Previous photo">&lsaquo;</button>
-  <img id="glbImg" src="" alt="">
+  <!-- No src attribute, deliberately. src="" is not "empty", it resolves to the
+       CURRENT PAGE URL, so every visit to /custom fetched this page's own HTML
+       a second time and threw it away when it failed to decode as an image.
+       A bare <img> makes no request until JS sets a real src. -->
+  <img id="glbImg" alt="">
   <button class="glb-nav glb-next" type="button" id="glbNext" aria-label="Next photo">&rsaquo;</button>
 </div>
 <script>
