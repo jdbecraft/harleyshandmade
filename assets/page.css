@@ -174,7 +174,11 @@ b{color:var(--espresso)}
   transition:color .2s ease,background .2s ease}
 .imk-credit:hover,.imk-credit:focus-visible{color:#F6ECD8;background:rgba(20,13,6,.9)}
 @media(max-width:820px){
-  /* clear of the pinned call bar, which owns the bottom edge on a phone */
-  .imk-credit{bottom:50px;font-size:9px;padding:7px 10px}
+  /* Clear of the pinned call bar, which owns the bottom edge on a phone.
+     MEASURED, not guessed: the bar runs 777-844 in an 844-tall viewport,
+     so it is ~64px, not the ~46 first assumed — at bottom:50px this chip
+     sat directly on top of 'Tell me what you want made', which is the one
+     control a credit must never cover. 76px clears it with a real gap. */
+  .imk-credit{bottom:76px;font-size:9px;padding:7px 10px}
 }
 @media print{ .imk-credit{display:none} }
