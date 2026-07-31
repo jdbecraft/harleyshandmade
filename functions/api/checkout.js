@@ -42,13 +42,20 @@ const PRODUCTS = {
   'Picnic Table Feeder':     { base: 75  },
   'Adirondack Chair Feeder': { base: 75  },
   'Birdhouse':               { base: 150 },
-  /* Unlinked from the shop but the pages still deploy (launch decision
-     pending) — a deep-linked buyer is still a buyer. */
-  'Engraved Sign':           { base: 285 },
-  'Hand-Carved Cardinal':    { base: 425 },
-  /* The frame's base is size-interpolated $145–$205 (product.js), so its
-     floor is the range floor. */
-  'Custom Picture Frame':    { base: 145 },
+  /* ⛔ REMOVED 2026-07-31 — Engraved Sign ($285), Hand-Carved Cardinal ($425)
+     and Custom Picture Frame ($145–205). Jeff retired all three to quoted
+     custom work the same day: they need too much per-piece adjustment to carry
+     a shelf price. Leaving them here let the server mint a REAL payment link
+     for an engraved sign at $285 — charging a card for a piece Harley is
+     supposed to price after seeing it, which is the exact thing this file
+     exists to prevent. Caught by the audit, not by the UI, because the UI
+     cannot produce those keys any more.
+     ⚠️ It was NOT unreachable: a cart is localStorage, so anyone who added one
+     of these before today still has it, and their next "Pay with card" would
+     have gone through. Now it is refused and they are told to refresh — the
+     send-the-order button sits right beside it.
+     If any of the three ever returns to the shelf, it comes back HERE and in
+     build-products.py's P list together. */
 };
 
 /* Ceiling above base: stain (+15/+25) + stand (+20) + frame size (+60) all
