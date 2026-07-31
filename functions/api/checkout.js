@@ -76,12 +76,13 @@ const MAX_ADDS = 150;
    So $23 covers the farthest order he is likely to get, and nearer ones leave
    him a few dollars ahead — which is what a flat rate is for.
 
-   ⚠️ The one thing that could still beat it: DIMENSIONAL WEIGHT. Over one
-   cubic foot (1,728 cu in) USPS bills on size rather than actual weight, and a
-   birdhouse box can pass that. If he ever boxes one bigger than roughly
-   12x12x12, the label can cost well above $15.75 no matter that it weighs 3 lb.
-   Worth him pricing one real birdhouse box before this number is treated as
-   settled.
+   Dimensional weight was raised as a risk and then RULED OUT (Jeff,
+   2026-07-31: the birdhouse is "not a foot tall", "nor is it a foot wide").
+   USPS bills on size instead of weight only above one cubic foot — 1,728 cu
+   in, which is a VOLUME, not any single measurement. With the largest piece
+   under 12 in on every side, a padded box lands around 12x10x11 ≈ 1,320 cu in
+   and nothing in this shop approaches the line. So $23 is a real ceiling
+   rather than a hopeful one, and the earlier warning here was mine, not his.
 
    ⚠️ The SERVER decides this number, never the browser — the client sends only
    its choice of pickup-or-ship. Change it here AND in SHIP_FLAT in
