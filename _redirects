@@ -1,0 +1,18 @@
+# Cloudflare Pages redirects.
+#
+# 2026-07-31 — the engraved sign, the hand-carved cardinal and the picture
+# frame came off the shelf and became quoted custom work (Jeff's call: they
+# need too much per-piece adjustment to carry a fixed price). Their product
+# pages are retired.
+#
+# These send anyone holding an old link to the custom-work page, which is
+# where all ten of their photographs now live, instead of a 404. 301 because
+# the move is permanent. Both the clean and .html forms, because the site
+# serves extensionless URLs and 308s the .html form — without the second line
+# an old .html link would redirect to a page that no longer exists.
+/p-sign          /custom  301
+/p-sign.html     /custom  301
+/p-cardinal      /custom  301
+/p-cardinal.html /custom  301
+/p-frame         /custom  301
+/p-frame.html    /custom  301
