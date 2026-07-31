@@ -148,37 +148,26 @@ b{color:var(--espresso)}
   .says.one .grid{grid-auto-columns:minmax(88%,1fr)}
 }
 
-/* ---------- "Website designed by Impact Marketing KY" — sitewide credit ----------
-   Jeff, 2026-07-31: "i want it displayed site wide even while you are walking
-   the board in the bottom right hand corner."
 
-   FIXED, and a direct child of <body>, both deliberately. The homepage walk has
-   no ordinary document flow to sit in, and everything inside it is driven by
-   scroll-timeline animations with fill-mode:both — an element parked in that
-   subtree freezes on its 0% keyframe and never appears (the frozen-keyframe
-   failure that once made the whole homepage look broken).
+/* ---------- "Website designed by Impact Marketing KY" — the credit ----------
+   Jeff, 2026-07-31: footer on every page and every width, EXCEPT the desktop
+   home page, where the floating bottom-right chip stays (index.html overrides
+   this). The reason for the exception is structural, not stylistic: the walk
+   is a fixed 3D stage with no ordinary document flow for a footer to sit in.
 
-   It carries its own dark chip so it stays legible over BOTH the near-black
-   board of the walk and the pale parchment of every interior page, without
-   needing a light and a dark variant.
-
-   z-index 35 sits above the rail (30) and below the pinned call bar (40), the
-   cart button (60) and the cart panel (81) — a credit must never cover a way
-   to buy or a way to call. On a phone it lifts clear of the call bar entirely. */
-.imk-credit{position:fixed;right:0;bottom:0;z-index:35;
-  font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9.5px;letter-spacing:.1em;
-  text-transform:uppercase;text-decoration:none;line-height:1;
-  color:rgba(246,236,216,.66);background:rgba(20,13,6,.62);
-  padding:8px 12px;border-top-left-radius:3px;
-  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
-  transition:color .2s ease,background .2s ease}
-.imk-credit:hover,.imk-credit:focus-visible{color:#F6ECD8;background:rgba(20,13,6,.9)}
+   It is the last element in <body>, so in normal flow it lands at the foot of
+   the page without needing to be moved. The pinned mobile call bar is
+   position:fixed and overlays the bottom ~64px, so the strip carries enough
+   bottom padding on a phone to stay readable underneath it. */
+.imk-foot{border-top:1px solid rgba(74,46,29,.16);background:var(--parchment);
+  padding:20px clamp(18px,4vw,44px);text-align:center}
+.imk-foot a{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;
+  letter-spacing:.12em;text-transform:uppercase;text-decoration:none;
+  color:var(--oak);transition:color .2s ease}
+.imk-foot a:hover,.imk-foot a:focus-visible{color:var(--walnut);text-decoration:underline;
+  text-underline-offset:3px}
 @media(max-width:820px){
-  /* Clear of the pinned call bar, which owns the bottom edge on a phone.
-     MEASURED, not guessed: the bar runs 777-844 in an 844-tall viewport,
-     so it is ~64px, not the ~46 first assumed — at bottom:50px this chip
-     sat directly on top of 'Tell me what you want made', which is the one
-     control a credit must never cover. 76px clears it with a real gap. */
-  .imk-credit{bottom:76px;font-size:9px;padding:7px 10px}
+  /* clear of the pinned call bar (~64px, measured) so the line is never
+     half-hidden when someone scrolls to the very bottom */
+  .imk-foot{padding-bottom:84px}
 }
-@media print{ .imk-credit{display:none} }

@@ -970,26 +970,51 @@ html:not(.flat) .walkoff-link:hover{color:#F6ECD8}
 </script>
 
 <style>
-/* "Website designed by Impact Marketing KY" — sitewide credit (Jeff, 2026-07-31).
-   Inline here because this page does not link assets/page.css. If these values
-   change, change them in BOTH places. Fixed + direct child of <body> so it
-   survives the walk's scroll-timeline animations. */
-.imk-credit{position:fixed;right:0;bottom:0;z-index:35;
-  font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9.5px;letter-spacing:.1em;
-  text-transform:uppercase;text-decoration:none;line-height:1;
-  color:rgba(246,236,216,.66);background:rgba(20,13,6,.62);
-  padding:8px 12px;border-top-left-radius:3px;
-  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
-  transition:color .2s ease,background .2s ease}
-.imk-credit:hover,.imk-credit:focus-visible{color:#F6ECD8;background:rgba(20,13,6,.9)}
-@media(max-width:820px){ .imk-credit{bottom:76px;font-size:9px;padding:7px 10px} }
-@media print{ .imk-credit{display:none} }
+
+/* ---------- "Website designed by Impact Marketing KY" — the credit ----------
+   Jeff, 2026-07-31: footer on every page and every width, EXCEPT the desktop
+   home page, where the floating bottom-right chip stays (index.html overrides
+   this). The reason for the exception is structural, not stylistic: the walk
+   is a fixed 3D stage with no ordinary document flow for a footer to sit in.
+
+   It is the last element in <body>, so in normal flow it lands at the foot of
+   the page without needing to be moved. The pinned mobile call bar is
+   position:fixed and overlays the bottom ~64px, so the strip carries enough
+   bottom padding on a phone to stay readable underneath it. */
+.imk-foot{border-top:1px solid rgba(74,46,29,.16);background:var(--parchment);
+  padding:20px clamp(18px,4vw,44px);text-align:center}
+.imk-foot a{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;
+  letter-spacing:.12em;text-transform:uppercase;text-decoration:none;
+  color:var(--oak);transition:color .2s ease}
+.imk-foot a:hover,.imk-foot a:focus-visible{color:var(--walnut);text-decoration:underline;
+  text-underline-offset:3px}
+@media(max-width:820px){
+  /* clear of the pinned call bar (~64px, measured) so the line is never
+     half-hidden when someone scrolls to the very bottom */
+  .imk-foot{padding-bottom:84px}
+}
+
+/* THE HOME PAGE EXCEPTION (Jeff, 2026-07-31: "on the desktop the placement on
+   the main page is perfect"). Above 820px this page is the 3D walk — a fixed
+   stage with no page foot to attach to — so the credit floats bottom-right
+   over the board instead. On a phone this page has ordinary flow like any
+   other, so it keeps the footer strip. */
+@media(min-width:821px){
+  .imk-foot{position:fixed;right:0;bottom:0;z-index:35;
+    border:0;border-top-left-radius:3px;background:rgba(20,13,6,.62);
+    padding:8px 12px;text-align:right;
+    -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+  .imk-foot a{font-size:9.5px;letter-spacing:.1em;color:rgba(246,236,216,.66)}
+  .imk-foot a:hover,.imk-foot a:focus-visible{color:#F6ECD8;text-decoration:none}
+}
 </style>
 
 <!-- Sitewide credit (Jeff, 2026-07-31). Fixed, and a DIRECT CHILD OF BODY:
      the homepage walk has no ordinary flow to sit in, and anything inside
      that subtree freezes on its 0% keyframe. Styles live in assets/page.css,
      and inline on the three self-contained pages. -->
-<a class="imk-credit" href="https://impactmarketingky.com" target="_blank" rel="noopener">Website designed by Impact Marketing KY</a>
+<footer class="imk-foot">
+  <a href="https://impactmarketingky.com" target="_blank" rel="noopener">Website designed by Impact Marketing KY</a>
+</footer>
 </body>
 </html>
