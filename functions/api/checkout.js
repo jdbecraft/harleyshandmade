@@ -62,15 +62,31 @@ const PRODUCTS = {
    fit under this with room; anything higher is a tampered or broken cart. */
 const MAX_ADDS = 150;
 
-/* Flat shipping, in cents. Set from Harley's own figures (2026-07-30, via
-   Jeff): heaviest shop item ~3 lb, $7 of packaging per order. A 3 lb Ground
-   Advantage label at Square/Shippo commercial rates runs ~$8.50 nearby to
-   ~$15.75 to the west coast, so his true cost is ~$15.50–$22.75. $18 covers
-   packaging plus the label everywhere he is likely to ship and runs a few
-   dollars short only on a far-zone order.
-   ⚠️ The SERVER decides this number, never the browser — the client sends
-   only its choice of pickup-or-ship. */
-const SHIPPING_FLAT_CENTS = 1800;
+/* Flat shipping, in cents.
+   Jeff, 2026-07-31: "change the flat rate shipping to be what the highest it
+   could most likely be for across the country like to california."
+
+   The arithmetic, from Harley's own figures and USPS's published commercial
+   rates rather than a guess:
+     packaging, his number ....................... $7.00
+     3 lb Ground Advantage, zone 8 (CA) .......... $15.75  (commercial, Apr 2026)
+     the +$0.10 bump for 3-5 lb from 25 Jul 2026 . $0.10
+                                                  -------
+     worst realistic cost to the west coast ...... $22.85
+   So $23 covers the farthest order he is likely to get, and nearer ones leave
+   him a few dollars ahead — which is what a flat rate is for.
+
+   ⚠️ The one thing that could still beat it: DIMENSIONAL WEIGHT. Over one
+   cubic foot (1,728 cu in) USPS bills on size rather than actual weight, and a
+   birdhouse box can pass that. If he ever boxes one bigger than roughly
+   12x12x12, the label can cost well above $15.75 no matter that it weighs 3 lb.
+   Worth him pricing one real birdhouse box before this number is treated as
+   settled.
+
+   ⚠️ The SERVER decides this number, never the browser — the client sends only
+   its choice of pickup-or-ship. Change it here AND in SHIP_FLAT in
+   assets/cart.js AND in the shop page copy, together. */
+const SHIPPING_FLAT_CENTS = 2300;
 const MAX_LINES = 12, MAX_QTY = 25, MAX_TOTAL_CENTS = 500000; // $5,000
 
 const SUPPORT_EMAIL = 'harley@harleyshandmadeky.com';

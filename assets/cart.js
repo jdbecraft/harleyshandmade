@@ -27,11 +27,14 @@
    ========================================================================== */
 var CHECKOUT_API = '/api/checkout';
 
-/* Flat shipping. Harley's own figures (2026-07-30): heaviest shop item ~3 lb,
-   $7 packaging per order; a 3 lb label runs ~$8.50–$15.75 depending how far
-   it goes. Display only — the SERVER sets the amount actually charged, and
-   the two must be changed together (functions/api/checkout.js). */
-var SHIP_FLAT = 18;
+/* Flat shipping, set to the worst realistic case rather than the average
+   (Jeff, 2026-07-31 — "the highest it could most likely be… like to
+   california"): $7 packaging + $15.85 for a 3 lb zone-8 Ground Advantage
+   label = $22.85, rounded to $23. Nearer orders leave him a little ahead,
+   which is the point of a flat rate, and anyone local has free pickup.
+   Display only — the SERVER sets what is actually charged. Change this and
+   SHIPPING_FLAT_CENTS in functions/api/checkout.js together. */
+var SHIP_FLAT = 23;
 /* Kentucky taxes delivery, postage, handling and packaging as part of the
    sales price (KRS 139.010), so tax is figured on goods PLUS shipping. */
 var KY_TAX = 0.06;
