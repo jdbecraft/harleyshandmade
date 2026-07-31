@@ -205,6 +205,59 @@ a{color:inherit}
     </div>
 </main>
 
+<!-- Real reviews, pulled 2026-07-30 from his Facebook page and his Etsy shop.
+     Placed here on purpose: right after the pieces, while somebody is deciding
+     — not buried at the bottom where the people who already trust him go.
+
+     ⚠️ The styles are INLINE here, and that is not an oversight. Every other
+     page on this site links assets/page.css and picks these rules up from
+     there; shop.html is the one page that carries all of its CSS inline, so a
+     rule added only to page.css silently does nothing here. Found by reading
+     document.styleSheets on the rendered page, not by looking at the markup —
+     the section looked perfect and was completely unstyled. If these rules
+     change, change them in BOTH places. -->
+<style>
+.says{background:var(--parchment);border-top:1px solid rgba(74,46,29,.16);
+  border-bottom:1px solid rgba(74,46,29,.16);padding:clamp(40px,6vw,66px) 0}
+.says .grid{display:grid;gap:18px;grid-template-columns:repeat(3,1fr);margin-top:4px}
+.says figure{background:var(--linen);border:1px solid rgba(74,46,29,.18);
+  padding:24px 24px 20px;display:flex;flex-direction:column;gap:15px}
+.says blockquote{font-size:17px;line-height:1.68;color:var(--espresso);flex:1}
+.says blockquote::before{content:"\201C";font-family:Fraunces,Georgia,serif;font-weight:800;
+  font-size:40px;line-height:0;color:var(--saddle);vertical-align:-.18em;margin-right:4px}
+.says figcaption{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--walnut);
+  border-top:1px solid rgba(74,46,29,.16);padding-top:13px}
+.says figcaption .src{color:var(--oak)}
+@media(max-width:820px){
+  .says .grid{grid-auto-flow:column;grid-auto-columns:minmax(80%,1fr);grid-template-columns:none;
+    overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;padding-bottom:4px;
+    margin-inline:calc(clamp(18px,4vw,44px) * -1);padding-inline:clamp(18px,4vw,44px)}
+  .says .grid::-webkit-scrollbar{display:none}
+  .says figure{scroll-snap-align:start}
+}
+</style>
+<section class="says">
+  <div class="wrap">
+    <div class="eyebrow">What folks say</div>
+    <div class="grid">
+      <figure>
+        <blockquote>Such a quick turn around and made the perfect sentimental gift for a loved one! I will purchase all wood needs here. It&rsquo;s clear there&rsquo;s heart behind this passion.</blockquote>
+        <figcaption>Miranda S. &middot; <span class="src">on Facebook</span></figcaption>
+      </figure>
+      <figure>
+        <blockquote>Got my &ldquo;squirrel feeder&rdquo; mini porch swing and I love it! Can&rsquo;t wait to get it filled with peanuts. Thanks Harley!</blockquote>
+        <figcaption>Emily R. &middot; <span class="src">on Facebook</span></figcaption>
+      </figure>
+      <figure>
+        <blockquote>Well made and arrived to my aunt in perfect condition. Now to just get a photo of Herbert using her new chair.</blockquote>
+        <figcaption>Etsy customer &middot; <span class="src">5 stars on Etsy</span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
 <section class="signup">
   <div class="wrap">
     <div class="su-box">
