@@ -90,8 +90,14 @@
   function paint() {
     var s = state(), b = base();
     elBase.textContent = money(b);
+    /* Clear the text as well as hiding the row. Hiding alone left the last
+       figure sitting in the DOM, so going back to the free finish showed
+       "+ $25" against a total that no longer included it (Jeff, 2026-07-31).
+       The total was always right — the line lied about it, which on this site
+       is the worse half: every product page exists to promise that the number
+       you see is the number you pay. */
     if (s.adds > 0) { elAddRow.hidden = false; elAdds.textContent = '+ ' + money(s.adds); }
-    else { elAddRow.hidden = true; }
+    else { elAddRow.hidden = true; elAdds.textContent = ''; }
     elTotal.textContent = money(b + s.adds);
     if (elHead) elHead.textContent = money(b + s.adds);
     if (s.quoted.length) {

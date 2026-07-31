@@ -69,6 +69,14 @@ window.HHCart = (function () {
   display:flex;flex-direction:column;transform:translateX(102%);transition:transform .26s cubic-bezier(.22,.61,.36,1);
   box-shadow:-18px 0 48px rgba(0,0,0,.4);font-family:Lora,Georgia,serif}
 .cart-panel[data-open]{transform:none}
+/* Same trap as .total .row, found in the same sweep (2026-07-31): the
+   display:flex above is an AUTHOR rule and outranks the browser's own
+   [hidden] display:none, so a CLOSED cart panel stayed in the layout —
+   parked 438px off-screen but still focusable. Tabbing through the page
+   landed on the invisible close button, and with items in the cart, on
+   Remove and Pay too. Keyboard access is a launch-gate item, not a nicety.
+   (No backticks in this comment: it lives inside a JS template literal.) */
+.cart-panel[hidden],.cart-scrim[hidden]{display:none}
 @media (prefers-reduced-motion:reduce){.cart-panel,.cart-scrim{transition:none}}
 .cart-hd{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.1rem 1.25rem;border-bottom:1px solid rgba(45,31,18,.16)}
 .cart-hd h2{margin:0;font-size:1.1rem;letter-spacing:.02em}

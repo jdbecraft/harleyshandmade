@@ -84,6 +84,13 @@
 .total{padding:18px;background:rgba(176,132,86,.16);border-top:1px solid rgba(74,46,29,.24)}
 .total .row{display:flex;justify-content:space-between;align-items:baseline;gap:14px;
   font-size:15px;color:rgba(45,31,18,.82)}
+/* ⚠️ This rule is load-bearing, not tidiness. `display:flex` above is an AUTHOR
+   rule, and it outranks the browser's own `[hidden]{display:none}` — so
+   `elAddRow.hidden = true` set the attribute and changed nothing on screen.
+   The options line stayed visible showing a stale "+ $25" next to a total that
+   did not include it (Jeff caught it, 2026-07-31). Any time an author rule
+   gives an element an explicit display, the hidden attribute needs this. */
+.total .row[hidden]{display:none}
 .total .row + .row{margin-top:7px}
 .total .row.big{margin-top:13px;padding-top:13px;border-top:1px solid rgba(74,46,29,.24)}
 .total .row.big .v{font-family:Fraunces,Georgia,serif;font-weight:800;font-size:29px;color:var(--ink)}

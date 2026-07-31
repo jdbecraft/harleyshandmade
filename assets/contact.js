@@ -154,10 +154,20 @@
       }
 
       /* Say plainly that the order came through, so it isn't a mystery why the
-         box is full of text. Styled inline: this appears on one page, once. */
+         box is full of text. Styled inline: this appears on one page, once.
+
+         ⚠️ grid-column:1/-1 is load-bearing. form.parentNode is `.cgrid`, a
+         two-column grid holding exactly the form and the sketch pad. Inserting
+         this note made it a THIRD grid item: the note took column one, the form
+         was squeezed into the narrow sketch column, and the sketch pad wrapped
+         onto a second row. Anyone arriving from the cart got a visibly broken
+         page — which is the worst possible moment for one, because they have
+         just decided to order (Jeff caught it, 2026-07-31). Spanning every
+         column makes it a banner above both and leaves the layout alone. */
       var note = document.createElement('p');
       note.setAttribute('role', 'status');
-      note.style.cssText = 'margin:0 0 16px;padding:13px 16px;border:1px solid rgba(74,46,29,.3);' +
+      note.style.cssText = 'grid-column:1/-1;margin:0 0 16px;padding:13px 16px;' +
+        'border:1px solid rgba(74,46,29,.3);' +
         'background:rgba(176,132,86,.16);font-size:15.5px;line-height:1.6;border-radius:3px';
       note.innerHTML = "<b>Your order came through.</b> It's written out below — add anything else you want me " +
         "to know, put your name and number in, and send it. I'll come back with the total including shipping.";
