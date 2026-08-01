@@ -982,7 +982,15 @@ html:not(.flat) .walkoff-link:hover{color:#F6ECD8}
    position:fixed and overlays the bottom ~64px, so the strip carries enough
    bottom padding on a phone to stay readable underneath it. */
 .imk-foot{border-top:1px solid rgba(74,46,29,.16);background:var(--parchment);
-  padding:20px clamp(18px,4vw,44px);text-align:center}
+  padding:18px clamp(18px,4vw,44px);
+  display:flex;flex-wrap:wrap;justify-content:center;align-items:center;
+  gap:10px clamp(14px,3vw,34px);text-align:center}
+/* Privacy and Terms sit here on EVERY page rather than on one buried link: a
+   shop that takes card payments and keeps email addresses has to make them
+   easy to find, and the footer is where people actually look. */
+.imk-legal{display:flex;align-items:center;gap:10px}
+.imk-legal span{color:rgba(74,46,29,.4);font-size:10px}
+@media(min-width:821px){ .imk-foot{justify-content:space-between;text-align:left} }
 .imk-foot a{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;
   letter-spacing:.12em;text-transform:uppercase;text-decoration:none;
   color:var(--oak);transition:color .2s ease}
@@ -992,20 +1000,37 @@ html:not(.flat) .walkoff-link:hover{color:#F6ECD8}
   /* clear of the pinned call bar (~64px, measured) so the line is never
      half-hidden when someone scrolls to the very bottom */
   .imk-foot{padding-bottom:84px}
+  .imk-foot a{padding:11px 4px;display:inline-block}   /* 44px targets */
 }
 
-/* THE HOME PAGE EXCEPTION (Jeff, 2026-07-31: "on the desktop the placement on
-   the main page is perfect"). Above 820px this page is the 3D walk — a fixed
-   stage with no page foot to attach to — so the credit floats bottom-right
-   over the board instead. On a phone this page has ordinary flow like any
-   other, so it keeps the footer strip. */
+/* THE HOME PAGE EXCEPTION (Jeff, 2026-07-31: credit bottom-right on the walk,
+   and "the home screen walk the board version in the bottom left" for the
+   legal links). Above 820px this page IS the walk — a fixed 3D stage with no
+   document flow for a footer to sit in — so the strip becomes a fixed bar
+   pinned to the bottom edge: LEGAL LEFT, CREDIT RIGHT, nothing between them.
+
+   The bar itself is transparent and pointer-events:none, so it cannot become
+   an invisible strip across the bottom of the board swallowing scroll or
+   clicks; only the two link groups take pointer events back. Each link keeps
+   its own dark chip so it stays readable over the wood.
+
+   On a phone this page has ordinary flow like every other, and keeps the
+   normal centred footer. */
 @media(min-width:821px){
-  .imk-foot{position:fixed;right:0;bottom:0;z-index:35;
-    border:0;border-top-left-radius:3px;background:rgba(20,13,6,.62);
-    padding:8px 12px;text-align:right;
+  .imk-foot{position:fixed;left:0;right:0;bottom:0;z-index:35;
+    border:0;background:none;padding:0;gap:0;
+    justify-content:space-between;align-items:flex-end;
+    pointer-events:none}
+  .imk-foot > *{pointer-events:auto}
+  .imk-legal{gap:0}
+  .imk-legal span{display:none}
+  .imk-foot a{background:rgba(20,13,6,.62);color:rgba(246,236,216,.66);
+    padding:8px 12px;font-size:9.5px;letter-spacing:.1em;
     -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
-  .imk-foot a{font-size:9.5px;letter-spacing:.1em;color:rgba(246,236,216,.66)}
-  .imk-foot a:hover,.imk-foot a:focus-visible{color:#F6ECD8;text-decoration:none}
+  .imk-legal a:first-child{border-top-right-radius:3px}
+  .imk-by{border-top-left-radius:3px}
+  .imk-foot a:hover,.imk-foot a:focus-visible{color:#F6ECD8;
+    background:rgba(20,13,6,.9);text-decoration:none}
 }
 </style>
 
@@ -1014,7 +1039,10 @@ html:not(.flat) .walkoff-link:hover{color:#F6ECD8}
      that subtree freezes on its 0% keyframe. Styles live in assets/page.css,
      and inline on the three self-contained pages. -->
 <footer class="imk-foot">
-  <a href="https://impactmarketingky.com" target="_blank" rel="noopener">Website designed by Impact Marketing KY</a>
+  <nav class="imk-legal" aria-label="Legal">
+    <a href="privacy">Privacy</a><span aria-hidden="true">&middot;</span><a href="terms">Terms</a>
+  </nav>
+  <a class="imk-by" href="https://impactmarketingky.com" target="_blank" rel="noopener">Website designed by Impact Marketing KY</a>
 </footer>
 </body>
 </html>

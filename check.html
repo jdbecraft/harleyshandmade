@@ -138,7 +138,15 @@
    position:fixed and overlays the bottom ~64px, so the strip carries enough
    bottom padding on a phone to stay readable underneath it. */
 .imk-foot{border-top:1px solid rgba(74,46,29,.16);background:var(--parchment);
-  padding:20px clamp(18px,4vw,44px);text-align:center}
+  padding:18px clamp(18px,4vw,44px);
+  display:flex;flex-wrap:wrap;justify-content:center;align-items:center;
+  gap:10px clamp(14px,3vw,34px);text-align:center}
+/* Privacy and Terms sit here on EVERY page rather than on one buried link: a
+   shop that takes card payments and keeps email addresses has to make them
+   easy to find, and the footer is where people actually look. */
+.imk-legal{display:flex;align-items:center;gap:10px}
+.imk-legal span{color:rgba(74,46,29,.4);font-size:10px}
+@media(min-width:821px){ .imk-foot{justify-content:space-between;text-align:left} }
 .imk-foot a{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;
   letter-spacing:.12em;text-transform:uppercase;text-decoration:none;
   color:var(--oak);transition:color .2s ease}
@@ -148,6 +156,7 @@
   /* clear of the pinned call bar (~64px, measured) so the line is never
      half-hidden when someone scrolls to the very bottom */
   .imk-foot{padding-bottom:84px}
+  .imk-foot a{padding:11px 4px;display:inline-block}   /* 44px targets */
 }
 </style>
 
@@ -156,6 +165,9 @@
      that subtree freezes on its 0% keyframe. Styles live in assets/page.css,
      and inline on the three self-contained pages. -->
 <footer class="imk-foot">
-  <a href="https://impactmarketingky.com" target="_blank" rel="noopener">Website designed by Impact Marketing KY</a>
+  <nav class="imk-legal" aria-label="Legal">
+    <a href="privacy">Privacy</a><span aria-hidden="true">&middot;</span><a href="terms">Terms</a>
+  </nav>
+  <a class="imk-by" href="https://impactmarketingky.com" target="_blank" rel="noopener">Website designed by Impact Marketing KY</a>
 </footer>
 </body></html>
