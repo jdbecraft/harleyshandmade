@@ -10,5 +10,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://harleyshandmade.pages.dev/sitemap.xml
+Sitemap: https://harleyshandmadeky.com/sitemap.xml
 # ^ change the host when the real domain goes live
