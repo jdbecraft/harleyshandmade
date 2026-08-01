@@ -404,7 +404,9 @@ document.querySelectorAll('.add').forEach(function(b){
   /* clear of the pinned call bar (~64px, measured) so the line is never
      half-hidden when someone scrolls to the very bottom */
   .imk-foot{padding-bottom:84px}
-  .imk-foot a{padding:11px 4px;display:inline-block}   /* 44px targets */
+  /* 44px minimum, measured not assumed: 11px padding gave 38px tall and the
+     gate wants 44. A 10px line box needs 14px each side to clear it. */
+  .imk-foot a{padding:14px 6px;display:inline-block;min-height:44px}
 }
 </style>
 
