@@ -187,19 +187,29 @@ export async function onRequestPost(context) {
     });
   }
   if (shipping) {
-    /* A line item, not a service charge, for two reasons: it shows on the
-       receipt in the customer's own words, and the order-level KY tax
-       applies to it automatically — which Kentucky requires. Delivery,
-       postage, handling and packaging are all inside "sales price" under
-       KRS 139.010, so shipping on a taxable good is taxable. Leaving it
-       untaxed would have Harley under-collecting and owing it on audit. */
+    /* PER PACKAGE, not per order (Jeff, 2026-07-31: "the shipping rate in
+       checkout stays the same no matter how many items are added, that needs
+       to be a per item charge"). These are bulky wooden pieces — a porch swing
+       and a birdhouse do not share a box — so every item is its own parcel and
+       its own label. Two swings is two boxes and two lots of postage; charging
+       one $23 for both had Harley paying the second label himself.
+
+       A line item, not a service charge, for two reasons: it shows on the
+       receipt in the customer's own words, and the order-level KY tax applies
+       to it automatically — which Kentucky requires. Delivery, postage,
+       handling and packaging are all inside "sales price" under KRS 139.010,
+       so shipping on a taxable good is taxable. Leaving it untaxed would have
+       Harley under-collecting and owing it on audit. */
+    const parcels = lines.reduce((n, ln) => n + ln.q, 0);
     items.push({
       name: 'Shipping',
-      quantity: '1',
+      quantity: String(parcels),
       base_price_money: { amount: SHIPPING_FLAT_CENTS, currency: 'USD' },
-      note: 'Flat rate, anywhere in the US',
+      note: parcels === 1
+        ? 'Flat rate, one package, anywhere in the US'
+        : 'Flat rate per package — ' + parcels + ' packages, anywhere in the US',
     });
-    totalCents += SHIPPING_FLAT_CENTS;
+    totalCents += SHIPPING_FLAT_CENTS * parcels;
   }
 
   if (totalCents < 100 || totalCents > MAX_TOTAL_CENTS)

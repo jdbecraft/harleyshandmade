@@ -229,7 +229,7 @@ window.HHCart = (function () {
         + '<label><input type="radio" name="hhFul" value="pickup"' + (ful === 'pickup' ? ' checked' : '')
         + '> Free pickup &mdash; Owingsville, Winchester, Mt.&nbsp;Sterling or Morehead</label>'
         + '<label><input type="radio" name="hhFul" value="ship"' + (ful === 'ship' ? ' checked' : '')
-        + '> Ship it &mdash; flat ' + money(SHIP_FLAT) + ', anywhere in the US</label>'
+        + '> Ship it &mdash; ' + money(SHIP_FLAT) + ' per package, anywhere in the US</label>'
         + '</div>'
         + (payMsg ? '<p class="cart-payerr" role="alert">' + payMsg + '</p>' : '')
         + '<button class="cart-cta" type="button" id="cartPay">Pay with card</button>'
@@ -238,16 +238,23 @@ window.HHCart = (function () {
 
     /* Every price is a whole dollar and shipping is a whole dollar, so the 6%
        lands exactly on the cent and matches Square's own checkout figure. */
-    var ship = (!anyQuoted && ful === 'ship') ? SHIP_FLAT : 0;
+    /* Shipping is PER PACKAGE, and every item is its own package — a porch
+       swing and a birdhouse do not share a box (Jeff, 2026-07-31). Charging
+       one flat rate on a two-item order had Harley buying the second label
+       out of his own pocket. */
+    var parcels = count();
+    var ship = (!anyQuoted && ful === 'ship') ? SHIP_FLAT * parcels : 0;
     var taxed = total() + ship;
     foot.innerHTML =
         '<div class="cart-sub"><span>Subtotal</span><span>' + money(total()) + '</span></div>'
-      + (ship ? '<div class="cart-sub"><span>Shipping &mdash; flat rate</span><span>' + money(ship) + '</span></div>' : '')
+      + (ship ? '<div class="cart-sub"><span>Shipping &mdash; ' + money(SHIP_FLAT) + ' &times; '
+          + parcels + (parcels === 1 ? ' package' : ' packages') + '</span><span>'
+          + money(ship) + '</span></div>' : '')
       + '<div class="cart-sub"><span>KY sales tax (6%)</span><span>' + money(taxed * KY_TAX) + '</span></div>'
       + '<div class="cart-tot"><span>' + (anyQuoted ? 'Total so far' : 'Total') + '</span><span>'
         + money(taxed * (1 + KY_TAX)) + '</span></div>'
       + (anyQuoted
-          ? '<p class="cart-note">Shipping is a flat ' + money(SHIP_FLAT) + '&nbsp;— free if you collect. '
+          ? '<p class="cart-note">Shipping is ' + money(SHIP_FLAT) + ' per package&nbsp;— free if you collect. '
             + 'The quoted items above aren\'t counted in this figure yet.</p>'
           : '')
       + pay
@@ -388,10 +395,13 @@ window.HHCart = (function () {
       if (s.opts) lines.push('    ' + s.opts);
       if (it.quoted && it.quoted.length) lines.push('    (to be quoted: ' + it.quoted.join(', ') + ')');
     }
-    var ship = (ful === 'ship') ? SHIP_FLAT : 0;
+    var parcels = count();
+    var ship = (ful === 'ship') ? SHIP_FLAT * parcels : 0;
     var taxed = total() + ship;
     lines.push('', 'Subtotal: ' + money(total()));
-    lines.push(ship ? 'Shipping (flat rate): ' + money(ship) : 'Pickup — no shipping');
+    lines.push(ship
+      ? 'Shipping (' + money(SHIP_FLAT) + ' x ' + parcels + (parcels === 1 ? ' package' : ' packages') + '): ' + money(ship)
+      : 'Pickup — no shipping');
     lines.push('KY sales tax (6%): ' + money(taxed * KY_TAX),
                'Total: ' + money(taxed * (1 + KY_TAX)));
     try { localStorage.setItem('hh_order_msg', lines.join('\n')); } catch (e) {}
