@@ -1,14 +1,19 @@
-# Harley's Handmade
+# Harley's Handmade — harleyshandmadeky.com
+# Handmade cedar swings, feeders, birdhouses and custom woodworking,
+# Owingsville, Kentucky.
 #
-# Crawling is ALLOWED on purpose so that the X-Robots-Tag: noindex header in
-# _headers is actually readable — a Disallow here would hide the noindex and
-# leave the URLs eligible to be indexed by reference. Keep both files in sync.
-#
-# WHEN THIS GOES LIVE ON HIS REAL DOMAIN: delete _headers (that removes the
-# noindex) and add the Sitemap line below.
+# LAUNCHED 2026-07-31. The _headers file that carried "X-Robots-Tag: noindex"
+# is deleted — that one file was the entire switch, and removing it is what
+# makes this site findable. The original is kept at ../_headers-noindex-BACKUP
+# if it ever has to go back.
 
 User-agent: *
 Allow: /
 
+# Two pages with nothing worth crawling: the owner's own self-diagnostic page
+# and the post-payment landing page. Both also carry their own noindex meta
+# tag, so this is belt and braces rather than the only guard.
+Disallow: /check
+Disallow: /thanks
+
 Sitemap: https://harleyshandmadeky.com/sitemap.xml
-# ^ change the host when the real domain goes live
