@@ -70,7 +70,17 @@ window.HHCart = (function () {
 .cart-scrim[data-open]{opacity:1;pointer-events:auto}
 .cart-panel{position:fixed;z-index:81;right:0;top:0;bottom:0;width:min(430px,100%);background:#f1e6cc;color:#2d1f12;
   display:flex;flex-direction:column;transform:translateX(102%);transition:transform .26s cubic-bezier(.22,.61,.36,1);
-  box-shadow:-18px 0 48px rgba(0,0,0,.4);font-family:Lora,Georgia,serif}
+  box-shadow:-18px 0 48px rgba(0,0,0,.4);font-family:Lora,Georgia,serif;
+  /* THE PANEL IS THE SCROLLER, not the item list (2026-08-04, Jeff).
+     It used to be a fixed sandwich: sticky header, .cart-body{flex:1;overflow-y:auto},
+     fixed footer. The footer carries the fulfillment chooser, subtotal, total, the
+     shipping note, two buttons AND the hold-my-cart capture — on a short phone
+     (or any phone with the browser chrome showing) that stack claimed most of the
+     height and left the items squeezed into a ~100px window scrolling by
+     themselves, inside a panel that also looked scrollable. Two nested scrollers
+     on a 390px screen is a defect, not a layout. Now the whole drawer scrolls as
+     ONE document and the item list simply grows as items are added. */
+  overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .cart-panel[data-open]{transform:none}
 /* Same trap as .total .row, found in the same sweep (2026-07-31): the
    display:flex above is an AUTHOR rule and outranks the browser's own
@@ -81,10 +91,14 @@ window.HHCart = (function () {
    (No backticks in this comment: it lives inside a JS template literal.) */
 .cart-panel[hidden],.cart-scrim[hidden]{display:none}
 @media (prefers-reduced-motion:reduce){.cart-panel,.cart-scrim{transition:none}}
-.cart-hd{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.1rem 1.25rem;border-bottom:1px solid rgba(45,31,18,.16)}
+/* Sticky so "Your order" and the close X stay reachable now that the panel
+   itself scrolls — the one control a customer must never have to hunt for. */
+.cart-hd{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.1rem 1.25rem;border-bottom:1px solid rgba(45,31,18,.16);
+  position:sticky;top:0;z-index:2;background:#f1e6cc;flex:none}
 .cart-hd h2{margin:0;font-size:1.1rem;letter-spacing:.02em}
 .cart-x{background:none;border:0;font-size:1.7rem;line-height:1;cursor:pointer;padding:.1rem .5rem;color:inherit;min-height:44px;min-width:44px}
-.cart-body{flex:1;overflow-y:auto;padding:1.25rem;-webkit-overflow-scrolling:touch}
+/* Grows with its contents. No inner scroller, no fixed height to run out of. */
+.cart-body{flex:0 0 auto;padding:1.25rem}
 .cart-li{padding:.85rem 0;border-bottom:1px solid rgba(45,31,18,.12)}
 .cart-li b{display:block;font-size:.98rem}
 .cart-li .o{font-size:.82rem;opacity:.75;margin-top:.2rem;line-height:1.5}
@@ -99,7 +113,11 @@ window.HHCart = (function () {
 @media(max-width:820px){.cart-step{min-width:44px;min-height:44px}}
 .cart-rm{background:none;border:0;font-size:.78rem;text-decoration:underline;cursor:pointer;padding:.4rem 0;color:inherit;opacity:.65;min-height:32px}
 .cart-q{font-size:.82rem;background:rgba(176,132,86,.16);border-left:3px solid #b08456;padding:.6rem .75rem;margin-top:.55rem;border-radius:3px;line-height:1.5}
-.cart-ft{border-top:1px solid rgba(45,31,18,.16);padding:1.15rem 1.25rem;display:grid;gap:.8rem}
+/* margin-top:auto keeps the footer pinned to the bottom of the drawer when the
+   cart is empty or short (so it doesn't float mid-panel with dead space under
+   it), and resolves to zero the moment the items overflow — then it just
+   follows the list, which is where a customer expects the total to be. */
+.cart-ft{border-top:1px solid rgba(45,31,18,.16);padding:1.15rem 1.25rem;display:grid;gap:.8rem;flex:none;margin-top:auto}
 .cart-sub{display:flex;justify-content:space-between;font-size:.88rem;opacity:.85;font-variant-numeric:tabular-nums;margin:0 0 -.5rem}
 .cart-tot{display:flex;justify-content:space-between;font-weight:700;font-size:1.12rem;font-variant-numeric:tabular-nums}
 .cart-note{font-size:.8rem;opacity:.75;line-height:1.55}
