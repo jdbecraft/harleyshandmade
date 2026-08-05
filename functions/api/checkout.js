@@ -246,8 +246,16 @@ export async function onRequestPost(context) {
         merchant_support_email: SUPPORT_EMAIL,
         redirect_url: url.origin + '/thanks?paid=1',
       },
+      /* DERIVED, never typed. This note said "$18" until 2026-08-04 while the
+         customer was actually charged $23 — the rate rose and this fourth copy
+         of it was missed, because the comment on SHIPPING_FLAT_CENTS lists only
+         three places to change (here, cart.js SHIP_FLAT, the shop copy). It is
+         the note Harley reads in Square at the moment he buys the label, so a
+         stale number tells him he collected $5 less per package than he did.
+         Building it from the constant removes the fourth copy entirely. */
       payment_note: shipping
-        ? 'Website order — SHIP IT. Flat $18 shipping paid; buy the label in Orders > Shipments.'
+        ? 'Website order — SHIP IT. Flat $' + (SHIPPING_FLAT_CENTS / 100)
+          + ' per package paid; buy the label in Orders > Shipments.'
         : 'Website order — FREE PICKUP arranged with the customer (no shipping owed)',
     }),
   });
