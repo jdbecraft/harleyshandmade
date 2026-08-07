@@ -534,6 +534,22 @@ html.flat .phoneintro{display:block;max-width:58ch;margin:0 auto;
   padding:clamp(34px,6vh,64px) 22px clamp(6px,1vh,14px);text-align:center;
   font-size:clamp(16px,1.35vw,19px);line-height:1.78;color:#E4D8BF}
 html.flat .phoneintro b{color:#F6ECD8}
+/* His phone number was rendering as a default browser-blue link on the flat
+   page at desktop width. Jeff, 2026-08-06: "I don't want that it makes it look
+   cheap" — and he is right, a stock #0000EE link is the one colour on the page
+   that belongs to no brand.
+   WHY IT ONLY HAPPENED THERE: the only rule that ever coloured this link lives
+   inside @media(max-width:820px), so below 820px it is walnut and above it
+   nothing claimed it at all. Scoped to min-width:821px deliberately so the
+   mobile rule keeps the ground it already owns and there is no specificity
+   fight between the two. */
+@media (min-width:821px){
+  .phoneintro .where a{color:#F6ECD8;text-decoration:underline;
+    text-underline-offset:3px;text-decoration-color:rgba(246,236,216,.42);
+    text-decoration-thickness:1px}
+  .phoneintro .where a:hover,.phoneintro .where a:focus-visible{
+    text-decoration-color:rgba(246,236,216,.9)}
+}
 
 /* the five sections read as chapters without the walk */
 html.flat .station{position:static;transform:none;opacity:1;visibility:visible;
@@ -720,7 +736,18 @@ html:not(.flat) .walkoff-link:hover{color:#F6ECD8}
   .endcap>*{max-width:none}
   .endcap .markwrap{margin-bottom:18px}
   .endcap .markwrap::before{display:none}
-  .endcap .mark{width:118px}
+  /* filter:none is not cosmetic tidying — it fixes a real rendering bug Jeff
+     reported 2026-08-06: "the logo at the bottom of the home page is rendering
+     initially with a shadow square box behind it, then it disappears after
+     scrolling." CAUSE: the base rule puts a double drop-shadow() on this <img>,
+     and the img is loading="lazy" decoding="async". Until the bitmap's ALPHA is
+     decoded the browser has no shape to trace, so it casts the shadow from the
+     element's 512x509 LAYOUT BOX — a square. The next repaint (which scrolling
+     forces) recomputes it from the real alpha and the square vanishes.
+     It should never have been here anyway: on a phone this section sits on a
+     LIGHT ground, and the pass that stripped the other dark-ground decoration
+     just above (markwrap glow, both text-shadows) missed the filter. */
+  .endcap .mark{width:118px;filter:none}
   .endcap h2{color:#1D1207;font-size:28px;text-shadow:none}
   .endcap p{color:rgba(45,31,18,.82);text-shadow:none}
   .endacts{margin-top:20px}

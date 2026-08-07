@@ -27,14 +27,24 @@
    ========================================================================== */
 var CHECKOUT_API = '/api/checkout';
 
-/* Flat shipping, set to the worst realistic case rather than the average
-   (Jeff, 2026-07-31 — "the highest it could most likely be… like to
-   california"): $7 packaging + $15.85 for a 3 lb zone-8 Ground Advantage
-   label = $22.85, rounded to $23. Nearer orders leave him a little ahead,
-   which is the point of a flat rate, and anyone local has free pickup.
-   Display only — the SERVER sets what is actually charged. Change this and
-   SHIPPING_FLAT_CENTS in functions/api/checkout.js together. */
-var SHIP_FLAT = 23;
+/* ── PER-ITEM SHIPPING (2026-08-06) ───────────────────────────────────────
+   Replaces the old flat $23. Jeff: "the shipping on every item in the shop
+   will be different so all flat rate shipping price is not going to work,
+   each item will have its own shipping price." Harley's own figures.
+
+   The old flat rate was overcharging most of the catalogue by more than
+   double — a $10 chair feeder was billed $23 postage on a live store.
+
+   Rates come from window.HH_SHIP, generated into assets/ship-rates.js by
+   build-products.py from ONE dict, so the page copy, the JSON-LD and this
+   cart can never quote three different numbers.
+   Display only — functions/api/checkout.js keeps its own table and that is
+   what Square actually charges. It must not trust a browser. */
+var SHIP = (window.HH_SHIP && window.HH_SHIP.rates) || {};
+var STAND_LABEL = (window.HH_SHIP && window.HH_SHIP.standLabel) || 'Matching cedar stand';
+
+/* shipFor / shipTotal / shipFrom live INSIDE the cart IIFE, beside split() —
+   they need `cart` and `split`, which are private to it. */
 /* Kentucky taxes delivery, postage, handling and packaging as part of the
    sales price (KRS 139.010), so tax is figured on goods PLUS shipping. */
 var KY_TAX = 0.06;
@@ -207,6 +217,32 @@ window.HHCart = (function () {
     return m ? { name: m[1], opts: m[2] } : { name: k, opts: '' };
   }
 
+  /* ---- per-item shipping (see the SHIP note at the top of this file) ----
+     What ONE unit of this line costs to post. The stand is a second, bigger
+     parcel, so a swing on rope and a swing on a stand are different rates —
+     and the chosen option is already in the cart key, which is where that
+     decision lives. */
+  function shipFor(k) {
+    var s = split(k), r = SHIP[s.name];
+    if (!r) return 0;
+    return (r.stand && s.opts && s.opts.indexOf(STAND_LABEL) !== -1) ? r.stand : r.base;
+  }
+  /* Every item is its own parcel (Jeff, 2026-07-31 — a porch swing and a
+     birdhouse do not share a box), so it is rate x quantity, summed. */
+  function shipTotal() {
+    var t = 0;
+    for (var k in cart) t += shipFor(k) * cart[k].q;
+    return t;
+  }
+  /* The CHEAPEST rate in the cart, for the "from $X" chooser label. Never an
+     average and never the highest: a number the customer beats at checkout is
+     a good surprise, a number they cannot is the bad kind. */
+  function shipFrom() {
+    var lo = null;
+    for (var k in cart) { var v = shipFor(k); if (lo === null || v < lo) lo = v; }
+    return lo === null ? 0 : lo;
+  }
+
   function render() {
     var keys = Object.keys(cart);
     if (!keys.length) {
@@ -247,7 +283,7 @@ window.HHCart = (function () {
         + '<label><input type="radio" name="hhFul" value="pickup"' + (ful === 'pickup' ? ' checked' : '')
         + '> Free pickup &mdash; Owingsville, Winchester, Mt.&nbsp;Sterling or Morehead</label>'
         + '<label><input type="radio" name="hhFul" value="ship"' + (ful === 'ship' ? ' checked' : '')
-        + '> Ship it &mdash; ' + money(SHIP_FLAT) + ' per package, anywhere in the US</label>'
+        + '> Ship it &mdash; from ' + money(shipFrom()) + ' per item, anywhere in the US</label>'
         + '</div>'
         + (payMsg ? '<p class="cart-payerr" role="alert">' + payMsg + '</p>' : '')
         + '<button class="cart-cta" type="button" id="cartPay">Pay with card</button>'
@@ -261,18 +297,18 @@ window.HHCart = (function () {
        one flat rate on a two-item order had Harley buying the second label
        out of his own pocket. */
     var parcels = count();
-    var ship = (!anyQuoted && ful === 'ship') ? SHIP_FLAT * parcels : 0;
+    var ship = (!anyQuoted && ful === 'ship') ? shipTotal() : 0;
     var taxed = total() + ship;
     foot.innerHTML =
         '<div class="cart-sub"><span>Subtotal</span><span>' + money(total()) + '</span></div>'
-      + (ship ? '<div class="cart-sub"><span>Shipping &mdash; ' + money(SHIP_FLAT) + ' &times; '
-          + parcels + (parcels === 1 ? ' package' : ' packages') + '</span><span>'
+      + (ship ? '<div class="cart-sub"><span>Shipping &mdash; ' + parcels
+          + (parcels === 1 ? ' package' : ' packages') + ', priced per item</span><span>'
           + money(ship) + '</span></div>' : '')
       + '<div class="cart-sub"><span>KY sales tax (6%)</span><span>' + money(taxed * KY_TAX) + '</span></div>'
       + '<div class="cart-tot"><span>' + (anyQuoted ? 'Total so far' : 'Total') + '</span><span>'
         + money(taxed * (1 + KY_TAX)) + '</span></div>'
       + (anyQuoted
-          ? '<p class="cart-note">Shipping is ' + money(SHIP_FLAT) + ' per package&nbsp;— free if you collect. '
+          ? '<p class="cart-note">Shipping is priced per item, from ' + money(shipFrom()) + '&nbsp;— free if you collect. '
             + 'The quoted items above aren\'t counted in this figure yet.</p>'
           : '')
       + pay
@@ -414,11 +450,11 @@ window.HHCart = (function () {
       if (it.quoted && it.quoted.length) lines.push('    (to be quoted: ' + it.quoted.join(', ') + ')');
     }
     var parcels = count();
-    var ship = (ful === 'ship') ? SHIP_FLAT * parcels : 0;
+    var ship = (ful === 'ship') ? shipTotal() : 0;
     var taxed = total() + ship;
     lines.push('', 'Subtotal: ' + money(total()));
     lines.push(ship
-      ? 'Shipping (' + money(SHIP_FLAT) + ' x ' + parcels + (parcels === 1 ? ' package' : ' packages') + '): ' + money(ship)
+      ? 'Shipping (' + parcels + (parcels === 1 ? ' package' : ' packages') + ', priced per item): ' + money(ship)
       : 'Pickup — no shipping');
     lines.push('KY sales tax (6%): ' + money(taxed * KY_TAX),
                'Total: ' + money(taxed * (1 + KY_TAX)));
