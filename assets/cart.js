@@ -140,6 +140,13 @@ window.HHCart = (function () {
 .cart-ful input{margin-top:.18rem;width:18px;height:18px;accent-color:#2d1f12;flex:none}
 @media(max-width:820px){.cart-ful label{min-height:44px}}
 .cart-payerr{font-size:.84rem;background:rgba(160,40,30,.08);border-left:3px solid #a0281e;padding:.6rem .75rem;margin:0;border-radius:3px;line-height:1.5}
+.cart-pick{border:1px solid rgba(45,31,18,.16);background:rgba(45,31,18,.03);padding:.7rem .75rem;display:grid;gap:.5rem;border-radius:3px}
+.cart-pick p{font-size:.82rem;line-height:1.55;margin:0;opacity:.88}
+.cart-pick .row{display:flex;gap:.5rem;flex-wrap:wrap}
+.cart-pick input{flex:1 1 130px;min-width:0;font-family:inherit;font-size:16px;padding:.55rem .6rem;
+  border:1px solid rgba(45,31,18,.35);background:#fff;color:#2d1f12;border-radius:2px;min-height:44px}
+.cart-pick input:focus{outline:2px solid #b08456;outline-offset:-1px}
+.cart-pick label{font-size:.78rem;display:grid;gap:.25rem;flex:1 1 130px}
 .cart-empty{text-align:center;opacity:.7;padding:2.5rem 1rem;font-size:.95rem;line-height:1.6}
 /* "hold my cart" capture — asked at the moment of hesitation, not at the door */
 .cart-hold{border-top:1px solid rgba(45,31,18,.16);padding-top:.85rem;margin-top:.2rem}
@@ -202,7 +209,19 @@ window.HHCart = (function () {
       /* pickup pays by card now; ship goes by reply until the flat rate is
          confirmed by Harley — the chooser below routes between the two. */
       ful = 'pickup',
-      payMsg = '';
+      payMsg = '',
+      /* Pickup slot (2026-08-29, Harley's email): pickup happens at the
+         Marathon station next to Ace Hardware in Owingsville, ordered at
+         least 3 days ahead, time chosen at checkout. Kept as module state so
+         a qty-change re-render doesn't eat what the customer typed. */
+      pickDate = '',
+      pickTime = '';
+
+  function pickMin() {
+    var d = new Date(Date.now() + 3 * 86400000);
+    var m = d.getMonth() + 1, day = d.getDate();
+    return d.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (day < 10 ? '0' : '') + day;
+  }
 
   function count() { var t = 0; for (var k in cart) t += cart[k].q; return t; }
   function total() { var t = 0; for (var k in cart) t += cart[k].p * cart[k].q; return t; }
@@ -279,12 +298,27 @@ window.HHCart = (function () {
         + 'Send it over and I\'ll reply with the full number and how to pay. Usually the same day.</div>'
         + '<button class="cart-cta" type="button" id="cartSend">Send this order to Harley</button>';
     } else {
+      /* Pickup wording per Harley, 2026-08-25: the Marathon station next to
+         Ace Hardware in Owingsville is the one scheduled pickup point; the
+         other three towns are him meeting somebody, arranged by message. */
       pay = '<div class="cart-ful" role="radiogroup" aria-label="Pickup or shipping">'
         + '<label><input type="radio" name="hhFul" value="pickup"' + (ful === 'pickup' ? ' checked' : '')
-        + '> Free pickup &mdash; Owingsville, Winchester, Mt.&nbsp;Sterling or Morehead</label>'
+        + '> Free pickup &mdash; Marathon station next to Ace Hardware, Owingsville</label>'
         + '<label><input type="radio" name="hhFul" value="ship"' + (ful === 'ship' ? ' checked' : '')
         + '> Ship it &mdash; from ' + money(shipFrom()) + ' per item, anywhere in the US</label>'
         + '</div>'
+        + (ful === 'pickup'
+          ? '<div class="cart-pick">'
+            + '<p>Order at least 3 days ahead and pick a time that suits you. '
+            + 'In Winchester, Mt.&nbsp;Sterling or Morehead? Use &ldquo;send me the order&rdquo; below '
+            + 'instead and I\'ll meet you &mdash; no charge for that either.</p>'
+            + '<div class="row">'
+            + '<label>Pickup day<input type="date" id="cartPickDate" min="' + pickMin()
+            + '" value="' + pickDate + '" aria-label="Pickup day"></label>'
+            + '<label>Time<input type="time" id="cartPickTime" value="' + pickTime
+            + '" aria-label="Pickup time"></label>'
+            + '</div></div>'
+          : '')
         + (payMsg ? '<p class="cart-payerr" role="alert">' + payMsg + '</p>' : '')
         + '<button class="cart-cta" type="button" id="cartPay">Pay with card</button>'
         + '<button class="cart-cta alt" type="button" id="cartSend">Or send me the order instead</button>';
@@ -417,6 +451,19 @@ window.HHCart = (function () {
      total, and we send the customer there. Any failure becomes a plain
      sentence and the send-the-order path — the customer is never stranded. */
   function payNow() {
+    /* Pickup needs its slot before the card page (Harley, 2026-08-25: order
+       at least 3 days ahead and pick a time at checkout). Checked here, at
+       the last moment before money, with a plain sentence — never an alert. */
+    if (ful === 'pickup') {
+      if (!pickDate || !pickTime) {
+        payMsg = 'Pick your pickup day and a time first — I need at least 3 days to have it ready.';
+        render(); return;
+      }
+      if (pickDate < pickMin()) {
+        payMsg = 'I need at least 3 days to have it sanded, finished and boxed — pick a day on or after ' + pickMin() + '.';
+        render(); return;
+      }
+    }
     var b = foot.querySelector('#cartPay');
     if (b) { b.disabled = true; b.textContent = 'Opening secure payment…'; }
     var lines = [];
@@ -424,7 +471,9 @@ window.HHCart = (function () {
     fetch(CHECKOUT_API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ lines: lines, fulfillment: ful })
+      body: JSON.stringify(ful === 'pickup'
+        ? { lines: lines, fulfillment: ful, pickup: { date: pickDate, time: pickTime } }
+        : { lines: lines, fulfillment: ful })
     }).then(function (r) {
       return r.json().then(function (j) { return { ok: r.ok, j: j }; });
     }).then(function (res) {
@@ -455,7 +504,8 @@ window.HHCart = (function () {
     lines.push('', 'Subtotal: ' + money(total()));
     lines.push(ship
       ? 'Shipping (' + parcels + (parcels === 1 ? ' package' : ' packages') + ', priced per item): ' + money(ship)
-      : 'Pickup — no shipping');
+      : 'Pickup at the Marathon station next to Ace Hardware, Owingsville — no shipping'
+        + (pickDate ? '\nPickup time asked for: ' + pickDate + (pickTime ? ' at ' + pickTime : '') : ''));
     lines.push('KY sales tax (6%): ' + money(taxed * KY_TAX),
                'Total: ' + money(taxed * (1 + KY_TAX)));
     try { localStorage.setItem('hh_order_msg', lines.join('\n')); } catch (e) {}
@@ -496,6 +546,10 @@ window.HHCart = (function () {
   });
   foot.addEventListener('change', function (e) {
     if (e.target.name === 'hhFul') { ful = e.target.value; payMsg = ''; render(); }
+    /* No re-render on these — rebuilding the foot mid-typing would eat focus.
+       The value lives in module state and the markup restores it next render. */
+    if (e.target.id === 'cartPickDate') { pickDate = e.target.value; payMsg = ''; }
+    if (e.target.id === 'cartPickTime') { pickTime = e.target.value; payMsg = ''; }
   });
   body.addEventListener('click', function (e) {
     var el = e.target.closest ? e.target.closest('[data-rm],[data-inc],[data-dec]') : e.target;

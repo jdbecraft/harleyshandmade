@@ -9,13 +9,26 @@ window.HH_SHIP = {
     "Birdhouse": {
       "base": 24
     },
+    "Fall Plaque \u2014 Black Walnut \u00b7 Boots, Bourbon & Bonfires": {
+      "base": 10
+    },
+    "Fall Plaque \u2014 Black Walnut \u00b7 Leaves Are Falling, Bourbon's Calling": {
+      "base": 10
+    },
+    "Fall Sign Block \u2014 Black Walnut \u00b7 Sweater Weather & Bourbon": {
+      "base": 8
+    },
+    "Fall Sign Block \u2014 Cherry \u00b7 Porch Season": {
+      "base": 8
+    },
     "Loveseat Swing": {
-      "base": 10,
-      "stand": 18
+      "base": 10
     },
     "Mini Porch Swing": {
-      "base": 10,
-      "stand": 18
+      "base": 10
+    },
+    "Mini Swing Stand": {
+      "base": 8
     },
     "Picnic Table Feeder": {
       "base": 10

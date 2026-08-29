@@ -39,9 +39,17 @@
 const PRODUCTS = {
   'Mini Porch Swing':        { base: 75  },
   'Loveseat Swing':          { base: 75  },
+  /* Added 2026-08-29 — Harley's 2026-08-25 emails: the stand became its own
+     product (the With Stand option is retired, see the guard below), and the
+     four fall pieces are his "1 of 4" through "4 of 4", his prices. */
+  'Mini Swing Stand':        { base: 25  },
   'Picnic Table Feeder':     { base: 75  },
   'Adirondack Chair Feeder': { base: 75  },
   'Birdhouse':               { base: 150 },
+  'Fall Sign Block — Cherry · Porch Season':                            { base: 25 },
+  'Fall Sign Block — Black Walnut · Sweater Weather & Bourbon':         { base: 25 },
+  'Fall Plaque — Black Walnut · Boots, Bourbon & Bonfires':             { base: 50 },
+  'Fall Plaque — Black Walnut · Leaves Are Falling, Bourbon\'s Calling': { base: 50 },
   /* ⛔ REMOVED 2026-07-31 — Engraved Sign ($285), Hand-Carved Cardinal ($425)
      and Custom Picture Frame ($145–205). Jeff retired all three to quoted
      custom work the same day: they need too much per-piece adjustment to carry
@@ -85,24 +93,29 @@ const MAX_ADDS = 150;
    (the note further down records a customer shown $18 and charged $23).
    Two deliberate copies beat four accidental ones. */
 const SHIP_CENTS = {
-  'Mini Porch Swing':        { base: 1000, stand: 1800 },
-  'Loveseat Swing':          { base: 1000, stand: 1800 },
+  'Mini Porch Swing':        { base: 1000 },
+  'Loveseat Swing':          { base: 1000 },
+  'Mini Swing Stand':        { base: 800 },
   'Picnic Table Feeder':     { base: 1000 },
   'Adirondack Chair Feeder': { base: 1000 },
   'Birdhouse':               { base: 2400 },
+  'Fall Sign Block — Cherry · Porch Season':                            { base: 800 },
+  'Fall Sign Block — Black Walnut · Sweater Weather & Bourbon':         { base: 800 },
+  'Fall Plaque — Black Walnut · Boots, Bourbon & Bonfires':             { base: 1000 },
+  'Fall Plaque — Black Walnut · Leaves Are Falling, Bourbon\'s Calling': { base: 1000 },
 };
+/* ⛔ The stand:1800 rates are GONE (2026-08-29). Harley, 2026-08-25: the
+   stand is its own product now — swing $10 + stand $8 is the same $18 the
+   old with-stand rate charged, priced honestly per parcel. */
 
-/* The exact option label the stand radio writes into the cart key, from
-   build-products.py's STAND_LABEL. Matching on it is safe here: the worst a
-   forged key can do is understate postage by $8 while still paying the +$20
-   the stand adds, and the product price is independently re-validated
-   against PRODUCTS below. */
+/* The exact option label the RETIRED stand radio wrote into cart keys. A
+   cart is localStorage, so a line added before 2026-08-29 can still carry
+   it — those lines are refused plainly below rather than priced by guess. */
 const STAND_LABEL = 'Matching cedar stand';
 
-function shipCentsFor(name, opts) {
+function shipCentsFor(name) {
   const r = SHIP_CENTS[name];
-  if (!r) return null;
-  return (r.stand && opts && opts.indexOf(STAND_LABEL) !== -1) ? r.stand : r.base;
+  return r ? r.base : null;
 }
 const MAX_LINES = 12, MAX_QTY = 25, MAX_TOTAL_CENTS = 500000; // $5,000
 
@@ -175,6 +188,21 @@ export async function onRequestPost(context) {
   if (!shipping && body.fulfillment !== 'pickup')
     return json(400, { error: 'Pick pickup or shipping before paying.' });
 
+  /* Pickup slot (2026-08-29 — the Marathon-station pickup flow, Harley's
+     2026-08-25 email: order at least 3 days ahead and pick a time). The cart
+     requires it before Pay; here it is OPTIONAL on purpose — Cloudflare
+     serves cart.js at max-age=14400, so for up to four hours after deploy a
+     cached cart can still POST without the field, and a hard requirement
+     would fail those checkouts (P-012's cache window, server-side). Format
+     is validated, not trusted: it goes into the payment note Harley reads. */
+  let pickupWhen = '';
+  if (!shipping && body.pickup && typeof body.pickup === 'object') {
+    const d = String(body.pickup.date || '').slice(0, 10);
+    const t = String(body.pickup.time || '').slice(0, 5);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(d))
+      pickupWhen = d + (/^\d{1,2}:\d{2}$/.test(t) ? ' at ' + t : '');
+  }
+
   const items = [];
   const parsed = [];
   /* hoisted: the payment note below needs it outside the shipping branch */
@@ -190,6 +218,14 @@ export async function onRequestPost(context) {
     const name = (m && m[1] || '').trim(), opts = (m && m[2] || '').trim();
     const prod = PRODUCTS[name];
     if (!prod) return json(400, { error: '"' + name + '" isn’t a product this shop sells — refresh the shop page.' });
+
+    /* The With Stand option came off the swings on 2026-08-29 (Harley's
+       email — the stand is its own $25 product now). A cart is localStorage,
+       so a line added before that day can still carry the old option; it no
+       longer has a postage rate or a current price, so refuse it plainly
+       instead of guessing. The customer is told exactly what to do. */
+    if (opts.indexOf(STAND_LABEL) !== -1)
+      return json(400, { error: 'The swing stand is its own product now — remove this line, refresh the shop, and add the swing and the Mini Swing Stand ($25) separately.' });
 
     const q = ln.q, p = ln.p;
     if (!Number.isInteger(q) || q < 1 || q > MAX_QTY) return json(400, { error: 'Quantity out of range.' });
@@ -228,7 +264,7 @@ export async function onRequestPost(context) {
        is a second parcel) times its quantity. A swing on rope and a birdhouse
        in one order are $10 and $24 — not two of anything. */
     for (const ln of parsed) {
-      const rate = shipCentsFor(ln.name, ln.opts);
+      const rate = shipCentsFor(ln.name);
       if (rate === null)
         return json(400, { error: 'Shipping is not set for "' + ln.name
           + '" — send Harley the order and he will price the postage himself.' });
@@ -296,8 +332,12 @@ export async function onRequestPost(context) {
          Building it from the constant removes the fourth copy entirely. */
       payment_note: shipping
         ? 'Website order — SHIP IT. Postage $' + (shipCents / 100).toFixed(2)
-          + ' per package paid; buy the label in Orders > Shipments.'
-        : 'Website order — FREE PICKUP arranged with the customer (no shipping owed)',
+          + ' paid across ' + parsed.reduce((n, ln) => n + ln.q, 0)
+          + ' package(s); buy the labels in Orders > Shipments.'
+        : 'Website order — FREE PICKUP, Marathon station next to Ace Hardware, Owingsville'
+          + (pickupWhen ? '. Customer picked: ' + pickupWhen
+                        : '. No time chosen — arrange by reply')
+          + ' (no shipping owed).',
     }),
   });
 
