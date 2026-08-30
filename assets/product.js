@@ -13,11 +13,15 @@
   /* ---------------- gallery ---------------- */
   var main = document.getElementById('galMain');
   var shotno = document.getElementById('shotno');
+  var imgNote = document.getElementById('imgNote');
   var thumbs = [].slice.call(document.querySelectorAll('.strip button'));
   thumbs.forEach(function (b, i) {
     b.addEventListener('click', function () {
       main.src = b.dataset.full;
       main.alt = b.dataset.alt || main.alt;
+      /* stand shots carry data-note — the "Stand not included" badge shows
+         only while one of them is up (Jeff, 2026-08-29) */
+      if (imgNote) imgNote.hidden = !b.dataset.note;
       thumbs.forEach(function (o) { o.setAttribute('aria-current', String(o === b)); });
       if (shotno) shotno.textContent = 'Shot ' + String(i + 1).padStart(2, '0') + ' of ' +
         String(thumbs.length).padStart(2, '0');

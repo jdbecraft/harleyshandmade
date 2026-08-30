@@ -16,6 +16,12 @@
 .gal .main{position:relative;background:var(--parchment);border:1px solid rgba(74,46,29,.2);
   aspect-ratio:1/1;overflow:hidden}
 .gal .main img{width:100%;height:100%;object-fit:cover;display:block}
+/* "Stand not included" badge — raised only while a shot showing the swing ON
+   the stand is up (data-note thumbs); the stand is its own listing (2026-08-29) */
+.img-note{position:absolute;left:10px;bottom:10px;z-index:2;pointer-events:none;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--parchment,#F1E6CC);background:rgba(45,31,18,.86);
+  padding:7px 11px;border:1px solid rgba(241,230,204,.25)}
 .gal .strip{display:flex;gap:9px;margin-top:10px;overflow-x:auto;padding-bottom:4px;min-width:0;max-width:100%;
   scrollbar-width:thin}
 .gal .strip button{flex:none;width:74px;height:74px;padding:0;border:1px solid rgba(74,46,29,.25);
@@ -43,6 +49,13 @@
   font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;
   color:var(--walnut)}
 .opt{padding:18px;border-bottom:1px solid rgba(74,46,29,.14)}
+/* "Want it customized?" strip under the gallery (2026-08-29 — replaces the
+   note-style option blocks; a real picker, when a product has one, stays in the sheet) */
+.customize{margin-top:14px;border:1px solid rgba(74,46,29,.2);background:var(--linen,#FAF4E6)}
+.customize .optlink{display:inline-block;margin:10px 18px 0 0;font-family:'IBM Plex Mono',monospace;
+  font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--walnut,#4A2E1D);
+  text-decoration:underline;text-underline-offset:3px}
+.customize .optlink:hover,.customize .optlink:focus-visible{color:var(--ink,#2D1F12)}
 .opt:last-of-type{border-bottom:0}
 .opt > .k{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.15em;
   text-transform:uppercase;color:var(--oak);display:block;margin-bottom:11px}
