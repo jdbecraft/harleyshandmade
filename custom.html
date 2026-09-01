@@ -31,25 +31,28 @@
    No captions, by Jeff's direction: a label under every photo turns a gallery
    into a catalog, and none of these are stock items to catalog. Alt text is
    still written on every image — that is accessibility, not a caption. */
-.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));
-  gap:clamp(9px,1.4vw,16px);margin:clamp(10px,2vh,24px) 0 0}
+/* The slider (Jeff, 2026-09-01): the "See all 26" expander is retired — all
+   26 pieces ride one horizontal track that advances by itself and can be
+   slid by hand. The sliding is NATIVE scroll-snap (finger, trackpad, arrows
+   all work with no animation engine to break); only the auto-advance is JS. */
+.gwrap{position:relative;margin:clamp(10px,2vh,24px) 0 0}
+.gallery{display:flex;gap:clamp(9px,1.4vw,16px);overflow-x:auto;
+  scroll-snap-type:x mandatory;scrollbar-width:thin;padding-bottom:8px;
+  -webkit-overflow-scrolling:touch}
 .gitem{padding:0;border:1px solid rgba(74,46,29,.22);background:var(--parchment);cursor:zoom-in;
-  overflow:hidden;display:block;transition:transform .3s cubic-bezier(.2,.7,.2,1),box-shadow .3s}
+  overflow:hidden;display:block;flex:0 0 auto;width:min(72vw,300px);scroll-snap-align:center;
+  transition:transform .3s cubic-bezier(.2,.7,.2,1),box-shadow .3s}
 .gitem:hover{transform:translateY(-3px);box-shadow:0 14px 26px rgba(45,31,18,.18)}
 .gitem:focus-visible{outline:2px solid var(--saddle);outline-offset:3px}
 .gitem img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+.gnav{position:absolute;top:50%;transform:translateY(-50%);z-index:2;
+  width:46px;height:46px;border-radius:50%;border:1px solid rgba(74,46,29,.4);
+  background:var(--linen);color:var(--espresso);cursor:pointer;font-size:20px;line-height:1;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(45,31,18,.18)}
+.gnav:hover{background:var(--walnut);color:var(--linen)}
+.gnav:focus-visible{outline:2px solid var(--saddle);outline-offset:3px}
+.gprev{left:-6px}.gnext{right:-6px}
 @media (prefers-reduced-motion:reduce){.gitem{transition:none}.gitem:hover{transform:none}}
-
-/* the expander — 26 photographs is a lot of page, so 8 show and the rest
-   wait behind one tap (Jeff, 2026-07-31) */
-.gallery.is-collapsed .gitem[data-extra]{display:none}
-.galmore{display:flex;justify-content:center;margin-top:clamp(14px,2vh,22px)}
-.galbtn{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;
-  text-transform:uppercase;cursor:pointer;padding:15px 26px;min-height:48px;
-  border:1px solid rgba(74,46,29,.4);background:transparent;color:var(--espresso);
-  transition:background .2s,color .2s}
-.galbtn:hover{background:var(--walnut);color:var(--linen);border-color:var(--walnut)}
-.galbtn:focus-visible{outline:2px solid var(--saddle);outline-offset:3px}
 
 /* lightbox */
 .glb{position:fixed;inset:0;z-index:120;background:rgba(12,7,3,.94);display:none;
@@ -152,12 +155,14 @@
 </section>
 
 <section class="wrap" data-rise>
-  <!-- 26 pieces. Collapsed to the first 8 so the page stays walkable
-       (Jeff, 2026-07-31). The hidden tiles are display:none rather than
-       just visually tucked away, deliberately: an author display rule is
-       what actually removes them from the tab order, and a keyboard user
-       must not land on a photograph nobody can see (L-058). -->
-  <div class="gallery is-collapsed" id="gallery">
+  <!-- 26 pieces on one sliding track (Jeff, 2026-09-01 — replaces the
+       "See all 26" expander of 2026-07-31). Every tile is visible and in
+       the tab order, so the old hidden-but-focusable concern (L-058) no
+       longer applies; the data-extra attrs are inert leftovers. Auto-advance
+       pauses on any interaction and is off under prefers-reduced-motion. -->
+  <div class="gwrap">
+  <button type="button" class="gnav gprev" id="gprev" aria-label="Previous pieces">&larr;</button>
+  <div class="gallery" id="gallery" aria-label="Photos of custom work">
     <button type="button" class="gitem" data-full="assets/img/p/sign-1.webp"><img src="assets/img/p/sign-1.webp" alt="Engraved oval sign with script lettering, torched and finished by hand" decoding="async" width="1000" height="1000"></button>
     <button type="button" class="gitem" data-full="assets/img/g/carve-4.webp"><img src="assets/img/g/carve-4.webp" alt="The finished cardinal, carved from a block and painted red by hand" decoding="async" width="480" height="480"></button>
     <button type="button" class="gitem" data-full="assets/img/g/table-5.webp"><img src="assets/img/g/table-5.webp" alt="A finished side table outside, dark torched base under a natural top" loading="lazy" decoding="async" width="480" height="480"></button>
@@ -185,11 +190,7 @@
     <button type="button" class="gitem" data-extra data-full="assets/img/p/frame-4.webp"><img src="assets/img/p/frame-4.webp" alt="Custom picture frame with engraved detail along the base" loading="lazy" decoding="async" width="1000" height="1000"></button>
     <button type="button" class="gitem" data-extra data-full="assets/img/sign.webp"><img src="assets/img/sign.webp" alt="Engraved oval sign with a wolf, script lettering and a dragonfly" loading="lazy" decoding="async" width="1000" height="1000"></button>
   </div>
-  <div class="galmore">
-    <button type="button" id="galToggle" class="galbtn"
-            aria-expanded="false" aria-controls="gallery">
-      See all 26 pieces <span aria-hidden="true">&darr;</span>
-    </button>
+  <button type="button" class="gnav gnext" id="gnext" aria-label="Next pieces">&rarr;</button>
   </div>
 </section>
 
@@ -293,19 +294,38 @@
 /* Gallery lightbox + enquiry form. Keyboard works: Escape closes, arrows move. */
 (function(){
 
-  /* Expander. Text and aria-expanded both change, because a button whose
-     label still says "see all" after you have seen all is a small lie. */
-  var gal = document.getElementById('gallery'),
-      galBtn = document.getElementById('galToggle');
-  if (gal && galBtn) {
-    galBtn.addEventListener('click', function () {
-      var open = gal.classList.toggle('is-collapsed') === false;
-      galBtn.setAttribute('aria-expanded', String(open));
-      galBtn.innerHTML = open
-        ? 'Show fewer <span aria-hidden="true">&uarr;</span>'
-        : 'See all 26 pieces <span aria-hidden="true">&darr;</span>';
-      if (!open) gal.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  /* The slider (Jeff, 2026-09-01): auto-advances one piece at a time and
+     loops, but gets out of the way the moment a human touches it — any
+     pointer, wheel, touch or key pauses the timer, which resumes after ten
+     quiet seconds. prefers-reduced-motion turns auto-advance off entirely.
+     The sliding itself is native scroll-snap; JS only nudges scrollLeft. */
+  var gal = document.getElementById('gallery');
+  if (gal) {
+    var step = function (dir) {
+      var t = gal.querySelector('.gitem');
+      var dx = (t ? t.getBoundingClientRect().width : 300) + 12;
+      if (dir > 0 && gal.scrollLeft + gal.clientWidth >= gal.scrollWidth - 4) {
+        gal.scrollTo({ left: 0, behavior: 'smooth' });   /* wrap to the start */
+      } else {
+        gal.scrollBy({ left: dx * dir, behavior: 'smooth' });
+      }
+    };
+    var gPrev = document.getElementById('gprev'), gNext = document.getElementById('gnext');
+    var quietTimer = null, autoPaused = false;
+    var humanTouched = function () {
+      autoPaused = true;
+      clearTimeout(quietTimer);
+      quietTimer = setTimeout(function () { autoPaused = false; }, 10000);
+    };
+    if (gPrev) gPrev.addEventListener('click', function () { humanTouched(); step(-1); });
+    if (gNext) gNext.addEventListener('click', function () { humanTouched(); step(1); });
+    ['pointerdown', 'pointerenter', 'wheel', 'touchstart', 'keydown'].forEach(function (ev) {
+      gal.addEventListener(ev, humanTouched, { passive: true });
     });
+    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setInterval(function () {
+      if (!autoPaused && !reducedMotion.matches && document.visibilityState === 'visible') step(1);
+    }, 4000);
   }
 
   var items = [].slice.call(document.querySelectorAll('.gitem'));

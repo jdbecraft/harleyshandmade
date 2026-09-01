@@ -15,7 +15,13 @@
   var shotno = document.getElementById('shotno');
   var imgNote = document.getElementById('imgNote');
   var thumbs = [].slice.call(document.querySelectorAll('.strip button'));
-  thumbs.forEach(function (b, i) {
+  /* Shot numbers count within the VISIBLE set, so a design-filtered gallery
+     reads "Shot 01 of 02", not "Shot 07 of 18". On pages with no filtering
+     every thumb is visible and the numbers read exactly as they always did. */
+  function visibleThumbs() {
+    return thumbs.filter(function (b) { return b.style.display !== 'none'; });
+  }
+  thumbs.forEach(function (b) {
     b.addEventListener('click', function () {
       main.src = b.dataset.full;
       main.alt = b.dataset.alt || main.alt;
@@ -23,10 +29,35 @@
          only while one of them is up (Jeff, 2026-08-29) */
       if (imgNote) imgNote.hidden = !b.dataset.note;
       thumbs.forEach(function (o) { o.setAttribute('aria-current', String(o === b)); });
-      if (shotno) shotno.textContent = 'Shot ' + String(i + 1).padStart(2, '0') + ' of ' +
-        String(thumbs.length).padStart(2, '0');
+      var vis = visibleThumbs();
+      if (shotno) shotno.textContent = 'Shot ' + String(vis.indexOf(b) + 1).padStart(2, '0') +
+        ' of ' + String(vis.length).padStart(2, '0');
     });
   });
+
+  /* Design-filtered gallery (the keychains, Jeff 2026-09-01: "pick one and
+     then when they get on that design it only shows the pictures for that
+     design"). Thumbs carrying data-design show only while their design is
+     the one picked in the sheet. display is set DIRECTLY, not via [hidden] —
+     an author display rule beats the [hidden] UA rule on this site and that
+     bug family has bitten twice (the 7/31 options-line and cart-trap fixes). */
+  function applyDesignFilter() {
+    var f = document.getElementById('sheet');
+    if (!f) return;
+    var sel = f.querySelector('input[name=Design]:checked');
+    if (!sel || !thumbs.some(function (b) { return b.dataset.design; })) return;
+    thumbs.forEach(function (b) {
+      b.style.display = (!b.dataset.design || b.dataset.design === sel.value) ? '' : 'none';
+    });
+    var vis = visibleThumbs();
+    var current = thumbs.filter(function (b) { return b.getAttribute('aria-current') === 'true'; })[0];
+    if (vis.length && vis.indexOf(current) === -1) vis[0].click();
+    else if (current) current.click(); /* refresh the counter for the new set */
+  }
+  (function () {
+    var f = document.getElementById('sheet');
+    if (f) { f.addEventListener('change', applyDesignFilter); applyDesignFilter(); }
+  })();
 
   /* ---------------- price ---------------- */
   var form = document.getElementById('sheet');
