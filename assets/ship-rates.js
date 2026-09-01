@@ -9,6 +9,9 @@ window.HH_SHIP = {
     "Birdhouse": {
       "base": 24
     },
+    "Custom Keychain": {
+      "base": 5
+    },
     "Fall Plaque \u2014 Black Walnut \u00b7 Boots, Bourbon & Bonfires": {
       "base": 10
     },
@@ -32,6 +35,9 @@ window.HH_SHIP = {
     },
     "Picnic Table Feeder": {
       "base": 10
+    },
+    "Wood Keychain": {
+      "base": 5
     }
   },
   "standLabel": "Matching cedar stand"

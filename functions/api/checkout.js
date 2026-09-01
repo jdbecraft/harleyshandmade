@@ -50,6 +50,14 @@ const PRODUCTS = {
   'Fall Sign Block — Black Walnut · Sweater Weather & Bourbon':         { base: 25 },
   'Fall Plaque — Black Walnut · Boots, Bourbon & Bonfires':             { base: 50 },
   'Fall Plaque — Black Walnut · Leaves Are Falling, Bourbon\'s Calling': { base: 50 },
+  /* Added 2026-09-01 — Harley's keychain email: the $15 stock keychain (nine
+     designs, all the same price — the Design label rides the cart key, never
+     the price) and the $25 custom (chargeable up front BY HIS DESIGN: he
+     messages the buyer to confirm wording/design AFTER ordering, before
+     burning). Both accept the +$5 "Same design on back" add, which the
+     base..base+MAX_ADDS window prices without new logic. */
+  'Wood Keychain':           { base: 15 },
+  'Custom Keychain':         { base: 25 },
   /* ⛔ REMOVED 2026-07-31 — Engraved Sign ($285), Hand-Carved Cardinal ($425)
      and Custom Picture Frame ($145–205). Jeff retired all three to quoted
      custom work the same day: they need too much per-piece adjustment to carry
@@ -103,6 +111,10 @@ const SHIP_CENTS = {
   'Fall Sign Block — Black Walnut · Sweater Weather & Bourbon':         { base: 800 },
   'Fall Plaque — Black Walnut · Boots, Bourbon & Bonfires':             { base: 1000 },
   'Fall Plaque — Black Walnut · Leaves Are Falling, Bourbon\'s Calling': { base: 1000 },
+  /* Added 2026-09-01 — Harley's 8/25 keychain rate, both listings. The
+     generator's SHIP dict carries 5/5 in the same commit (O-050). */
+  'Wood Keychain':           { base: 500 },
+  'Custom Keychain':         { base: 500 },
 };
 /* ⛔ The stand:1800 rates are GONE (2026-08-29). Harley, 2026-08-25: the
    stand is its own product now — swing $10 + stand $8 is the same $18 the
