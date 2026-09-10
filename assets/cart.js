@@ -223,6 +223,37 @@ window.HHCart = (function () {
     return d.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (day < 10 ? '0' : '') + day;
   }
 
+  /* Days Harley cannot do a pickup (his 2026-09-09 email). Inclusive
+     YYYY-MM-DD ranges — a single day is the same date twice. The checkout
+     function carries the SAME list on purpose (two deliberate copies, the
+     SHIP rule): the picker can be bypassed, the server cannot. To add a
+     blackout: one row here, one in functions/api/checkout.js, bump ASSET_V. */
+  var BLOCKED = [
+    ['2026-10-10', '2026-10-18', 'Court Days week, I\'m at the booth'],
+    ['2026-11-26', '2026-11-26', 'Thanksgiving'],
+    ['2026-12-24', '2026-12-25', 'Christmas Eve and Christmas Day']
+  ];
+  function blockedReason(d) {
+    for (var i = 0; i < BLOCKED.length; i++)
+      if (d >= BLOCKED[i][0] && d <= BLOCKED[i][1]) return BLOCKED[i][2];
+    return '';
+  }
+  /* "Oct 10–18, Nov 26 and Dec 24–25" — only blackouts still ahead of today,
+     so the note under the picker never lists a week that has already passed. */
+  function blockedList() {
+    var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    function f(d) { return MON[+d.slice(5, 7) - 1] + ' ' + (+d.slice(8, 10)); }
+    var today = pickMin().slice(0, 10), out = [];
+    for (var i = 0; i < BLOCKED.length; i++) {
+      var a = BLOCKED[i][0], b = BLOCKED[i][1];
+      if (b < today) continue;
+      out.push(a === b ? f(a) : (a.slice(0, 7) === b.slice(0, 7)
+        ? f(a) + '\u2013' + (+b.slice(8, 10)) : f(a) + '\u2013' + f(b)));
+    }
+    if (!out.length) return '';
+    return out.length === 1 ? out[0] : out.slice(0, -1).join(', ') + ' and ' + out[out.length - 1];
+  }
+
   function count() { var t = 0; for (var k in cart) t += cart[k].q; return t; }
   function total() { var t = 0; for (var k in cart) t += cart[k].p * cart[k].q; return t; }
   function save()  { try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch (e) {} }
@@ -253,12 +284,14 @@ window.HHCart = (function () {
     for (var k in cart) t += shipFor(k) * cart[k].q;
     return t;
   }
-  /* The CHEAPEST rate in the cart, for the "from $X" chooser label. Never an
-     average and never the highest: a number the customer beats at checkout is
-     a good surprise, a number they cannot is the bad kind. */
+  /* The CHEAPEST rate in the SHOP, for the "from $X" chooser label — Harley,
+     2026-09-09: "My cheapest shipping profile is $5 (keychains), so 'from $10'
+     isn't right." Read off the rate table, so a rate change moves it. The
+     exact per-package figure for what is actually in the cart shows in the
+     Shipping line the moment "Ship it" is chosen, before any money moves. */
   function shipFrom() {
     var lo = null;
-    for (var k in cart) { var v = shipFor(k); if (lo === null || v < lo) lo = v; }
+    for (var n in SHIP) { var v = SHIP[n] && SHIP[n].base; if (typeof v === 'number' && (lo === null || v < lo)) lo = v; }
     return lo === null ? 0 : lo;
   }
 
@@ -317,7 +350,9 @@ window.HHCart = (function () {
             + '" value="' + pickDate + '" aria-label="Pickup day"></label>'
             + '<label>Time<input type="time" id="cartPickTime" value="' + pickTime
             + '" aria-label="Pickup time"></label>'
-            + '</div></div>'
+            + '</div>'
+            + (blockedList() ? '<p class="cart-note">No pickups ' + blockedList() + ' &mdash; any other day is fine.</p>' : '')
+            + '</div>'
           : '')
         + (payMsg ? '<p class="cart-payerr" role="alert">' + payMsg + '</p>' : '')
         + '<button class="cart-cta" type="button" id="cartPay">Pay with card</button>'
@@ -463,6 +498,10 @@ window.HHCart = (function () {
         payMsg = 'I need at least 3 days to have it sanded, finished and boxed — pick a day on or after ' + pickMin() + '.';
         render(); return;
       }
+      if (blockedReason(pickDate)) {
+        payMsg = 'I can\'t do a pickup that day — ' + blockedReason(pickDate) + '. Pick another day and you\'re set.';
+        render(); return;
+      }
     }
     var b = foot.querySelector('#cartPay');
     if (b) { b.disabled = true; b.textContent = 'Opening secure payment…'; }
@@ -548,7 +587,17 @@ window.HHCart = (function () {
     if (e.target.name === 'hhFul') { ful = e.target.value; payMsg = ''; render(); }
     /* No re-render on these — rebuilding the foot mid-typing would eat focus.
        The value lives in module state and the markup restores it next render. */
-    if (e.target.id === 'cartPickDate') { pickDate = e.target.value; payMsg = ''; }
+    if (e.target.id === 'cartPickDate') {
+      var hadErr = !!foot.querySelector('.cart-payerr');
+      pickDate = e.target.value; payMsg = '';
+      /* A committed date is the one moment a re-render is safe (nothing is
+         being typed): say so at once if the day is blocked, and clear a
+         sentence that is still on screen once a good day replaces a bad one. */
+      if (blockedReason(pickDate)) {
+        payMsg = 'I can\'t do a pickup that day — ' + blockedReason(pickDate) + '. Pick another day and you\'re set.';
+        render();
+      } else if (hadErr) render();
+    }
     if (e.target.id === 'cartPickTime') { pickTime = e.target.value; payMsg = ''; }
   });
   body.addEventListener('click', function (e) {

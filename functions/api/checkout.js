@@ -125,6 +125,18 @@ const SHIP_CENTS = {
    it — those lines are refused plainly below rather than priced by guess. */
 const STAND_LABEL = 'Matching cedar stand';
 
+/* Inclusive YYYY-MM-DD ranges Harley cannot do a Marathon-station pickup.
+   Mirror of cart.js BLOCKED — see the note there. */
+const PICKUP_BLOCKED = [
+  ['2026-10-10', '2026-10-18', 'Court Days week, Harley is at the booth'],
+  ['2026-11-26', '2026-11-26', 'Thanksgiving'],
+  ['2026-12-24', '2026-12-25', 'Christmas Eve and Christmas Day'],
+];
+function pickupBlocked(d) {
+  for (const r of PICKUP_BLOCKED) if (d >= r[0] && d <= r[1]) return r[2];
+  return '';
+}
+
 function shipCentsFor(name) {
   const r = SHIP_CENTS[name];
   return r ? r.base : null;
@@ -211,8 +223,15 @@ export async function onRequestPost(context) {
   if (!shipping && body.pickup && typeof body.pickup === 'object') {
     const d = String(body.pickup.date || '').slice(0, 10);
     const t = String(body.pickup.time || '').slice(0, 5);
-    if (/^\d{4}-\d{2}-\d{2}$/.test(d))
+    if (/^\d{4}-\d{2}-\d{2}$/.test(d)) {
+      /* Harley's blackout days (2026-09-09 email). Same list as cart.js's
+         BLOCKED, kept in both places on purpose: the picker is a courtesy,
+         this is the rule. Add a row in both files together. */
+      const why = pickupBlocked(d);
+      if (why)
+        return json(400, { error: 'That pickup day isn\'t available — ' + why + '. Pick another day and try again.' });
       pickupWhen = d + (/^\d{1,2}:\d{2}$/.test(t) ? ' at ' + t : '');
+    }
   }
 
   const items = [];
