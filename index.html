@@ -674,10 +674,14 @@ html:not(.flat) .walkoff-link:hover{color:#F6ECD8}
      which is also what the desktop does: you travel ALONG the board.
      The rotation is on the <img width="1200" height="900"> only, never on the container, so the marks and
      their labels stay in normal upright coordinates and stay readable. */
+  .phoneboard>picture{display:contents}
   .phoneboard{display:block;position:relative;margin:18px auto 4px;
     width:100%;height:min(52svh,470px);
     filter:drop-shadow(0 14px 20px rgba(45,31,18,.26)) drop-shadow(0 3px 5px rgba(45,31,18,.2))}
-  .phoneboard>img{position:absolute;left:50%;top:50%;display:block;
+  /* DESCENDANT, not child: the 2026-09-11 performance pass wrapped this <img> in a
+     <picture> for the phone-sized board, which silently stopped '.phoneboard>img'
+     matching - so the board lost its rotation and lay down flat on phones. */
+  .phoneboard img{position:absolute;left:50%;top:50%;display:block;
     width:min(52svh,470px);max-width:none;height:auto;
     transform:translate(-50%,-50%) rotate(90deg)}
 
