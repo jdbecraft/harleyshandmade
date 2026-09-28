@@ -16,3 +16,31 @@
 /p-cardinal.html /custom  301
 /p-frame         /custom  301
 /p-frame.html    /custom  301
+
+# 2026-09-28 — product pages moved to descriptive addresses (Jeff's order).
+# The old short addresses are in Google's index and in links people have
+# already shared, so every one forwards permanently. Both forms, as above.
+/p-swing /mini-porch-swing-squirrel-feeder 301
+/p-swing.html /mini-porch-swing-squirrel-feeder 301
+/p-loveseat /loveseat-swing-bird-feeder 301
+/p-loveseat.html /loveseat-swing-bird-feeder 301
+/p-picnic /cedar-picnic-table-squirrel-feeder 301
+/p-picnic.html /cedar-picnic-table-squirrel-feeder 301
+/p-chair /cedar-adirondack-chair-squirrel-feeder 301
+/p-chair.html /cedar-adirondack-chair-squirrel-feeder 301
+/p-birdhouse /log-cabin-birdhouse 301
+/p-birdhouse.html /log-cabin-birdhouse 301
+/p-stand /mini-porch-swing-stand 301
+/p-stand.html /mini-porch-swing-stand 301
+/p-fall-porch /porch-season-cherry-sign-block 301
+/p-fall-porch.html /porch-season-cherry-sign-block 301
+/p-fall-sweater /sweater-weather-bourbon-walnut-sign-block 301
+/p-fall-sweater.html /sweater-weather-bourbon-walnut-sign-block 301
+/p-fall-boots /boots-bourbon-bonfires-walnut-plaque 301
+/p-fall-boots.html /boots-bourbon-bonfires-walnut-plaque 301
+/p-fall-leaves /leaves-are-falling-walnut-plaque 301
+/p-fall-leaves.html /leaves-are-falling-walnut-plaque 301
+/p-keychain /cedar-wood-keychain 301
+/p-keychain.html /cedar-wood-keychain 301
+/p-keychain-custom /custom-cedar-keychain 301
+/p-keychain-custom.html /custom-cedar-keychain 301
