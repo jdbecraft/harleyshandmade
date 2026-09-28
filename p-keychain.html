@@ -41,10 +41,15 @@
 <link rel="stylesheet" href="assets/page.css?v=20260909a">
 <link rel="stylesheet" href="assets/rail.css?v=20260909a">
 <link rel="stylesheet" href="assets/product.css?v=20260909a">
+<style>.shiptag{display:inline-block;margin:10px 0 0;padding:6px 10px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10px;line-height:1.4;letter-spacing:.13em;text-transform:uppercase;color:#4A2E1D;background:#FAF4E6;border:1px solid rgba(74,46,29,.32);border-radius:2px}</style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Product", "name": "Wood Keychain", "image": ["https://harleyshandmadeky.com/assets/img/p/kc-bath-county-1.webp", "https://harleyshandmadeky.com/assets/img/p/kc-bath-county-2.webp", "https://harleyshandmadeky.com/assets/img/p/kc-owingsville-1.webp", "https://harleyshandmadeky.com/assets/img/p/kc-owingsville-2.webp", "https://harleyshandmadeky.com/assets/img/p/kc-cardinal-1.webp", "https://harleyshandmadeky.com/assets/img/p/kc-cardinal-2.webp", "https://harleyshandmadeky.com/assets/img/p/kc-deer-1.webp", "https://harleyshandmadeky.com/assets/img/p/kc-deer-2.webp", "https://harleyshandmadeky.com/assets/img/p/kc-bass-1.webp", "https://harleyshandmadeky.com/assets/img/p/kc-bass-2.webp", "https://harleyshandmadeky.com/assets/img/p/kc-bourbon-barrel-1.webp", "https://harleyshandmadeky.com/assets/img/p/kc-bourbon-barrel-2.webp", "https://harleyshandmadeky.com/assets/img/p/kc-campfire-1.webp", "https://harleyshandmadeky.com/assets/img/p/kc-campfire-2.webp", "https://harleyshandmadeky.com/assets/img/p/kc-cross-1.webp", "https://harleyshandmadeky.com/assets/img/p/kc-cross-2.webp", "https://harleyshandmadeky.com/assets/img/p/kc-paw-print-1.webp", "https://harleyshandmadeky.com/assets/img/p/kc-paw-print-2.webp"], "description": "A solid eastern red cedar keychain, cut and engraved in Owingsville, Kentucky \u2014 nine stock designs to pick from, with the option of the same design burned on the back. Sold bare on purpose, so the cedar keeps its scent.", "brand": {"@type": "Brand", "name": "Harley's Handmade"}, "material": "Red cedar", "offers": {"@type": "Offer", "price": "15", "priceCurrency": "USD", "availability": "https://schema.org/InStock", "url": "https://harleyshandmadeky.com/p-keychain", "seller": {"@type": "Organization", "name": "Harley's Handmade, LLC"}, "shippingDetails": {"@type": "OfferShippingDetails", "shippingRate": {"@type": "MonetaryAmount", "value": "5.00", "currency": "USD"}, "shippingDestination": {"@type": "DefinedRegion", "addressCountry": "US"}}, "hasMerchantReturnPolicy": {"@type": "MerchantReturnPolicy", "applicableCountry": "US", "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted", "merchantReturnLink": "https://harleyshandmadeky.com/terms"}}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Harley's Handmade", "item": "https://harleyshandmadeky.com/"}, {"@type": "ListItem", "position": 2, "name": "The Shop", "item": "https://harleyshandmadeky.com/shop"}, {"@type": "ListItem", "position": 3, "name": "Wood Keychain"}]}</script>
 </head>
 <body>
+<!-- Site-wide top bar (Jeff, 2026-09-28). Styles are inline with the bar on purpose:
+     no assets/* file changes, so no ASSET_V bump and no 4h edge-cache wait (P-012). -->
+<style>.hh-bar{background:#2D1F12;color:#F1E6CC;text-align:center;padding:9px 14px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10.5px;line-height:1.5;letter-spacing:.15em;text-transform:uppercase;border-bottom:1px solid rgba(176,132,86,.45);position:relative;z-index:60}body .cartbtn{top:47px}@media(max-width:520px){.hh-bar{font-size:9.5px;letter-spacing:.1em;padding:8px 10px}body .cartbtn{top:58px}}</style>
+<div class="hh-bar" role="note">Authentic Appalachian Cedar Crafts &bull; Flat-Rate 50-State Shipping</div>
 
 <header class="top">
   <div class="board"></div><div class="fade"></div>
@@ -89,6 +94,7 @@
       <p class="lede">A solid red cedar keychain with your pick of nine burned-in designs — county pride, cardinal, deer, bass and more.</p>
 
       <div class="price"><span id="sumHead">$15</span><span class="from">Price</span></div>
+      <p class="shiptag">Flat-Rate Nationwide Shipping &middot; $5</p>
 
       <form class="sheet" id="sheet" data-base="15" data-name="Wood Keychain"
             onsubmit="return false">
