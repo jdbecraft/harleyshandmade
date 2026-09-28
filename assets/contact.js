@@ -52,7 +52,7 @@
 
   function fields() {
     var out = [];
-    ['Name', 'Phone', 'Email', 'What they want', 'Details', 'Deadline'].forEach(function (n) {
+    ['Name', 'Phone', 'Email', 'What they want', 'Piece', 'Wood', 'Rough size', 'ZIP', 'Details', 'Deadline'].forEach(function (n) {
       var el = form.querySelector('[name="' + n + '"]');
       if (el && el.value.trim()) out.push(n + ': ' + el.value.trim());
     });

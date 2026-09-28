@@ -168,6 +168,46 @@
         </select>
       </div>
 
+      <!-- Structured quote fields (Jeff, 2026-09-28). All optional: somebody with a
+           question about a shop order should not have to fill in a wood species. -->
+      <div class="fld two">
+        <div>
+          <label for="cpiece">What kind of piece?</label>
+          <select id="cpiece" name="Piece">
+            <option value="">Pick one, or skip it</option>
+            <option>Engraved sign</option>
+            <option>Porch swing or outdoor furniture</option>
+            <option>Table or indoor furniture</option>
+            <option>Feeder or birdhouse</option>
+            <option>Picture frame</option>
+            <option>Carving</option>
+            <option>Something else</option>
+          </select>
+        </div>
+        <div>
+          <label for="cwood">Wood</label>
+          <select id="cwood" name="Wood">
+            <option value="">Not sure, you pick</option>
+            <option>Red cedar</option>
+            <option>Cherry</option>
+            <option>Walnut</option>
+            <option>Reclaimed barn or pallet wood</option>
+            <option>Something else</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="fld two">
+        <div>
+          <label for="csize">Rough size</label>
+          <input id="csize" name="Rough size" type="text" placeholder="4 ft wide, 30 in tall">
+        </div>
+        <div>
+          <label for="czip">ZIP code, if it ships</label>
+          <input id="czip" name="ZIP" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="10" placeholder="40360">
+        </div>
+      </div>
+
       <div class="fld">
         <label for="cdetails">Tell me about it</label>
         <textarea id="cdetails" name="Details" required
@@ -284,7 +324,7 @@
      message" on a plan that cannot send it — the stale-cache version of the bug
      this change exists to fix. Bump the date whenever either file changes. -->
 <script src="assets/sketch.js?v=20260730"></script>
-<script src="assets/contact.js?v=20260731b"></script>
+<script src="assets/contact.js?v=20260928a"></script>
 
 <!-- Sitewide credit (Jeff, 2026-07-31). Fixed, and a DIRECT CHILD OF BODY:
      the homepage walk has no ordinary flow to sit in, and anything inside
