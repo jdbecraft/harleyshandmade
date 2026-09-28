@@ -938,6 +938,8 @@ html:not(.flat) .walkoff-link:hover{color:#F6ECD8}
      page and carries its own Add to cart. They sit ABOVE .cardlink (z-index 3),
      which otherwise sends every click on the card to /shop. -->
 <style>
+/* .row is its own stacking context at z-index 1, so the lift has to happen on the row */
+.card .row{z-index:4}
 .pick{position:relative;z-index:4;display:flex;flex-direction:column}
 .pick .pk{display:block;color:inherit;text-decoration:none;flex:1}
 .pick .pk:hover h3,.pick .pk:focus-visible h3{text-decoration:underline;text-underline-offset:3px}
