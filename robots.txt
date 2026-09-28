@@ -16,4 +16,27 @@ Allow: /
 Disallow: /check
 Disallow: /thanks
 
+# AI assistants and AI search are welcome here (2026-09-28). They are named one
+# by one so nothing can read this file as an opt-out: until mid-September the
+# host added its own block for these crawlers, and Google's Gemini was still
+# honouring that old copy. A named group replaces the "*" group for that
+# crawler, so the two Disallow lines are repeated here on purpose.
+User-agent: Google-Extended
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: OAI-SearchBot
+User-agent: ClaudeBot
+User-agent: Claude-User
+User-agent: Claude-SearchBot
+User-agent: anthropic-ai
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Applebot-Extended
+User-agent: Amazonbot
+User-agent: CCBot
+User-agent: meta-externalagent
+Allow: /
+Disallow: /check
+Disallow: /thanks
+
 Sitemap: https://harleyshandmadeky.com/sitemap.xml
