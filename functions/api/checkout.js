@@ -37,26 +37,26 @@
 /* Exact data-name / data-n strings from the built pages. If a product is
    renamed in build-products.py, rename it here in the same commit. */
 const PRODUCTS = {
-  'Mini Porch Swing':        { base: 75  },
-  'Loveseat Swing':          { base: 75  },
+  'Mini Porch Swing':        { base: 50  },
+  'Loveseat Swing':          { base: 50  },
   /* Added 2026-08-29 — Harley's 2026-08-25 emails: the stand became its own
      product (the With Stand option is retired, see the guard below), and the
      four fall pieces are his "1 of 4" through "4 of 4", his prices. */
-  'Mini Swing Stand':        { base: 25  },
-  'Picnic Table Feeder':     { base: 75  },
-  'Adirondack Chair Feeder': { base: 75  },
+  'Mini Swing Stand':        { base: 15  },
+  'Picnic Table Feeder':     { base: 60  },
+  'Adirondack Chair Feeder': { base: 65  },
   'Birdhouse':               { base: 150 },
-  'Fall Sign Block — Cherry · Porch Season':                            { base: 25 },
-  'Fall Sign Block — Black Walnut · Sweater Weather & Bourbon':         { base: 25 },
-  'Fall Plaque — Black Walnut · Boots, Bourbon & Bonfires':             { base: 50 },
-  'Fall Plaque — Black Walnut · Leaves Are Falling, Bourbon\'s Calling': { base: 50 },
+  'Fall Sign Block — Cherry · Porch Season':                            { base: 15 },
+  'Fall Sign Block — Black Walnut · Sweater Weather & Bourbon':         { base: 15 },
+  'Fall Plaque — Black Walnut · Boots, Bourbon & Bonfires':             { base: 28 },
+  'Fall Plaque — Black Walnut · Leaves Are Falling, Bourbon\'s Calling': { base: 28 },
   /* Added 2026-09-01 — Harley's keychain email: the $15 stock keychain (nine
      designs, all the same price — the Design label rides the cart key, never
      the price) and the $25 custom (chargeable up front BY HIS DESIGN: he
      messages the buyer to confirm wording/design AFTER ordering, before
      burning). Both accept the +$5 "Same design on back" add, which the
      base..base+MAX_ADDS window prices without new logic. */
-  'Wood Keychain':           { base: 15 },
+  'Wood Keychain':           { base: 8 },
   'Custom Keychain':         { base: 25 },
   /* ⛔ REMOVED 2026-07-31 — Engraved Sign ($285), Hand-Carved Cardinal ($425)
      and Custom Picture Frame ($145–205). Jeff retired all three to quoted
@@ -77,6 +77,17 @@ const PRODUCTS = {
 /* Ceiling above base: stain (+15/+25) + stand (+20) + frame size (+60) all
    fit under this with room; anything higher is a tampered or broken cart. */
 const MAX_ADDS = 150;
+/* 2026-09-28 — Harley lowered his prices. A cart is localStorage, so a line
+   added before that day still carries the OLD price, and the old window
+   (base..base+150) would have let it through and charged the customer more
+   than the page now says. Every shop item is exact-price now; the only priced
+   add left in the shop is the keychains' +$5 "same design on back". */
+const ADDS_OK = { 'Wood Keychain': 5, 'Custom Keychain': 5 };
+/* Harley, 2026-09-02: western cedar lines ended. Same two names as SOLD_OUT in
+   build-products.py - change both together. */
+const SOLD_OUT = { 'Adirondack Chair Feeder': 1, 'Birdhouse': 1 };
+/* Harley, 2026-09-28: "The stand is only sold with a swing, never on its own." */
+const SWINGS = { 'Mini Porch Swing': 1, 'Loveseat Swing': 1 };
 
 /* ── PER-ITEM SHIPPING, IN CENTS — the AUTHORITATIVE table ────────────────
    Jeff, 2026-08-06: "the shipping on every item in the shop will be different
@@ -234,6 +245,13 @@ export async function onRequestPost(context) {
     }
   }
 
+  /* The stand never ships on its own (Harley, 2026-09-28). */
+  {
+    const names = lines.map(function (l) { return String((l && l.key) || '').replace(/\s*\(.*$/, '').trim(); });
+    if (names.indexOf('Mini Swing Stand') !== -1 && !names.some(function (n) { return SWINGS[n]; }))
+      return json(400, { error: 'The Mini Swing Stand is sold only with a swing — add a Mini Porch Swing or a Loveseat Swing to the cart.' });
+  }
+
   const items = [];
   const parsed = [];
   /* hoisted: the payment note below needs it outside the shipping branch */
@@ -249,6 +267,7 @@ export async function onRequestPost(context) {
     const name = (m && m[1] || '').trim(), opts = (m && m[2] || '').trim();
     const prod = PRODUCTS[name];
     if (!prod) return json(400, { error: '"' + name + '" isn’t a product this shop sells — refresh the shop page.' });
+    if (SOLD_OUT[name]) return json(400, { error: name + ' is sold out right now — remove it from the cart to pay for the rest.' });
 
     /* The With Stand option came off the swings on 2026-08-29 (Harley's
        email — the stand is its own $25 product now). A cart is localStorage,
@@ -256,11 +275,11 @@ export async function onRequestPost(context) {
        longer has a postage rate or a current price, so refuse it plainly
        instead of guessing. The customer is told exactly what to do. */
     if (opts.indexOf(STAND_LABEL) !== -1)
-      return json(400, { error: 'The swing stand is its own product now — remove this line, refresh the shop, and add the swing and the Mini Swing Stand ($25) separately.' });
+      return json(400, { error: 'The swing stand is its own product now — remove this line, refresh the shop, and add the swing and the Mini Swing Stand ($15) separately.' });
 
     const q = ln.q, p = ln.p;
     if (!Number.isInteger(q) || q < 1 || q > MAX_QTY) return json(400, { error: 'Quantity out of range.' });
-    if (typeof p !== 'number' || !isFinite(p) || p < prod.base || p > prod.base + MAX_ADDS)
+    if (typeof p !== 'number' || !isFinite(p) || p < prod.base || p > prod.base + (ADDS_OK[name] || 0))
       return json(400, { error: 'A price in the cart doesn’t match the shop — refresh the page and rebuild the order.' });
 
     const cents = Math.round(p * 100);
