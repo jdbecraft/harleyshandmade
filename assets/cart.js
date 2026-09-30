@@ -146,6 +146,8 @@ window.HHCart = (function () {
 .cart-pick input{flex:1 1 130px;min-width:0;font-family:inherit;font-size:16px;padding:.55rem .6rem;
   border:1px solid rgba(45,31,18,.35);background:#fff;color:#2d1f12;border-radius:2px;min-height:44px}
 .cart-pick input:focus{outline:2px solid #b08456;outline-offset:-1px}
+.cart-pick select{width:100%;font-family:inherit;font-size:16px;padding:.55rem .6rem;border:1px solid rgba(45,31,18,.3);background:#fff;color:inherit;min-height:44px}
+.cart-pick select:focus{outline:2px solid #b08456;outline-offset:-1px}
 .cart-pick label{font-size:.78rem;display:grid;gap:.25rem;flex:1 1 130px}
 .cart-empty{text-align:center;opacity:.7;padding:2.5rem 1rem;font-size:.95rem;line-height:1.6}
 /* "hold my cart" capture — asked at the moment of hesitation, not at the door */
@@ -215,7 +217,13 @@ window.HHCart = (function () {
          least 3 days ahead, time chosen at checkout. Kept as module state so
          a qty-change re-render doesn't eat what the customer typed. */
       pickDate = '',
-      pickTime = '';
+      pickTime = '',
+      /* Jeff, 2026-09-29: Harley ships to the lower 48 only. The state is asked
+         for HERE, before the card page, because Square's own address form
+         cannot be told to refuse Alaska or Hawaii. checkout.js holds the
+         same list and is the rule; this picker is the courtesy. */
+      shipState = '';
+  var STATES = [['AL','Alabama'],['AZ','Arizona'],['AR','Arkansas'],['CA','California'],['CO','Colorado'],['CT','Connecticut'],['DE','Delaware'],['DC','District of Columbia'],['FL','Florida'],['GA','Georgia'],['ID','Idaho'],['IL','Illinois'],['IN','Indiana'],['IA','Iowa'],['KS','Kansas'],['KY','Kentucky'],['LA','Louisiana'],['ME','Maine'],['MD','Maryland'],['MA','Massachusetts'],['MI','Michigan'],['MN','Minnesota'],['MS','Mississippi'],['MO','Missouri'],['MT','Montana'],['NE','Nebraska'],['NV','Nevada'],['NH','New Hampshire'],['NJ','New Jersey'],['NM','New Mexico'],['NY','New York'],['NC','North Carolina'],['ND','North Dakota'],['OH','Ohio'],['OK','Oklahoma'],['OR','Oregon'],['PA','Pennsylvania'],['RI','Rhode Island'],['SC','South Carolina'],['SD','South Dakota'],['TN','Tennessee'],['TX','Texas'],['UT','Utah'],['VT','Vermont'],['VA','Virginia'],['WA','Washington'],['WV','West Virginia'],['WI','Wisconsin'],['WY','Wyoming']];
 
   function pickMin() {
     var d = new Date(Date.now() + 3 * 86400000);
@@ -353,7 +361,13 @@ window.HHCart = (function () {
             + '</div>'
             + (blockedList() ? '<p class="cart-note">No pickups ' + blockedList() + ' &mdash; any other day is fine.</p>' : '')
             + '</div>'
-          : '')
+          : '<div class="cart-pick">'
+            + '<label>Shipping to which state?<select id="cartShipState" aria-label="Shipping to which state">'
+            + '<option value="">Pick your state</option>'
+            + STATES.map(function (s) { return '<option value="' + s[0] + '"' + (shipState === s[0] ? ' selected' : '') + '>' + s[1] + '</option>'; }).join('')
+            + '</select></label>'
+            + '<p>I ship to the lower 48 states. I don\'t ship to Alaska or Hawaii.</p>'
+            + '</div>')
         + (payMsg ? '<p class="cart-payerr" role="alert">' + payMsg + '</p>' : '')
         + '<button class="cart-cta" type="button" id="cartPay">Pay with card</button>'
         + '<button class="cart-cta alt" type="button" id="cartSend">Or send me the order instead</button>';
@@ -503,6 +517,10 @@ window.HHCart = (function () {
         render(); return;
       }
     }
+    if (ful === 'ship' && !shipState) {
+      payMsg = 'Pick the state it\'s shipping to first. I ship to the lower 48 states.';
+      render(); return;
+    }
     var b = foot.querySelector('#cartPay');
     if (b) { b.disabled = true; b.textContent = 'Opening secure payment…'; }
     var lines = [];
@@ -512,7 +530,7 @@ window.HHCart = (function () {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(ful === 'pickup'
         ? { lines: lines, fulfillment: ful, pickup: { date: pickDate, time: pickTime } }
-        : { lines: lines, fulfillment: ful })
+        : { lines: lines, fulfillment: ful, shipState: shipState })
     }).then(function (r) {
       return r.json().then(function (j) { return { ok: r.ok, j: j }; });
     }).then(function (res) {
@@ -599,6 +617,11 @@ window.HHCart = (function () {
       } else if (hadErr) render();
     }
     if (e.target.id === 'cartPickTime') { pickTime = e.target.value; payMsg = ''; }
+    if (e.target.id === 'cartShipState') {
+      var hadE = !!foot.querySelector('.cart-payerr');
+      shipState = e.target.value; payMsg = '';
+      if (hadE) render();
+    }
   });
   body.addEventListener('click', function (e) {
     var el = e.target.closest ? e.target.closest('[data-rm],[data-inc],[data-dec]') : e.target;

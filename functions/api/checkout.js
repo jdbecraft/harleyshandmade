@@ -91,6 +91,10 @@ const ADDS_OK = { 'Wood Keychain': 5, 'Custom Keychain': 5 };
 const SOLD_OUT = { 'Birdhouse': 1 };   /* chair back on sale 2026-09-29, eastern red cedar */
 /* Harley, 2026-09-28: "The stand is only sold with a swing, never on its own." */
 const SWINGS = { 'Mini Porch Swing': 1, 'Loveseat Swing': 1 };
+/* Jeff, 2026-09-29: Harley ships to the lower 48 (and DC) only. Same list as
+   cart.js STATES and build-products.py LOWER_48. Square's address form cannot
+   refuse a state, so the cart asks first and this is the rule. */
+const SHIP_STATES = 'AL AZ AR CA CO CT DE DC FL GA ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'.split(' ');
 
 /* ── PER-ITEM SHIPPING, IN CENTS — the AUTHORITATIVE table ────────────────
    Jeff, 2026-08-06: "the shipping on every item in the shop will be different
@@ -226,6 +230,17 @@ export async function onRequestPost(context) {
   const shipping = body.fulfillment === 'ship';
   if (!shipping && body.fulfillment !== 'pickup')
     return json(400, { error: 'Pick pickup or shipping before paying.' });
+
+  /* A shipped order names its state. A cart.js cached from before 2026-09-29
+     does not send the field, so a missing state is let through (same reasoning
+     as the pickup slot below); a state that is sent and is not on the list is
+     refused. */
+  let shipState = '';
+  if (shipping && body.shipState !== undefined && body.shipState !== '') {
+    shipState = String(body.shipState).toUpperCase().slice(0, 2);
+    if (SHIP_STATES.indexOf(shipState) === -1)
+      return json(400, { error: 'I ship to the lower 48 states only, so I can’t send this one to Alaska, Hawaii or outside the US. Message me and we’ll work something out.' });
+  }
 
   /* Pickup slot (2026-08-29 — the Marathon-station pickup flow, Harley's
      2026-08-25 email: order at least 3 days ahead and pick a time). The cart
@@ -392,7 +407,7 @@ export async function onRequestPost(context) {
          stale number tells him he collected $5 less per package than he did.
          Building it from the constant removes the fourth copy entirely. */
       payment_note: shipping
-        ? 'Website order — SHIP IT. Postage $' + (shipCents / 100).toFixed(2)
+        ? 'Website order — SHIP IT' + (shipState ? ' to ' + shipState + ' (state picked in the cart; check it matches the address)' : '') + '. Postage $' + (shipCents / 100).toFixed(2)
           + ' paid across ' + parsed.reduce((n, ln) => n + ln.q, 0)
           + ' package(s); buy the labels in Orders > Shipments.'
         : 'Website order — FREE PICKUP, Marathon station next to Ace Hardware, Owingsville'
