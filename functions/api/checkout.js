@@ -58,6 +58,9 @@ const PRODUCTS = {
      base..base+MAX_ADDS window prices without new logic. */
   'Wood Keychain':           { base: 8 },
   'Custom Keychain':         { base: 25 },
+  /* Added 2026-09-29 — Harley's coasters email: set of 4 with holder, $45
+     engraved, $40 plain cedar. The design/price pairing is checked below. */
+  'Cedar Coasters':          { base: 45 },
   /* ⛔ REMOVED 2026-07-31 — Engraved Sign ($285), Hand-Carved Cardinal ($425)
      and Custom Picture Frame ($145–205). Jeff retired all three to quoted
      custom work the same day: they need too much per-piece adjustment to carry
@@ -85,7 +88,7 @@ const MAX_ADDS = 150;
 const ADDS_OK = { 'Wood Keychain': 5, 'Custom Keychain': 5 };
 /* Harley, 2026-09-02: western cedar lines ended. Same two names as SOLD_OUT in
    build-products.py - change both together. */
-const SOLD_OUT = { 'Adirondack Chair Feeder': 1, 'Birdhouse': 1 };
+const SOLD_OUT = { 'Birdhouse': 1 };   /* chair back on sale 2026-09-29, eastern red cedar */
 /* Harley, 2026-09-28: "The stand is only sold with a swing, never on its own." */
 const SWINGS = { 'Mini Porch Swing': 1, 'Loveseat Swing': 1 };
 
@@ -126,6 +129,7 @@ const SHIP_CENTS = {
      generator's SHIP dict carries 5/5 in the same commit (O-050). */
   'Wood Keychain':           { base: 500 },
   'Custom Keychain':         { base: 500 },
+  'Cedar Coasters':          { base: 900 },
 };
 /* ⛔ The stand:1800 rates are GONE (2026-08-29). Harley, 2026-08-25: the
    stand is its own product now — swing $10 + stand $8 is the same $18 the
@@ -249,7 +253,7 @@ export async function onRequestPost(context) {
   {
     const names = lines.map(function (l) { return String((l && l.key) || '').replace(/\s*\(.*$/, '').trim(); });
     if (names.indexOf('Mini Swing Stand') !== -1 && !names.some(function (n) { return SWINGS[n]; }))
-      return json(400, { error: 'The Mini Swing Stand is sold only with a swing — add a Mini Porch Swing or a Loveseat Swing to the cart.' });
+      return json(400, { error: 'The Mini Swing Stand is sold only with a swing — add a Mini Porch Swing or a Loveseat Swing to the cart, or take the stand out.' });
   }
 
   const items = [];
@@ -275,10 +279,17 @@ export async function onRequestPost(context) {
        longer has a postage rate or a current price, so refuse it plainly
        instead of guessing. The customer is told exactly what to do. */
     if (opts.indexOf(STAND_LABEL) !== -1)
-      return json(400, { error: 'The swing stand is its own product now — remove this line, refresh the shop, and add the swing and the Mini Swing Stand ($15) separately.' });
+      return json(400, { error: 'The swing stand is its own product now — remove this line, refresh the shop, and add the swing again with the stand box ticked ($15).' });
 
     const q = ln.q, p = ln.p;
     if (!Number.isInteger(q) || q < 1 || q > MAX_QTY) return json(400, { error: 'Quantity out of range.' });
+    /* Coasters: $45 engraved, $40 plain cedar (Harley, 2026-09-29). The price
+       has to match the design written in the cart line. */
+    if (name === 'Cedar Coasters') {
+      const want = opts.indexOf('Plain Cedar') !== -1 ? 40 : 45;
+      if (p !== want || opts.indexOf('Design:') === -1)
+        return json(400, { error: 'A price in the cart doesn’t match the shop — refresh the page and rebuild the order.' });
+    } else
     if (typeof p !== 'number' || !isFinite(p) || p < prod.base || p > prod.base + (ADDS_OK[name] || 0))
       return json(400, { error: 'A price in the cart doesn’t match the shop — refresh the page and rebuild the order.' });
 
@@ -333,8 +344,8 @@ export async function onRequestPost(context) {
       quantity: '1',
       base_price_money: { amount: shipCents, currency: 'USD' },
       note: parcels === 1
-        ? 'One package, anywhere in the US'
-        : parcels + ' packages, priced per item, anywhere in the US',
+        ? 'One package, lower 48 states'
+        : parcels + ' packages, priced per item, lower 48 states',
     });
     totalCents += shipCents;
   }

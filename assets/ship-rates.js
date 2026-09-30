@@ -9,6 +9,9 @@ window.HH_SHIP = {
     "Birdhouse": {
       "base": 24
     },
+    "Cedar Coasters": {
+      "base": 9
+    },
     "Custom Keychain": {
       "base": 5
     },

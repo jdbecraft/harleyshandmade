@@ -338,7 +338,7 @@ window.HHCart = (function () {
         + '<label><input type="radio" name="hhFul" value="pickup"' + (ful === 'pickup' ? ' checked' : '')
         + '> Free pickup &mdash; Marathon station next to Ace Hardware, Owingsville</label>'
         + '<label><input type="radio" name="hhFul" value="ship"' + (ful === 'ship' ? ' checked' : '')
-        + '> Ship it &mdash; from ' + money(shipFrom()) + ' per item, anywhere in the US</label>'
+        + '> Ship it &mdash; from ' + money(shipFrom()) + ' per item, lower 48 states</label>'
         + '</div>'
         + (ful === 'pickup'
           ? '<div class="cart-pick">'

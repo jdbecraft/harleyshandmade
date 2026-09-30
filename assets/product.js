@@ -112,7 +112,15 @@
     form.querySelectorAll('select[data-size]').forEach(function (s) {
       chosen[s.name] = s.options[s.selectedIndex].text;
     });
-    return { adds: adds, quoted: quoted, chosen: chosen };
+    /* data-also (2026-09-29, the swing stand): a checked box that puts a
+       SECOND line in the cart beside this one. It never touches this item's
+       own price or its cart key, so the stand keeps its own price and its own
+       parcel at checkout. */
+    var also = [];
+    form.querySelectorAll('input[data-also]:checked').forEach(function (i) {
+      also.push({ name: i.dataset.also, price: parseFloat(i.dataset.alsoPrice) });
+    });
+    return { adds: adds, quoted: quoted, chosen: chosen, also: also };
   }
 
   function base() {
@@ -131,9 +139,11 @@
        The total was always right — the line lied about it, which on this site
        is the worse half: every product page exists to promise that the number
        you see is the number you pay. */
-    if (s.adds > 0) { elAddRow.hidden = false; elAdds.textContent = '+ ' + money(s.adds); }
+    var alsoSum = s.also.reduce(function (t, a) { return t + a.price; }, 0);
+    if (s.adds + alsoSum > 0) { elAddRow.hidden = false; elAdds.textContent = '+ ' + money(s.adds + alsoSum); }
     else { elAddRow.hidden = true; elAdds.textContent = ''; }
-    elTotal.textContent = money(b + s.adds);
+    elTotal.textContent = money(b + s.adds + alsoSum);
+    /* the headline price stays THIS item's price; the stand shows in the total */
     if (elHead) elHead.textContent = money(b + s.adds);
     if (s.quoted.length) {
       elQuote.hidden = false;
@@ -192,6 +202,7 @@
        (Jeff caught it, 2026-07-29). */
     var n = qty();
     HHCart.addKey(key, b + s.adds, s.quoted, n);
+    s.also.forEach(function (a) { HHCart.addKey(a.name, a.price, [], n); });
 
     var btn = this;
     btn.dataset.busy = '1';
