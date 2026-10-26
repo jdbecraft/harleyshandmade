@@ -36,31 +36,51 @@
 
 /* Exact data-name / data-n strings from the built pages. If a product is
    renamed in build-products.py, rename it here in the same commit. */
+/* 2026-10-25 — Harley's Court Days email (2026-10-23): "I'm keeping my Sunday
+   sale prices going forward on everything I batch-build." Swings 35, chair 45,
+   picnic 40, plaques 17, coasters 35/30, keychain 5. build-products.py carries
+   the same numbers in the same commit (O-050). */
 const PRODUCTS = {
-  'Mini Porch Swing':        { base: 50  },
-  'Loveseat Swing':          { base: 50  },
+  'Mini Porch Swing':        { base: 35  },
+  'Loveseat Swing':          { base: 35  },
   /* Added 2026-08-29 — Harley's 2026-08-25 emails: the stand became its own
      product (the With Stand option is retired, see the guard below), and the
      four fall pieces are his "1 of 4" through "4 of 4", his prices. */
   'Mini Swing Stand':        { base: 15  },
-  'Picnic Table Feeder':     { base: 60  },
-  'Adirondack Chair Feeder': { base: 65  },
+  'Picnic Table Feeder':     { base: 40  },   /* "Last ones" — discontinued line, still sold */
+  'Adirondack Chair Feeder': { base: 45  },
   'Birdhouse':               { base: 150 },
   'Fall Sign Block — Cherry · Porch Season':                            { base: 15 },
   'Fall Sign Block — Black Walnut · Sweater Weather & Bourbon':         { base: 15 },
-  'Fall Plaque — Black Walnut · Boots, Bourbon & Bonfires':             { base: 28 },
-  'Fall Plaque — Black Walnut · Leaves Are Falling, Bourbon\'s Calling': { base: 28 },
+  'Fall Plaque — Black Walnut · Boots, Bourbon & Bonfires':             { base: 17 },
+  'Fall Plaque — Black Walnut · Leaves Are Falling, Bourbon\'s Calling': { base: 17 },
   /* Added 2026-09-01 — Harley's keychain email: the $15 stock keychain (nine
      designs, all the same price — the Design label rides the cart key, never
      the price) and the $25 custom (chargeable up front BY HIS DESIGN: he
      messages the buyer to confirm wording/design AFTER ordering, before
      burning). Both accept the +$5 "Same design on back" add, which the
      base..base+MAX_ADDS window prices without new logic. */
-  'Wood Keychain':           { base: 8 },
+  'Wood Keychain':           { base: 5 },
   'Custom Keychain':         { base: 25 },
   /* Added 2026-09-29 — Harley's coasters email: set of 4 with holder, $45
      engraved, $40 plain cedar. The design/price pairing is checked below. */
-  'Cedar Coasters':          { base: 45 },
+  'Cedar Coasters':          { base: 35 },
+  /* Added 2026-10-25 — Harley's 2026-10-23 email, twelve new listings at his
+     prices. NO postage rate for any of them yet (he asked which sizes we need):
+     they are deliberately absent from SHIP_CENTS, so a "ship" order carrying
+     one is refused below with a plain sentence. Pickup pays by card today. */
+  'Roadhouse Hummingbird Feeder':      { base: 80 },
+  'Snack Shack Feeder':                { base: 55 },
+  'Bible Box':                         { base: 50 },
+  'Trinket Box':                       { base: 15 },
+  'Fire Starters':                     { base: 2.5 },
+  'Kitchen Sign Block':                { base: 10 },
+  'Kitchen Plank Sign':                { base: 15 },
+  'Hanging Rope Sign':                 { base: 12 },
+  'Large Cutting Board with Feet':     { base: 100 },
+  'Cutting Board with Juice Groove A': { base: 65 },
+  'Cutting Board with Juice Groove B': { base: 65 },
+  'Walnut Charcuterie Board':          { base: 75 },
   /* ⛔ REMOVED 2026-07-31 — Engraved Sign ($285), Hand-Carved Cardinal ($425)
      and Custom Picture Frame ($145–205). Jeff retired all three to quoted
      custom work the same day: they need too much per-piece adjustment to carry
@@ -89,6 +109,13 @@ const ADDS_OK = { 'Wood Keychain': 5, 'Custom Keychain': 5 };
 /* Harley, 2026-09-02: western cedar lines ended. Same two names as SOLD_OUT in
    build-products.py - change both together. */
 const SOLD_OUT = { 'Birdhouse': 1 };   /* chair back on sale 2026-09-29, eastern red cedar */
+/* Harley, 2026-10-23: the boards are one of a kind — "make sure each board
+   shows sold out once it sells, instead of letting someone order a second
+   one." Quantity 1, full stop; the page has no stepper and cart.js caps it,
+   this is the rule. When he says one sold, its name goes into SOLD_OUT here
+   AND in build-products.py together. */
+const ONE_OF_A_KIND = { 'Large Cutting Board with Feet': 1, 'Cutting Board with Juice Groove A': 1,
+                        'Cutting Board with Juice Groove B': 1, 'Walnut Charcuterie Board': 1 };
 /* Harley, 2026-09-28: "The stand is only sold with a swing, never on its own." */
 const SWINGS = { 'Mini Porch Swing': 1, 'Loveseat Swing': 1 };
 /* Jeff, 2026-09-29: Harley ships to the lower 48 (and DC) only. Same list as
@@ -298,10 +325,12 @@ export async function onRequestPost(context) {
 
     const q = ln.q, p = ln.p;
     if (!Number.isInteger(q) || q < 1 || q > MAX_QTY) return json(400, { error: 'Quantity out of range.' });
-    /* Coasters: $45 engraved, $40 plain cedar (Harley, 2026-09-29). The price
-       has to match the design written in the cart line. */
+    if (ONE_OF_A_KIND[name] && q !== 1)
+      return json(400, { error: name + ' is one of a kind — there is exactly one, so the quantity has to be 1.' });
+    /* Coasters: $35 engraved, $30 plain cedar (Harley, 2026-10-23; was 45/40).
+       The price has to match the design written in the cart line. */
     if (name === 'Cedar Coasters') {
-      const want = opts.indexOf('Plain Cedar') !== -1 ? 40 : 45;
+      const want = opts.indexOf('Plain Cedar') !== -1 ? 30 : 35;
       if (p !== want || opts.indexOf('Design:') === -1)
         return json(400, { error: 'A price in the cart doesn’t match the shop — refresh the page and rebuild the order.' });
     } else
@@ -342,8 +371,8 @@ export async function onRequestPost(context) {
     for (const ln of parsed) {
       const rate = shipCentsFor(ln.name);
       if (rate === null)
-        return json(400, { error: 'Shipping is not set for "' + ln.name
-          + '" — send Harley the order and he will price the postage himself.' });
+        return json(400, { error: 'Postage on "' + ln.name
+          + '" isn\u2019t set yet \u2014 pick it up free in Owingsville, or use \u201csend me the order\u201d and Harley will reply with the shipping before you pay.' });
       shipCents += rate * ln.q;
     }
 

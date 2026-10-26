@@ -183,3 +183,12 @@
 .askacts .p:hover{background:var(--espresso)}
 .askacts .s{border:1px solid rgba(74,46,29,.45)}
 .askacts .s:hover{background:rgba(74,46,29,.08)}
+
+/* 2026-10-25 — Harley's Court Days listings. The "Last ones" and "one of a
+   kind" tags sit beside the flat-rate tag and share its type; a text swatch
+   stands in for a design that has no photo yet (never a borrowed picture). */
+.shiptag.last{margin-left:6px;background:#2D1F12;color:#F1E6CC;border-color:#2D1F12}
+.shiptag.one{margin-left:6px;background:rgba(176,132,86,.18)}
+.qtyrow .oneoff{font-size:14px;color:rgba(45,31,18,.78)}
+.stains .sw-text{background:#F1E6CC;color:#4A2E1D;font-family:'IBM Plex Mono',monospace;font-size:9px;
+  letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.3}

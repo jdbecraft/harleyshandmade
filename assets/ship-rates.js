@@ -2,6 +2,12 @@
    Display only. functions/api/checkout.js holds the authoritative copy
    and is what Square actually charges. */
 window.HH_SHIP = {
+  "oneOff": [
+    "Cutting Board with Juice Groove A",
+    "Cutting Board with Juice Groove B",
+    "Large Cutting Board with Feet",
+    "Walnut Charcuterie Board"
+  ],
   "rates": {
     "Adirondack Chair Feeder": {
       "base": 10
@@ -43,5 +49,19 @@ window.HH_SHIP = {
       "base": 5
     }
   },
-  "standLabel": "Matching cedar stand"
+  "standLabel": "Matching cedar stand",
+  "unpriced": [
+    "Bible Box",
+    "Cutting Board with Juice Groove A",
+    "Cutting Board with Juice Groove B",
+    "Fire Starters",
+    "Hanging Rope Sign",
+    "Kitchen Plank Sign",
+    "Kitchen Sign Block",
+    "Large Cutting Board with Feet",
+    "Roadhouse Hummingbird Feeder",
+    "Snack Shack Feeder",
+    "Trinket Box",
+    "Walnut Charcuterie Board"
+  ]
 };

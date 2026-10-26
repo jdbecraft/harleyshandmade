@@ -41,6 +41,20 @@ var CHECKOUT_API = '/api/checkout';
    Display only — functions/api/checkout.js keeps its own table and that is
    what Square actually charges. It must not trust a browser. */
 var SHIP = (window.HH_SHIP && window.HH_SHIP.rates) || {};
+/* 2026-10-25 (Harley's 2026-10-23 email). ONE_OFF: boards that exist once —
+   the cart never holds more than one of each (checkout.js refuses q > 1 too).
+   UNPRICED: shop pieces with no postage rate from him yet — while one is in
+   the cart, "Ship it" is not offered; pickup pays by card, or the customer
+   sends the order and he replies with the postage. Both lists are generated
+   into ship-rates.js by build-products.py; this file never names a product. */
+var ONE_OFF = (window.HH_SHIP && window.HH_SHIP.oneOff) || [];
+var UNPRICED = (window.HH_SHIP && window.HH_SHIP.unpriced) || [];
+function isOneOff(name) { return ONE_OFF.indexOf(name) !== -1; }
+function unpricedInCart() {
+  var out = [];
+  for (var k in cart) { var n = split(k).name; if (UNPRICED.indexOf(n) !== -1 && out.indexOf(n) === -1) out.push(n); }
+  return out;
+}
 var STAND_LABEL = (window.HH_SHIP && window.HH_SHIP.standLabel) || 'Matching cedar stand';
 
 /* shipFor / shipTotal / shipFrom live INSIDE the cart IIFE, beside split() —
@@ -324,8 +338,8 @@ window.HHCart = (function () {
         + '<div class="r"><span class="qwrap">'
         + '<button class="cart-step" type="button" data-dec="' + ek + '" aria-label="One fewer"' + (it.q <= 1 ? ' disabled' : '') + '>&minus;</button>'
         + '<b class="cart-qn">' + it.q + '</b>'
-        + '<button class="cart-step" type="button" data-inc="' + ek + '" aria-label="One more"' + (it.q >= 25 ? ' disabled' : '') + '>+</button>'
-        + '<span class="q">' + money(it.p) + ' each</span></span>'
+        + '<button class="cart-step" type="button" data-inc="' + ek + '" aria-label="One more"' + ((it.q >= 25 || isOneOff(s.name)) ? ' disabled' : '') + '>+</button>'
+        + '<span class="q">' + money(it.p) + (isOneOff(s.name) ? ' &middot; one of a kind' : ' each') + '</span></span>'
         + '<span>' + money(it.p * it.q) + '</span></div>'
         + q
         + '<div class="r"><button class="cart-rm" type="button" data-rm="' + ek + '">Remove</button><span></span></div>'
@@ -342,11 +356,16 @@ window.HHCart = (function () {
       /* Pickup wording per Harley, 2026-08-25: the Marathon station next to
          Ace Hardware in Owingsville is the one scheduled pickup point; the
          other three towns are him meeting somebody, arranged by message. */
+      var unp = unpricedInCart();
+      if (unp.length && ful === 'ship') ful = 'pickup';
       pay = '<div class="cart-ful" role="radiogroup" aria-label="Pickup or shipping">'
         + '<label><input type="radio" name="hhFul" value="pickup"' + (ful === 'pickup' ? ' checked' : '')
         + '> Free pickup &mdash; Marathon station next to Ace Hardware, Owingsville</label>'
-        + '<label><input type="radio" name="hhFul" value="ship"' + (ful === 'ship' ? ' checked' : '')
-        + '> Ship it &mdash; from ' + money(shipFrom()) + ' per item, lower 48 states</label>'
+        + (unp.length
+          ? '<p class="cart-note">Postage on <b>' + unp.join('</b>, <b>') + '</b> isn\'t set yet, so shipping can\'t be added here. '
+            + 'Pick it up free, or use &ldquo;send me the order&rdquo; below and I\'ll reply with the postage before you pay.</p>'
+          : '<label><input type="radio" name="hhFul" value="ship"' + (ful === 'ship' ? ' checked' : '')
+            + '> Ship it &mdash; from ' + money(shipFrom()) + ' per item, lower 48 states</label>')
         + '</div>'
         + (ful === 'pickup'
           ? '<div class="cart-pick">'
@@ -653,7 +672,7 @@ window.HHCart = (function () {
       /* n is the product page's "how many"; absent (shop quick-add) it's 1.
          25 matches the checkout function's MAX_QTY — the two move together. */
       var add = (typeof n === 'number' && n >= 1) ? Math.floor(n) : 1;
-      cart[key].q = Math.min(25, cart[key].q + add);
+      cart[key].q = Math.min(isOneOff(split(key).name) ? 1 : 25, cart[key].q + add);
       save(); refresh();
     },
     refresh: refresh,
