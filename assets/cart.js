@@ -50,11 +50,6 @@ var SHIP = (window.HH_SHIP && window.HH_SHIP.rates) || {};
 var ONE_OFF = (window.HH_SHIP && window.HH_SHIP.oneOff) || [];
 var UNPRICED = (window.HH_SHIP && window.HH_SHIP.unpriced) || [];
 function isOneOff(name) { return ONE_OFF.indexOf(name) !== -1; }
-function unpricedInCart() {
-  var out = [];
-  for (var k in cart) { var n = split(k).name; if (UNPRICED.indexOf(n) !== -1 && out.indexOf(n) === -1) out.push(n); }
-  return out;
-}
 var STAND_LABEL = (window.HH_SHIP && window.HH_SHIP.standLabel) || 'Matching cedar stand';
 
 /* shipFor / shipTotal / shipFrom live INSIDE the cart IIFE, beside split() —
@@ -78,6 +73,12 @@ var WEB3FORMS_PLACEHOLDER = "REPLACE-WITH-HARLEYS-WEB3FORMS-KEY";
 
 window.HHCart = (function () {
   var KEY = 'hh_cart_v1', cart = {};
+  /* pieces in the cart with no postage rate yet (names from ship-rates.js UNPRICED) */
+  function unpricedInCart() {
+    var out = [];
+    for (var k in cart) { var n = split(k).name; if (UNPRICED.indexOf(n) !== -1 && out.indexOf(n) === -1) out.push(n); }
+    return out;
+  }
   try { cart = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { cart = {}; }
 
   /* ---------------- styles ---------------- */
