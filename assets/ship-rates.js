@@ -12,6 +12,9 @@ window.HH_SHIP = {
     "Adirondack Chair Feeder": {
       "base": 10
     },
+    "Bible Box": {
+      "base": 10
+    },
     "Birdhouse": {
       "base": 24
     },
@@ -20,6 +23,12 @@ window.HH_SHIP = {
     },
     "Custom Keychain": {
       "base": 5
+    },
+    "Cutting Board with Juice Groove A": {
+      "base": 10
+    },
+    "Cutting Board with Juice Groove B": {
+      "base": 10
     },
     "Fall Plaque \u2014 Black Walnut \u00b7 Boots, Bourbon & Bonfires": {
       "base": 10
@@ -33,6 +42,18 @@ window.HH_SHIP = {
     "Fall Sign Block \u2014 Cherry \u00b7 Porch Season": {
       "base": 8
     },
+    "Hanging Rope Sign": {
+      "base": 8
+    },
+    "Kitchen Plank Sign": {
+      "base": 10
+    },
+    "Kitchen Sign Block": {
+      "base": 8
+    },
+    "Large Cutting Board with Feet": {
+      "base": 24
+    },
     "Loveseat Swing": {
       "base": 10
     },
@@ -45,23 +66,25 @@ window.HH_SHIP = {
     "Picnic Table Feeder": {
       "base": 10
     },
+    "Roadhouse Hummingbird Feeder": {
+      "base": 24
+    },
+    "Snack Shack Feeder": {
+      "base": 24
+    },
+    "Trinket Box": {
+      "base": 8
+    },
+    "Walnut Charcuterie Board": {
+      "base": 10
+    },
     "Wood Keychain": {
       "base": 5
     }
   },
+  "ridesAlong": [
+    "Fire Starters"
+  ],
   "standLabel": "Matching cedar stand",
-  "unpriced": [
-    "Bible Box",
-    "Cutting Board with Juice Groove A",
-    "Cutting Board with Juice Groove B",
-    "Fire Starters",
-    "Hanging Rope Sign",
-    "Kitchen Plank Sign",
-    "Kitchen Sign Block",
-    "Large Cutting Board with Feet",
-    "Roadhouse Hummingbird Feeder",
-    "Snack Shack Feeder",
-    "Trinket Box",
-    "Walnut Charcuterie Board"
-  ]
+  "unpriced": []
 };

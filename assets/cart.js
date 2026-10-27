@@ -49,7 +49,13 @@ var SHIP = (window.HH_SHIP && window.HH_SHIP.rates) || {};
    into ship-rates.js by build-products.py; this file never names a product. */
 var ONE_OFF = (window.HH_SHIP && window.HH_SHIP.oneOff) || [];
 var UNPRICED = (window.HH_SHIP && window.HH_SHIP.unpriced) || [];
+/* 2026-10-26 (Harley's reply): RIDES_ALONG — pieces with no postage of their
+   own that ride free in the box with any other shipped piece (the fire
+   starters: "Shipping one pack alone costs more than the pack"). A cart that
+   is nothing but these is pickup-only; checkout.js refuses it the same way. */
+var RIDES_ALONG = (window.HH_SHIP && window.HH_SHIP.ridesAlong) || [];
 function isOneOff(name) { return ONE_OFF.indexOf(name) !== -1; }
+function ridesAlong(name) { return RIDES_ALONG.indexOf(name) !== -1; }
 var STAND_LABEL = (window.HH_SHIP && window.HH_SHIP.standLabel) || 'Matching cedar stand';
 
 /* shipFor / shipTotal / shipFrom live INSIDE the cart IIFE, beside split() —
@@ -78,6 +84,17 @@ window.HHCart = (function () {
     var out = [];
     for (var k in cart) { var n = split(k).name; if (UNPRICED.indexOf(n) !== -1 && out.indexOf(n) === -1) out.push(n); }
     return out;
+  }
+  /* the rides-along names in the cart, and whether the cart is NOTHING but them */
+  function ridersInCart() {
+    var out = [];
+    for (var k in cart) { var n = split(k).name; if (ridesAlong(n) && out.indexOf(n) === -1) out.push(n); }
+    return out;
+  }
+  function onlyRiders() {
+    var any = false;
+    for (var k in cart) { any = true; if (!ridesAlong(split(k).name)) return false; }
+    return any;
   }
   try { cart = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { cart = {}; }
 
@@ -278,6 +295,8 @@ window.HHCart = (function () {
   }
 
   function count() { var t = 0; for (var k in cart) t += cart[k].q; return t; }
+  /* packages = units that carry their own postage; a rides-along pack is not a box */
+  function parcelCount() { var t = 0; for (var k in cart) if (shipFor(k) > 0) t += cart[k].q; return t; }
   function total() { var t = 0; for (var k in cart) t += cart[k].p * cart[k].q; return t; }
   function save()  { try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch (e) {} }
   function money(v){ return '$' + v.toFixed(2).replace(/\.00$/, ''); }
@@ -358,13 +377,17 @@ window.HHCart = (function () {
          Ace Hardware in Owingsville is the one scheduled pickup point; the
          other three towns are him meeting somebody, arranged by message. */
       var unp = unpricedInCart();
-      if (unp.length && ful === 'ship') ful = 'pickup';
+      var riders = onlyRiders() ? ridersInCart() : [];
+      if ((unp.length || riders.length) && ful === 'ship') ful = 'pickup';
       pay = '<div class="cart-ful" role="radiogroup" aria-label="Pickup or shipping">'
         + '<label><input type="radio" name="hhFul" value="pickup"' + (ful === 'pickup' ? ' checked' : '')
         + '> Free pickup &mdash; Marathon station next to Ace Hardware, Owingsville</label>'
         + (unp.length
           ? '<p class="cart-note">Postage on <b>' + unp.join('</b>, <b>') + '</b> isn\'t set yet, so shipping can\'t be added here. '
             + 'Pick it up free, or use &ldquo;send me the order&rdquo; below and I\'ll reply with the postage before you pay.</p>'
+          : riders.length
+          ? '<p class="cart-note"><b>' + riders.join('</b>, <b>') + '</b> rides free in the box with any other piece, but doesn\'t ship on its own: '
+            + 'the postage on one pack costs more than the pack. Pick it up free, or add another piece and shipping opens up.</p>'
           : '<label><input type="radio" name="hhFul" value="ship"' + (ful === 'ship' ? ' checked' : '')
             + '> Ship it &mdash; from ' + money(shipFrom()) + ' per item, lower 48 states</label>')
         + '</div>'
@@ -399,7 +422,7 @@ window.HHCart = (function () {
        swing and a birdhouse do not share a box (Jeff, 2026-07-31). Charging
        one flat rate on a two-item order had Harley buying the second label
        out of his own pocket. */
-    var parcels = count();
+    var parcels = parcelCount();
     var ship = (!anyQuoted && ful === 'ship') ? shipTotal() : 0;
     var taxed = total() + ship;
     foot.innerHTML =
@@ -575,7 +598,7 @@ window.HHCart = (function () {
       if (s.opts) lines.push('    ' + s.opts);
       if (it.quoted && it.quoted.length) lines.push('    (to be quoted: ' + it.quoted.join(', ') + ')');
     }
-    var parcels = count();
+    var parcels = parcelCount();
     var ship = (ful === 'ship') ? shipTotal() : 0;
     var taxed = total() + ship;
     lines.push('', 'Subtotal: ' + money(total()));

@@ -66,9 +66,8 @@ const PRODUCTS = {
      engraved, $40 plain cedar. The design/price pairing is checked below. */
   'Cedar Coasters':          { base: 35 },
   /* Added 2026-10-25 — Harley's 2026-10-23 email, twelve new listings at his
-     prices. NO postage rate for any of them yet (he asked which sizes we need):
-     they are deliberately absent from SHIP_CENTS, so a "ship" order carrying
-     one is refused below with a plain sentence. Pickup pays by card today. */
+     prices. Postage set 2026-10-26 from his reply (SHIP_CENTS below); the
+     fire starters have none of their own — see RIDES_ALONG. */
   'Roadhouse Hummingbird Feeder':      { base: 80 },
   'Snack Shack Feeder':                { base: 55 },
   'Bible Box':                         { base: 50 },
@@ -161,7 +160,27 @@ const SHIP_CENTS = {
   'Wood Keychain':           { base: 500 },
   'Custom Keychain':         { base: 500 },
   'Cedar Coasters':          { base: 900 },
+  /* Added 2026-10-26 — Harley's reply, "using my existing per-item tiers".
+     build-products.py's SHIP carries the same eleven in the same commit. */
+  'Kitchen Sign Block':                { base: 800 },
+  'Hanging Rope Sign':                 { base: 800 },
+  'Trinket Box':                       { base: 800 },
+  'Kitchen Plank Sign':                { base: 1000 },
+  'Walnut Charcuterie Board':          { base: 1000 },
+  'Cutting Board with Juice Groove A': { base: 1000 },
+  'Cutting Board with Juice Groove B': { base: 1000 },
+  'Bible Box':                         { base: 1000 },
+  'Roadhouse Hummingbird Feeder':      { base: 2400 },
+  'Snack Shack Feeder':                { base: 2400 },
+  'Large Cutting Board with Feet':     { base: 2400 },
 };
+/* Harley, 2026-10-26: "Don't ship those on their own. Make them an add-on so
+   they ship with another item, but keep them buyable by themselves for local
+   pickup only. Shipping one pack alone costs more than the pack." A rides-along
+   piece posts for $0 beside any other shipped line; a ship order that is
+   NOTHING but rides-along lines is refused below. Same set as the generator's
+   SHIP_WITH_ANOTHER (cart.js reads it from ship-rates.js). */
+const RIDES_ALONG = { 'Fire Starters': 1 };
 /* ⛔ The stand:1800 rates are GONE (2026-08-29). Harley, 2026-08-25: the
    stand is its own product now — swing $10 + stand $8 is the same $18 the
    old with-stand rate charged, priced honestly per parcel. */
@@ -363,13 +382,17 @@ export async function onRequestPost(context) {
        handling and packaging are all inside "sales price" under KRS 139.010,
        so shipping on a taxable good is taxable. Leaving it untaxed would have
        Harley under-collecting and owing it on audit. */
-    const parcels = parsed.reduce((n, ln) => n + ln.q, 0);
+    /* 2026-10-26: a rides-along pack is not a box of its own, and an order
+       that is nothing but rides-along packs cannot ship at all. */
+    if (parsed.every(ln => RIDES_ALONG[ln.name]))
+      return json(400, { error: 'Fire starters ship free in the box with another piece, not on their own \u2014 the postage on one pack costs more than the pack. Pick them up free in Owingsville, or add another piece to the order.' });
+    const parcels = parsed.reduce((n, ln) => n + (RIDES_ALONG[ln.name] ? 0 : ln.q), 0);
 
     /* Priced per LINE now: each line's own rate (and its stand option, which
        is a second parcel) times its quantity. A swing on rope and a birdhouse
        in one order are $10 and $24 — not two of anything. */
     for (const ln of parsed) {
-      const rate = shipCentsFor(ln.name);
+      const rate = RIDES_ALONG[ln.name] ? 0 : shipCentsFor(ln.name);
       if (rate === null)
         return json(400, { error: 'Postage on "' + ln.name
           + '" isn\u2019t set yet \u2014 pick it up free in Owingsville, or use \u201csend me the order\u201d and Harley will reply with the shipping before you pay.' });
