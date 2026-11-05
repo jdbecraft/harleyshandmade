@@ -41,7 +41,7 @@
      the one picked in the sheet. display is set DIRECTLY, not via [hidden] —
      an author display rule beats the [hidden] UA rule on this site and that
      bug family has bitten twice (the 7/31 options-line and cart-trap fixes). */
-  function applyDesignFilter() {
+  function applyDesignFilter(jump) {
     var f = document.getElementById('sheet');
     if (!f) return;
     var sel = f.querySelector('input[name=Design]:checked');
@@ -51,12 +51,19 @@
     });
     var vis = visibleThumbs();
     var current = thumbs.filter(function (b) { return b.getAttribute('aria-current') === 'true'; })[0];
-    if (vis.length && vis.indexOf(current) === -1) vis[0].click();
+    /* 2026-11-04 (the ornaments): when the CUSTOMER picks a design, show that
+       design's own shot up top, not a group shot that happens to be visible for
+       every design. On first paint (jump=false) the hero stays as built, so a
+       group shot can still open the page. A design with no photo yet (the
+       Christ on the Cross lid) has no shot of its own and falls through. */
+    var mine = jump ? vis.filter(function (b) { return b.dataset.design === sel.value; }) : [];
+    if (mine.length && mine.indexOf(current) === -1) mine[0].click();
+    else if (vis.length && vis.indexOf(current) === -1) vis[0].click();
     else if (current) current.click(); /* refresh the counter for the new set */
   }
   (function () {
     var f = document.getElementById('sheet');
-    if (f) { f.addEventListener('change', applyDesignFilter); applyDesignFilter(); }
+    if (f) { f.addEventListener('change', function () { applyDesignFilter(true); }); applyDesignFilter(false); }
   })();
 
   /* ---------------- price ---------------- */
