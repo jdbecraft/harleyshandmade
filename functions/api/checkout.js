@@ -80,6 +80,12 @@ const PRODUCTS = {
   'Cutting Board with Juice Groove A': { base: 65 },
   'Cutting Board with Juice Groove B': { base: 65 },
   'Walnut Charcuterie Board':          { base: 75 },
+  /* Added 2026-11-04 — the two 10/23 listings held for photos (Harley's
+     Drive folder, 11/4). His prices. No postage rate from him on either, so
+     neither is in SHIP_CENTS: a ship order carrying one is refused below
+     ("isn't set yet"), pickup is free. The ornaments' 3-for-$10 is BUNDLES. */
+  'Christmas Ornament':                { base: 4 },
+  'Name Keychain':                     { base: 6 },
   /* ⛔ REMOVED 2026-07-31 — Engraved Sign ($285), Hand-Carved Cardinal ($425)
      and Custom Picture Frame ($145–205). Jeff retired all three to quoted
      custom work the same day: they need too much per-piece adjustment to carry
@@ -181,6 +187,13 @@ const SHIP_CENTS = {
    NOTHING but rides-along lines is refused below. Same set as the generator's
    SHIP_WITH_ANOTHER (cart.js reads it from ship-rates.js). */
 const RIDES_ALONG = { 'Fire Starters': 1 };
+/* Harley, 2026-10-23: "Christmas Ornaments, laser-cut cedar: $4 each or 3 for
+   $10." Any three, designs mixed. Charged as an ORDER-level fixed discount of
+   (3 × $4 − $10) = $2 per full three, so every line still shows his $4 and
+   the receipt names the deal; Square takes discounts off before the 6% tax.
+   build-products.py's BUNDLES (-> ship-rates.js -> cart.js) is the display
+   copy; this is the number charged. Change both together. */
+const BUNDLES = { 'Christmas Ornament': { n: 3, cents: 1000 } };
 /* ⛔ The stand:1800 rates are GONE (2026-08-29). Harley, 2026-08-25: the
    stand is its own product now — swing $10 + stand $8 is the same $18 the
    old with-stand rate charged, priced honestly per parcel. */
@@ -417,6 +430,24 @@ export async function onRequestPost(context) {
     totalCents += shipCents;
   }
 
+  /* Any-three bundles (BUNDLES above), counted across lines so two Trees and a
+     Mitten make a set. Never below zero, never on a product that isn't listed. */
+  const discounts = [];
+  for (const bname in BUNDLES) {
+    const b = BUNDLES[bname], prod = PRODUCTS[bname];
+    if (!prod) continue;
+    const units = parsed.reduce(function (n, ln) { return n + (ln.name === bname ? ln.q : 0); }, 0);
+    const sets = Math.floor(units / b.n);
+    const off = sets * (Math.round(prod.base * 100) * b.n - b.cents);
+    if (sets < 1 || off <= 0) continue;
+    discounts.push({
+      uid: 'bundle-' + bname.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      name: bname + 's, any ' + b.n + ' for $' + (b.cents / 100) + (sets > 1 ? ' (x' + sets + ')' : ''),
+      type: 'FIXED_AMOUNT', amount_money: { amount: off, currency: 'USD' }, scope: 'ORDER',
+    });
+    totalCents -= off;
+  }
+
   if (totalCents < 100 || totalCents > MAX_TOTAL_CENTS)
     return json(400, { error: 'Order total out of range.' });
 
@@ -441,6 +472,8 @@ export async function onRequestPost(context) {
            KY filing. The cart panel computes the identical 6% (all prices
            are whole dollars, so the cent math is exact on both sides). */
         taxes: [{ uid: 'ky-sales-tax', name: 'KY sales tax', type: 'ADDITIVE', percentage: '6', scope: 'ORDER' }],
+        /* 2026-11-04: the ornaments' any-3-for-$10, as a named line on the receipt */
+        discounts: discounts.length ? discounts : undefined,
       },
       checkout_options: {
         /* Square collects the address on its own page for shipped orders, so

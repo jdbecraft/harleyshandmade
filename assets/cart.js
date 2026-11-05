@@ -54,6 +54,9 @@ var UNPRICED = (window.HH_SHIP && window.HH_SHIP.unpriced) || [];
    starters: "Shipping one pack alone costs more than the pack"). A cart that
    is nothing but these is pickup-only; checkout.js refuses it the same way. */
 var RIDES_ALONG = (window.HH_SHIP && window.HH_SHIP.ridesAlong) || [];
+/* 2026-11-04 — any-N-for-$X rules, from build-products.py BUNDLES via ship-rates.js
+   (the ornaments: $4 each or any 3 for $10). Display only; checkout.js charges. */
+var BUNDLES = (window.HH_SHIP && window.HH_SHIP.bundles) || {};
 function isOneOff(name) { return ONE_OFF.indexOf(name) !== -1; }
 function ridesAlong(name) { return RIDES_ALONG.indexOf(name) !== -1; }
 var STAND_LABEL = (window.HH_SHIP && window.HH_SHIP.standLabel) || 'Matching cedar stand';
@@ -297,7 +300,26 @@ window.HHCart = (function () {
   function count() { var t = 0; for (var k in cart) t += cart[k].q; return t; }
   /* packages = units that carry their own postage; a rides-along pack is not a box */
   function parcelCount() { var t = 0; for (var k in cart) if (shipFor(k) > 0) t += cart[k].q; return t; }
-  function total() { var t = 0; for (var k in cart) t += cart[k].p * cart[k].q; return t; }
+  function gross() { var t = 0; for (var k in cart) t += cart[k].p * cart[k].q; return t; }
+  /* The any-three deal (Harley, 2026-10-23: ornaments "$4 each or 3 for $10"),
+     counted across lines so three different designs make a set. $2 off per
+     three, shown as its own line so the customer sees the deal happen. */
+  function bundleOff() {
+    var off = 0;
+    for (var name in BUNDLES) {
+      var b = BUNDLES[name], units = 0, each = null;
+      for (var k in cart) { var s = split(k); if (s.name === name) { units += cart[k].q; each = cart[k].p; } }
+      var sets = Math.floor(units / b.n);
+      if (sets > 0 && each !== null) off += sets * (each * b.n - b.price);
+    }
+    return off > 0 ? off : 0;
+  }
+  function bundleLabel() {
+    var out = [];
+    for (var name in BUNDLES) out.push(name + 's, any ' + BUNDLES[name].n + ' for ' + money(BUNDLES[name].price));
+    return out.join(' \u00b7 ');
+  }
+  function total() { return gross() - bundleOff(); }
   function save()  { try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch (e) {} }
   function money(v){ return '$' + v.toFixed(2).replace(/\.00$/, ''); }
   function refresh(){ var n = document.getElementById('cartN'); if (n) n.textContent = count(); }
@@ -426,7 +448,8 @@ window.HHCart = (function () {
     var ship = (!anyQuoted && ful === 'ship') ? shipTotal() : 0;
     var taxed = total() + ship;
     foot.innerHTML =
-        '<div class="cart-sub"><span>Subtotal</span><span>' + money(total()) + '</span></div>'
+        '<div class="cart-sub"><span>Subtotal</span><span>' + money(gross()) + '</span></div>'
+      + (bundleOff() ? '<div class="cart-sub"><span>' + bundleLabel() + '</span><span>&minus;' + money(bundleOff()) + '</span></div>' : '')
       + (ship ? '<div class="cart-sub"><span>Shipping &mdash; ' + parcels
           + (parcels === 1 ? ' package' : ' packages') + ', priced per item</span><span>'
           + money(ship) + '</span></div>' : '')
@@ -601,7 +624,8 @@ window.HHCart = (function () {
     var parcels = parcelCount();
     var ship = (ful === 'ship') ? shipTotal() : 0;
     var taxed = total() + ship;
-    lines.push('', 'Subtotal: ' + money(total()));
+    lines.push('', 'Subtotal: ' + money(gross()));
+    if (bundleOff()) lines.push(bundleLabel() + ': -' + money(bundleOff()));
     lines.push(ship
       ? 'Shipping (' + parcels + (parcels === 1 ? ' package' : ' packages') + ', priced per item): ' + money(ship)
       : 'Pickup at the Marathon station next to Ace Hardware, Owingsville — no shipping'

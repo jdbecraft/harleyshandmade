@@ -2,6 +2,12 @@
    Display only. functions/api/checkout.js holds the authoritative copy
    and is what Square actually charges. */
 window.HH_SHIP = {
+  "bundles": {
+    "Christmas Ornament": {
+      "n": 3,
+      "price": 10
+    }
+  },
   "oneOff": [
     "Cutting Board with Juice Groove A",
     "Cutting Board with Juice Groove B",
@@ -86,5 +92,8 @@ window.HH_SHIP = {
     "Fire Starters"
   ],
   "standLabel": "Matching cedar stand",
-  "unpriced": []
+  "unpriced": [
+    "Christmas Ornament",
+    "Name Keychain"
+  ]
 };
