@@ -27,6 +27,9 @@ window.HH_SHIP = {
     "Cedar Coasters": {
       "base": 9
     },
+    "Christmas Ornament": {
+      "base": 5
+    },
     "Custom Keychain": {
       "base": 5
     },
@@ -69,6 +72,9 @@ window.HH_SHIP = {
     "Mini Swing Stand": {
       "base": 8
     },
+    "Name Keychain": {
+      "base": 5
+    },
     "Picnic Table Feeder": {
       "base": 10
     },
@@ -92,8 +98,5 @@ window.HH_SHIP = {
     "Fire Starters"
   ],
   "standLabel": "Matching cedar stand",
-  "unpriced": [
-    "Christmas Ornament",
-    "Name Keychain"
-  ]
+  "unpriced": []
 };

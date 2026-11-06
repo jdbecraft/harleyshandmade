@@ -60,7 +60,7 @@ const PRODUCTS = {
      messages the buyer to confirm wording/design AFTER ordering, before
      burning). Both accept the +$5 "Same design on back" add, which the
      base..base+MAX_ADDS window prices without new logic. */
-  'Wood Keychain':           { base: 5 },
+  'Wood Keychain':           { base: 8 },    /* Harley 2026-11-04: $8, "to match Square" */
   'Custom Keychain':         { base: 25 },
   /* Added 2026-09-29 — Harley's coasters email: set of 4 with holder, $45
      engraved, $40 plain cedar. The design/price pairing is checked below. */
@@ -85,7 +85,7 @@ const PRODUCTS = {
      neither is in SHIP_CENTS: a ship order carrying one is refused below
      ("isn't set yet"), pickup is free. The ornaments' 3-for-$10 is BUNDLES. */
   'Christmas Ornament':                { base: 4 },
-  'Name Keychain':                     { base: 6 },
+  'Name Keychain':                     { base: 10 },   /* Harley 2026-11-04: $10, "to match Square" */
   /* ⛔ REMOVED 2026-07-31 — Engraved Sign ($285), Hand-Carved Cardinal ($425)
      and Custom Picture Frame ($145–205). Jeff retired all three to quoted
      custom work the same day: they need too much per-piece adjustment to carry
@@ -171,6 +171,9 @@ const SHIP_CENTS = {
   'Kitchen Sign Block':                { base: 800 },
   'Hanging Rope Sign':                 { base: 800 },
   'Trinket Box':                       { base: 800 },
+  /* Harley 2026-11-04: "$5, same as the keychains" on the two 11/4 listings. */
+  'Christmas Ornament':                { base: 500 },
+  'Name Keychain':                     { base: 500 },
   'Kitchen Plank Sign':                { base: 1000 },
   'Walnut Charcuterie Board':          { base: 1000 },
   'Cutting Board with Juice Groove A': { base: 1000 },
