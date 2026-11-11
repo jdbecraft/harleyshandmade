@@ -59,6 +59,10 @@ var RIDES_ALONG = (window.HH_SHIP && window.HH_SHIP.ridesAlong) || [];
 var BUNDLES = (window.HH_SHIP && window.HH_SHIP.bundles) || {};
 function isOneOff(name) { return ONE_OFF.indexOf(name) !== -1; }
 function ridesAlong(name) { return RIDES_ALONG.indexOf(name) !== -1; }
+/* 2026-11-10 (Harley): dated free shipping on orders of PROMO.min and up. The
+   window and the floor come from build-products.py PROMO via ship-rates.js.
+   Display only: functions/api/checkout.js applies the rule that is charged. */
+var PROMO = (window.HH_SHIP && window.HH_SHIP.promo) || null;
 var STAND_LABEL = (window.HH_SHIP && window.HH_SHIP.standLabel) || 'Matching cedar stand';
 
 /* shipFor / shipTotal / shipFrom live INSIDE the cart IIFE, beside split() —
@@ -320,6 +324,14 @@ window.HHCart = (function () {
     return out.join(' \u00b7 ');
   }
   function total() { return gross() - bundleOff(); }
+  /* window.HH_NOW is the preview-only test clock set by the top-bar script */
+  function promoOn() {
+    if (!PROMO) return false;
+    var n = window.HH_NOW || Date.now();
+    return n >= Date.parse(PROMO.start) && n < Date.parse(PROMO.end);
+  }
+  /* goods after the ornament deal, before postage and tax */
+  function promoFree() { return promoOn() && total() >= PROMO.min; }
   function save()  { try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch (e) {} }
   function money(v){ return '$' + v.toFixed(2).replace(/\.00$/, ''); }
   function refresh(){ var n = document.getElementById('cartN'); if (n) n.textContent = count(); }
@@ -411,7 +423,10 @@ window.HHCart = (function () {
           ? '<p class="cart-note"><b>' + riders.join('</b>, <b>') + '</b> rides free in the box with any other piece, but doesn\'t ship on its own: '
             + 'the postage on one pack costs more than the pack. Pick it up free, or add another piece and shipping opens up.</p>'
           : '<label><input type="radio" name="hhFul" value="ship"' + (ful === 'ship' ? ' checked' : '')
-            + '> Ship it &mdash; from ' + money(shipFrom()) + ' per item, lower 48 states</label>')
+            + (promoOn()
+              ? '> Ship it &mdash; FREE on orders ' + money(PROMO.min) + '+ through ' + PROMO.until
+                + ' (under ' + money(PROMO.min) + ', from ' + money(shipFrom()) + ' per item), lower 48 states</label>'
+              : '> Ship it &mdash; from ' + money(shipFrom()) + ' per item, lower 48 states</label>'))
         + '</div>'
         + (ful === 'pickup'
           ? '<div class="cart-pick">'
@@ -446,13 +461,16 @@ window.HHCart = (function () {
        out of his own pocket. */
     var parcels = parcelCount();
     var ship = (!anyQuoted && ful === 'ship') ? shipTotal() : 0;
-    var taxed = total() + ship;
+    var free = ship > 0 && promoFree();
+    var taxed = total() + (free ? 0 : ship);
     foot.innerHTML =
         '<div class="cart-sub"><span>Subtotal</span><span>' + money(gross()) + '</span></div>'
       + (bundleOff() ? '<div class="cart-sub"><span>' + bundleLabel() + '</span><span>&minus;' + money(bundleOff()) + '</span></div>' : '')
       + (ship ? '<div class="cart-sub"><span>Shipping &mdash; ' + parcels
-          + (parcels === 1 ? ' package' : ' packages') + ', priced per item</span><span>'
-          + money(ship) + '</span></div>' : '')
+          + (parcels === 1 ? ' package' : ' packages')
+          + (free ? ' &middot; ' + PROMO.name + '</span><span><s>' + money(ship) + '</s> FREE'
+                  : ', priced per item</span><span>' + money(ship))
+          + '</span></div>' : '')
       + '<div class="cart-sub"><span>KY sales tax (6%)</span><span>' + money(taxed * KY_TAX) + '</span></div>'
       + '<div class="cart-tot"><span>' + (anyQuoted ? 'Total so far' : 'Total') + '</span><span>'
         + money(taxed * (1 + KY_TAX)) + '</span></div>'
@@ -596,7 +614,7 @@ window.HHCart = (function () {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(ful === 'pickup'
         ? { lines: lines, fulfillment: ful, pickup: { date: pickDate, time: pickTime } }
-        : { lines: lines, fulfillment: ful, shipState: shipState })
+        : { lines: lines, fulfillment: ful, shipState: shipState, testNow: window.HH_NOW || undefined })
     }).then(function (r) {
       return r.json().then(function (j) { return { ok: r.ok, j: j }; });
     }).then(function (res) {
@@ -623,11 +641,13 @@ window.HHCart = (function () {
     }
     var parcels = parcelCount();
     var ship = (ful === 'ship') ? shipTotal() : 0;
-    var taxed = total() + ship;
+    var free = ship > 0 && promoFree();
+    var taxed = total() + (free ? 0 : ship);
     lines.push('', 'Subtotal: ' + money(gross()));
     if (bundleOff()) lines.push(bundleLabel() + ': -' + money(bundleOff()));
     lines.push(ship
-      ? 'Shipping (' + parcels + (parcels === 1 ? ' package' : ' packages') + ', priced per item): ' + money(ship)
+      ? 'Shipping (' + parcels + (parcels === 1 ? ' package' : ' packages')
+        + (free ? '): FREE, ' + PROMO.name + ' (normally ' + money(ship) + ')' : ', priced per item): ' + money(ship))
       : 'Pickup at the Marathon station next to Ace Hardware, Owingsville — no shipping'
         + (pickDate ? '\nPickup time asked for: ' + pickDate + (pickTime ? ' at ' + pickTime : '') : ''));
     lines.push('KY sales tax (6%): ' + money(taxed * KY_TAX),

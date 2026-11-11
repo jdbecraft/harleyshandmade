@@ -14,6 +14,13 @@ window.HH_SHIP = {
     "Large Cutting Board with Feet",
     "Walnut Charcuterie Board"
   ],
+  "promo": {
+    "end": "2026-12-02T05:00:00Z",
+    "min": 50,
+    "name": "Black Friday free shipping",
+    "start": "2026-11-23T05:00:00Z",
+    "until": "Dec 1"
+  },
   "rates": {
     "Adirondack Chair Feeder": {
       "base": 10

@@ -197,6 +197,17 @@ const RIDES_ALONG = { 'Fire Starters': 1 };
    build-products.py's BUNDLES (-> ship-rates.js -> cart.js) is the display
    copy; this is the number charged. Change both together. */
 const BUNDLES = { 'Christmas Ornament': { n: 3, cents: 1000 } };
+/* Harley, 2026-11-10: "free shipping on orders $50 and up, Monday Nov 23 through
+   Tuesday Dec 1, ending at 11:59pm Eastern. Under $50 ships at the normal rates,
+   and custom orders aren't included." Dated, so it switches itself on and off:
+   midnight Eastern Standard Time is 05:00 UTC. The $50 is the goods subtotal
+   after the ornament deal, before postage and tax. Charged as an ORDER discount
+   equal to the postage, so the receipt still shows the Shipping line and names
+   why it is free; Square takes discounts off before the 6% tax. Quoted custom
+   work is refused above and never reaches this. build-products.py PROMO (->
+   ship-rates.js -> cart.js) is the display copy. Change both together. */
+const PROMO = { startMs: Date.UTC(2026, 10, 23, 5), endMs: Date.UTC(2026, 11, 2, 5),
+                minCents: 5000, name: 'Black Friday free shipping, orders $50+' };
 /* ⛔ The stand:1800 rates are GONE (2026-08-29). Harley, 2026-08-25: the
    stand is its own product now — swing $10 + stand $8 is the same $18 the
    old with-stand rate charged, priced honestly per parcel. */
@@ -451,6 +462,22 @@ export async function onRequestPost(context) {
     totalCents -= off;
   }
 
+  /* Dated free shipping (PROMO above). The clock is the server's; a preview
+     (sandbox) deployment may be handed a test time so the rule can be proven
+     before the day. Production never reads it. */
+  let promoNow = Date.now();
+  if (sandbox && typeof body.testNow === 'number' && isFinite(body.testNow)) promoNow = body.testNow;
+  let promoShipFree = false;
+  if (shipping && shipCents > 0 && promoNow >= PROMO.startMs && promoNow < PROMO.endMs
+      && (totalCents - shipCents) >= PROMO.minCents) {
+    discounts.push({
+      uid: 'promo-free-shipping', name: PROMO.name,
+      type: 'FIXED_AMOUNT', amount_money: { amount: shipCents, currency: 'USD' }, scope: 'ORDER',
+    });
+    totalCents -= shipCents;
+    promoShipFree = true;
+  }
+
   if (totalCents < 100 || totalCents > MAX_TOTAL_CENTS)
     return json(400, { error: 'Order total out of range.' });
 
@@ -495,8 +522,10 @@ export async function onRequestPost(context) {
          stale number tells him he collected $5 less per package than he did.
          Building it from the constant removes the fourth copy entirely. */
       payment_note: shipping
-        ? 'Website order — SHIP IT' + (shipState ? ' to ' + shipState + ' (state picked in the cart; check it matches the address)' : '') + '. Postage $' + (shipCents / 100).toFixed(2)
-          + ' paid across ' + parsed.reduce((n, ln) => n + ln.q, 0)
+        ? 'Website order — SHIP IT' + (shipState ? ' to ' + shipState + ' (state picked in the cart; check it matches the address)' : '') + '. Postage '
+          + (promoShipFree ? 'FREE to the customer (' + PROMO.name + '); the labels would have been $' : '$')
+          + (shipCents / 100).toFixed(2)
+          + (promoShipFree ? ' across ' : ' paid across ') + parsed.reduce((n, ln) => n + ln.q, 0)
           + ' package(s); buy the labels in Orders > Shipments.'
         : 'Website order — FREE PICKUP, Marathon station next to Ace Hardware, Owingsville'
           + (pickupWhen ? '. Customer picked: ' + pickupWhen
