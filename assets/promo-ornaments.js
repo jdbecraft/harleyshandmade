@@ -16,8 +16,10 @@
   var WIDE = [[3, 38, 40, 'red'], [9, 70, 32, 'gold'], [15, 24, 36, 'cream'], [24, 56, 30, 'red'],
               [34, 30, 34, 'gold'], [46, 64, 38, 'red'], [58, 26, 30, 'cream'], [67, 52, 36, 'gold'],
               [76, 34, 40, 'red'], [84, 66, 30, 'cream']];
-  var PHONE = [[5, 18, 28, 'red'], [17, 40, 22, 'gold'], [30, 12, 26, 'cream'], [44, 34, 24, 'red'],
-               [57, 16, 22, 'gold']];
+  /* phone: the home page logo starts about 50px under the bar between 35% and 65%,
+     and the Cart button sits right of 70%, so the middle strings stay short */
+  var PHONE = [[5, 22, 28, 'red'], [17, 40, 22, 'gold'], [30, 10, 26, 'cream'], [44, 16, 22, 'red'],
+               [57, 8, 24, 'gold']];
   var n = 0;
 
   function ball(size, tone) {
