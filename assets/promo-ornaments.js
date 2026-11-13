@@ -98,8 +98,9 @@
   /* The Cart button is pinned a fixed distance from the top of the page, just under
      the normal bar. The dressed bar is taller, so move the button down by exactly
      the height that was added (measured, so it holds at every width). */
-  var cart = document.getElementById('cartBtn') || document.querySelector('.cartbtn');
   function fit() {
+    /* looked up each time: on most pages cart.js adds the button after this runs */
+    var cart = document.getElementById('cartBtn') || document.querySelector('.cartbtn');
     bar.className = bar.className.replace(/\s*hh-x/g, '');
     var h0 = bar.offsetHeight;
     bar.className += ' hh-x';
@@ -112,4 +113,6 @@
   }
   fit();
   window.addEventListener('resize', fit);
+  window.addEventListener('load', fit);
+  document.addEventListener('DOMContentLoaded', fit);
 })();
