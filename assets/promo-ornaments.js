@@ -58,10 +58,10 @@
     + '.hh-orn svg{display:block;margin-top:-1px}'
     + '.hh-orn .p{display:none}'
     + '@keyframes hhsway{from{transform:rotate(-2.6deg)}to{transform:rotate(2.6deg)}}'
-    + '.hh-bar.hh-promo{padding-bottom:22px}'
-    + '@media (min-width:700px){.hh-bar.hh-promo{font-size:12px;padding:11px 14px 24px}}'
-    + '.hh-lights{position:absolute;left:0;right:0;bottom:0;height:18px;pointer-events:none;'
-    + 'clip-path:inset(-12px 0 -12px 0);background:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 '
+    + '.hh-bar.hh-promo.hh-x{padding-bottom:22px}'
+    + '@media (min-width:700px){.hh-bar.hh-promo.hh-x{font-size:12px;padding:11px 14px 24px}}'
+    + '.hh-lights{position:absolute;left:0;right:0;bottom:0;height:18px;pointer-events:none;overflow:hidden;'
+    + 'background:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 '
     + 'width=%2732%27 height=%2718%27%3E%3Cpath d=%27M0 2Q16 9 32 2%27 fill=%27none%27 stroke=%27%237A5C36%27 stroke-width=%271%27/%3E%3C/svg%3E") repeat-x}'
     + '.hh-lights b{position:absolute;top:8px;width:6px;height:8px;border-radius:50% 50% 50% 50%/40% 40% 60% 60%;'
     + 'animation:hhtw 3s ease-in-out infinite}'
@@ -94,4 +94,22 @@
   box.setAttribute('aria-hidden', 'true');
   box.innerHTML = row(WIDE, 'w') + row(PHONE, 'p');
   bar.appendChild(box);
+
+  /* The Cart button is pinned a fixed distance from the top of the page, just under
+     the normal bar. The dressed bar is taller, so move the button down by exactly
+     the height that was added (measured, so it holds at every width). */
+  var cart = document.getElementById('cartBtn') || document.querySelector('.cartbtn');
+  function fit() {
+    bar.className = bar.className.replace(/\s*hh-x/g, '');
+    var h0 = bar.offsetHeight;
+    bar.className += ' hh-x';
+    var grew = bar.offsetHeight - h0;
+    if (cart) {
+      cart.style.top = '';
+      var base = parseFloat(getComputedStyle(cart).top);
+      if (isFinite(base) && grew > 0) cart.style.top = (base + grew) + 'px';
+    }
+  }
+  fit();
+  window.addEventListener('resize', fit);
 })();
