@@ -58,10 +58,36 @@
     + '.hh-orn svg{display:block;margin-top:-1px}'
     + '.hh-orn .p{display:none}'
     + '@keyframes hhsway{from{transform:rotate(-2.6deg)}to{transform:rotate(2.6deg)}}'
-    + '@media (min-width:700px){.hh-bar.hh-promo{font-size:12px;padding:11px 14px}}'
+    + '.hh-bar.hh-promo{padding-bottom:22px}'
+    + '@media (min-width:700px){.hh-bar.hh-promo{font-size:12px;padding:11px 14px 24px}}'
+    + '.hh-lights{position:absolute;left:0;right:0;bottom:0;height:18px;pointer-events:none;'
+    + 'clip-path:inset(-12px 0 -12px 0);background:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 '
+    + 'width=%2732%27 height=%2718%27%3E%3Cpath d=%27M0 2Q16 9 32 2%27 fill=%27none%27 stroke=%27%237A5C36%27 stroke-width=%271%27/%3E%3C/svg%3E") repeat-x}'
+    + '.hh-lights b{position:absolute;top:8px;width:6px;height:8px;border-radius:50% 50% 50% 50%/40% 40% 60% 60%;'
+    + 'animation:hhtw 3s ease-in-out infinite}'
+    + '.hh-lights b:before{content:"";position:absolute;left:1px;top:-3px;width:4px;height:3px;background:#1a120a;border-radius:1px}'
+    + '@keyframes hhtw{0%,100%{opacity:1}50%{opacity:.4}}'
+    + '@media (prefers-reduced-motion:reduce){.hh-lights b{animation:none}}'
     + '@media (max-width:699px){.hh-orn .w{display:none}.hh-orn .p{display:flex}}'
     + '@media (prefers-reduced-motion:reduce){.hh-orn span{animation:none}}';
   document.head.appendChild(css);
+
+  /* 2026-11-13 (Jeff): a string of Christmas lights along the bottom of the bar.
+     They sit INSIDE the bar (it gets 13px taller) so nothing reaches the Cart button. */
+  var LIGHTS = ['#ff5a3c', '#ffc04d', '#fff3d1', '#58c96b'];
+  var count = Math.min(120, Math.ceil(Math.max(screen.width || 0, window.innerWidth || 0, 1200) / 32) + 1);
+  var lh = '';
+  for (var k = 0; k < count; k++) {
+    var col = LIGHTS[k % LIGHTS.length];
+    lh += '<b style="left:' + (k * 32 + 13) + 'px;background:radial-gradient(circle at 40% 30%,#fff,' + col
+      + ' 55%);box-shadow:0 0 7px 2px ' + col + ';animation-duration:' + (2.2 + (k % 5) * 0.35)
+      + 's;animation-delay:-' + ((k * 0.53) % 3).toFixed(2) + 's"></b>';
+  }
+  var lights = document.createElement('div');
+  lights.className = 'hh-lights';
+  lights.setAttribute('aria-hidden', 'true');
+  lights.innerHTML = lh;
+  bar.appendChild(lights);
 
   var box = document.createElement('div');
   box.className = 'hh-orn';
