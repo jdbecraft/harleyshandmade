@@ -108,5 +108,8 @@ window.HH_SHIP = {
     "Fire Starters"
   ],
   "standLabel": "Matching cedar stand",
-  "unpriced": []
+  "unpriced": [
+    "Christmas Puzzle",
+    "Shop Edition Puzzle"
+  ]
 };

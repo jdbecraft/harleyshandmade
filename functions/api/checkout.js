@@ -86,6 +86,11 @@ const PRODUCTS = {
      ("isn't set yet"), pickup is free. The ornaments' 3-for-$10 is BUNDLES. */
   'Christmas Ornament':                { base: 4 },
   'Name Keychain':                     { base: 10 },   /* Harley 2026-11-04: $10, "to match Square" */
+  /* Harley 2026-11-17: wooden jigsaw puzzles, two listings. The price depends on
+     the piece count (PUZZLE_PRICES below). No postage rate from him yet, so
+     neither is in SHIP_CENTS: pickup only until he sends one. */
+  'Christmas Puzzle':                  { base: 35 },
+  'Shop Edition Puzzle':               { base: 35 },
   /* ⛔ REMOVED 2026-07-31 — Engraved Sign ($285), Hand-Carved Cardinal ($425)
      and Custom Picture Frame ($145–205). Jeff retired all three to quoted
      custom work the same day: they need too much per-piece adjustment to carry
@@ -111,6 +116,9 @@ const MAX_ADDS = 150;
    than the page now says. Every shop item is exact-price now; the only priced
    add left in the shop is the keychains' +$5 "same design on back". */
 const ADDS_OK = { 'Wood Keychain': 5, 'Custom Keychain': 5 };
+/* Harley 2026-11-17: "48 pieces: $35 · 80 pieces: $45 · 180 pieces: $60". */
+const PUZZLES = { 'Christmas Puzzle': 1, 'Shop Edition Puzzle': 1 };
+const PUZZLE_PRICES = { '48 pieces': 35, '80 pieces': 45, '180 pieces': 60 };
 /* Harley, 2026-09-02: western cedar lines ended. Same two names as SOLD_OUT in
    build-products.py - change both together. */
 const SOLD_OUT = { 'Birdhouse': 1 };   /* chair back on sale 2026-09-29, eastern red cedar */
@@ -387,6 +395,12 @@ export async function onRequestPost(context) {
       const want = opts.indexOf('Plain Cedar') !== -1 ? 30 : 35;
       if (p !== want || opts.indexOf('Design:') === -1)
         return json(400, { error: 'A price in the cart doesn’t match the shop — refresh the page and rebuild the order.' });
+    } else
+    if (PUZZLES[name]) {
+      /* the price has to match the piece count written in the cart line, and a design has to be picked */
+      const m = /Pieces: (\d+ pieces)/.exec(opts);
+      if (!m || PUZZLE_PRICES[m[1]] !== p || opts.indexOf('Design:') === -1)
+        return json(400, { error: 'A price in the cart doesn\u2019t match the shop \u2014 refresh the page and rebuild the order.' });
     } else
     if (typeof p !== 'number' || !isFinite(p) || p < prod.base || p > prod.base + (ADDS_OK[name] || 0))
       return json(400, { error: 'A price in the cart doesn’t match the shop — refresh the page and rebuild the order.' });
