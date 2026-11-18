@@ -332,6 +332,16 @@ window.HHCart = (function () {
   }
   /* goods after the ornament deal, before postage and tax */
   function promoFree() { return promoOn() && total() >= PROMO.min; }
+  /* 2026-11-17 (Harley): he covers up to PROMO.cap of labels per order; the
+     customer pays the rest. A pickup order of PROMO.min+ gets PROMO.pickupOff
+     off instead (no postage on a pickup, so the two can never stack). */
+  function promoShipOff(ship) {
+    if (!(ship > 0) || !promoFree()) return 0;
+    return PROMO.cap ? Math.min(ship, PROMO.cap) : ship;
+  }
+  function promoPickOff(isPickup, quoted) {
+    return (isPickup && !quoted && PROMO && PROMO.pickupOff && promoFree()) ? PROMO.pickupOff : 0;
+  }
   function save()  { try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch (e) {} }
   function money(v){ return '$' + v.toFixed(2).replace(/\.00$/, ''); }
   function refresh(){ var n = document.getElementById('cartN'); if (n) n.textContent = count(); }
@@ -415,7 +425,10 @@ window.HHCart = (function () {
       if ((unp.length || riders.length) && ful === 'ship') ful = 'pickup';
       pay = '<div class="cart-ful" role="radiogroup" aria-label="Pickup or shipping">'
         + '<label><input type="radio" name="hhFul" value="pickup"' + (ful === 'pickup' ? ' checked' : '')
-        + '> Free pickup &mdash; Marathon station next to Ace Hardware, Owingsville</label>'
+        + '> Free pickup &mdash; Marathon station next to Ace Hardware, Owingsville'
+        + (promoOn() && PROMO.pickupOff
+          ? ' &middot; ' + money(PROMO.pickupOff) + ' off orders ' + money(PROMO.min) + '+ through ' + PROMO.until : '')
+        + '</label>'
         + (unp.length
           ? '<p class="cart-note">Postage on <b>' + unp.join('</b>, <b>') + '</b> isn\'t set yet, so shipping can\'t be added here. '
             + 'Pick it up free, or use &ldquo;send me the order&rdquo; below and I\'ll reply with the postage before you pay.</p>'
@@ -425,6 +438,7 @@ window.HHCart = (function () {
           : '<label><input type="radio" name="hhFul" value="ship"' + (ful === 'ship' ? ' checked' : '')
             + (promoOn()
               ? '> Ship it &mdash; FREE on orders ' + money(PROMO.min) + '+ through ' + PROMO.until
+                + (PROMO.cap ? ', up to ' + money(PROMO.cap) + ' of postage per order' : '')
                 + ' (under ' + money(PROMO.min) + ', from ' + money(shipFrom()) + ' per item), lower 48 states</label>'
               : '> Ship it &mdash; from ' + money(shipFrom()) + ' per item, lower 48 states</label>'))
         + '</div>'
@@ -461,16 +475,20 @@ window.HHCart = (function () {
        out of his own pocket. */
     var parcels = parcelCount();
     var ship = (!anyQuoted && ful === 'ship') ? shipTotal() : 0;
-    var free = ship > 0 && promoFree();
-    var taxed = total() + (free ? 0 : ship);
+    var shipOff = promoShipOff(ship);
+    var free = ship > 0 && shipOff >= ship;
+    var pickOff = promoPickOff(ful === 'pickup', anyQuoted);
+    var taxed = total() + ship - shipOff - pickOff;
     foot.innerHTML =
         '<div class="cart-sub"><span>Subtotal</span><span>' + money(gross()) + '</span></div>'
       + (bundleOff() ? '<div class="cart-sub"><span>' + bundleLabel() + '</span><span>&minus;' + money(bundleOff()) + '</span></div>' : '')
       + (ship ? '<div class="cart-sub"><span>Shipping &mdash; ' + parcels
           + (parcels === 1 ? ' package' : ' packages')
           + (free ? ' &middot; ' + PROMO.name + '</span><span><s>' + money(ship) + '</s> FREE'
+             : shipOff ? ' &middot; ' + PROMO.name + ' covers ' + money(shipOff) + '</span><span><s>' + money(ship) + '</s> ' + money(ship - shipOff)
                   : ', priced per item</span><span>' + money(ship))
           + '</span></div>' : '')
+      + (pickOff ? '<div class="cart-sub"><span>' + PROMO.pickupName + ', orders ' + money(PROMO.min) + '+</span><span>&minus;' + money(pickOff) + '</span></div>' : '')
       + '<div class="cart-sub"><span>KY sales tax (6%)</span><span>' + money(taxed * KY_TAX) + '</span></div>'
       + '<div class="cart-tot"><span>' + (anyQuoted ? 'Total so far' : 'Total') + '</span><span>'
         + money(taxed * (1 + KY_TAX)) + '</span></div>'
@@ -641,15 +659,20 @@ window.HHCart = (function () {
     }
     var parcels = parcelCount();
     var ship = (ful === 'ship') ? shipTotal() : 0;
-    var free = ship > 0 && promoFree();
-    var taxed = total() + (free ? 0 : ship);
+    var shipOff = promoShipOff(ship);
+    var free = ship > 0 && shipOff >= ship;
+    var pickOff = promoPickOff(ful === 'pickup', false);
+    var taxed = total() + ship - shipOff - pickOff;
     lines.push('', 'Subtotal: ' + money(gross()));
     if (bundleOff()) lines.push(bundleLabel() + ': -' + money(bundleOff()));
     lines.push(ship
       ? 'Shipping (' + parcels + (parcels === 1 ? ' package' : ' packages')
-        + (free ? '): FREE, ' + PROMO.name + ' (normally ' + money(ship) + ')' : ', priced per item): ' + money(ship))
+        + (free ? '): FREE, ' + PROMO.name + ' (normally ' + money(ship) + ')'
+           : shipOff ? '): ' + money(ship - shipOff) + ', ' + PROMO.name + ' covers ' + money(shipOff) + ' of ' + money(ship)
+           : ', priced per item): ' + money(ship))
       : 'Pickup at the Marathon station next to Ace Hardware, Owingsville — no shipping'
         + (pickDate ? '\nPickup time asked for: ' + pickDate + (pickTime ? ' at ' + pickTime : '') : ''));
+    if (pickOff) lines.push(PROMO.pickupName + ', orders ' + money(PROMO.min) + '+: -' + money(pickOff));
     lines.push('KY sales tax (6%): ' + money(taxed * KY_TAX),
                'Total: ' + money(taxed * (1 + KY_TAX)));
     try { localStorage.setItem('hh_order_msg', lines.join('\n')); } catch (e) {}

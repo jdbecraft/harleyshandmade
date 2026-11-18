@@ -206,8 +206,16 @@ const BUNDLES = { 'Christmas Ornament': { n: 3, cents: 1000 } };
    why it is free; Square takes discounts off before the 6% tax. Quoted custom
    work is refused above and never reaches this. build-products.py PROMO (->
    ship-rates.js -> cart.js) is the display copy. Change both together. */
+/* Harley, 2026-11-17: "Yes, please cap it. I'll cover up to $20 in labels per
+   order, and the customer pays anything over that." -> capCents.
+   Same day: "For the same dates (Nov 23 - Dec 1), can you set up $15 off orders
+   $50+ when they pick local pickup? Same $50 items total before tax, and it
+   shouldn't stack with free shipping." -> pickupOffCents, applied with no code
+   to type. A pickup order has no postage, so the two cannot meet. */
 const PROMO = { startMs: Date.UTC(2026, 10, 23, 5), endMs: Date.UTC(2026, 11, 2, 5),
-                minCents: 5000, name: 'Black Friday free shipping, orders $50+' };
+                minCents: 5000, name: 'Black Friday free shipping, orders $50+',
+                capCents: 2000, pickupOffCents: 1500,
+                pickupName: 'Black Friday pickup offer, $15 off orders $50+' };
 /* ⛔ The stand:1800 rates are GONE (2026-08-29). Harley, 2026-08-25: the
    stand is its own product now — swing $10 + stand $8 is the same $18 the
    old with-stand rate charged, priced honestly per parcel. */
@@ -467,15 +475,27 @@ export async function onRequestPost(context) {
      before the day. Production never reads it. */
   let promoNow = Date.now();
   if (sandbox && typeof body.testNow === 'number' && isFinite(body.testNow)) promoNow = body.testNow;
-  let promoShipFree = false;
-  if (shipping && shipCents > 0 && promoNow >= PROMO.startMs && promoNow < PROMO.endMs
-      && (totalCents - shipCents) >= PROMO.minCents) {
+  let promoShipFree = false, promoShipOff = 0;
+  const promoLive = promoNow >= PROMO.startMs && promoNow < PROMO.endMs
+      && (totalCents - shipCents) >= PROMO.minCents;
+  if (shipping && shipCents > 0 && promoLive) {
+    promoShipOff = Math.min(shipCents, PROMO.capCents);
     discounts.push({
-      uid: 'promo-free-shipping', name: PROMO.name,
-      type: 'FIXED_AMOUNT', amount_money: { amount: shipCents, currency: 'USD' }, scope: 'ORDER',
+      uid: 'promo-free-shipping',
+      name: PROMO.name + (promoShipOff < shipCents ? ' (covers $' + (promoShipOff / 100) + ' of the postage)' : ''),
+      type: 'FIXED_AMOUNT', amount_money: { amount: promoShipOff, currency: 'USD' }, scope: 'ORDER',
     });
-    totalCents -= shipCents;
-    promoShipFree = true;
+    totalCents -= promoShipOff;
+    promoShipFree = promoShipOff === shipCents;
+  }
+  let promoPickup = false;
+  if (!shipping && promoLive) {
+    discounts.push({
+      uid: 'promo-pickup', name: PROMO.pickupName,
+      type: 'FIXED_AMOUNT', amount_money: { amount: PROMO.pickupOffCents, currency: 'USD' }, scope: 'ORDER',
+    });
+    totalCents -= PROMO.pickupOffCents;
+    promoPickup = true;
   }
 
   if (totalCents < 100 || totalCents > MAX_TOTAL_CENTS)
@@ -523,14 +543,16 @@ export async function onRequestPost(context) {
          Building it from the constant removes the fourth copy entirely. */
       payment_note: shipping
         ? 'Website order — SHIP IT' + (shipState ? ' to ' + shipState + ' (state picked in the cart; check it matches the address)' : '') + '. Postage '
-          + (promoShipFree ? 'FREE to the customer (' + PROMO.name + '); the labels would have been $' : '$')
+          + (promoShipFree ? 'FREE to the customer (' + PROMO.name + '); the labels would have been $'
+             : promoShipOff ? 'for the customer $' + ((shipCents - promoShipOff) / 100).toFixed(2) + ' (' + PROMO.name
+               + ' covers $' + (promoShipOff / 100).toFixed(2) + '); the labels come to $' : '$')
           + (shipCents / 100).toFixed(2)
-          + (promoShipFree ? ' across ' : ' paid across ') + parsed.reduce((n, ln) => n + ln.q, 0)
+          + (promoShipFree || promoShipOff ? ' across ' : ' paid across ') + parsed.reduce((n, ln) => n + ln.q, 0)
           + ' package(s); buy the labels in Orders > Shipments.'
         : 'Website order — FREE PICKUP, Marathon station next to Ace Hardware, Owingsville'
           + (pickupWhen ? '. Customer picked: ' + pickupWhen
                         : '. No time chosen — arrange by reply')
-          + ' (no shipping owed).',
+          + ' (no shipping owed).' + (promoPickup ? ' ' + PROMO.pickupName + ' applied.' : ''),
     }),
   });
 

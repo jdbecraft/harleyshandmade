@@ -15,9 +15,12 @@ window.HH_SHIP = {
     "Walnut Charcuterie Board"
   ],
   "promo": {
+    "cap": 20,
     "end": "2026-12-02T05:00:00Z",
     "min": 50,
     "name": "Black Friday free shipping",
+    "pickupName": "Black Friday pickup offer",
+    "pickupOff": 15,
     "start": "2026-11-23T05:00:00Z",
     "until": "Dec 1"
   },
