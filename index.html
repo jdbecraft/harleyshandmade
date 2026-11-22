@@ -286,21 +286,30 @@ img{display:block;max-width:100%;height:auto}
 .bpimg{margin-top:16px;border:1px solid rgba(74,46,29,.32);width:100%;transform:translateZ(0);box-shadow:0 6px 16px rgba(8,4,1,.28)}
 
 /* ---------- SCROLL-DRIVEN: one continuous walk ---------- */
+/* 2026-11-21: every range below is measured along THE WALK (.walk, 900vh), not
+   the whole page. They used to ride scroll(root); once the reviews section was
+   added under the walk the page grew, the last ranges fell past the point where
+   the camera lets go, and "That's the whole board" never showed. "contain" on an
+   element taller than the window runs from its top reaching the top of the
+   window to its bottom reaching the bottom: exactly while .cam is pinned. */
 @supports (animation-timeline: scroll()){
  @media (prefers-reduced-motion:no-preference){
+  .walk{view-timeline:--hhwalk block}
   .floor{animation:walk linear both, descend linear both;
-         animation-timeline:scroll(root),scroll(root);
-         animation-range:0 100%, 0 13%}
-  .world{animation:zoomIn linear both;animation-timeline:scroll(root);animation-range:0 13%}
-  .edgeL,.edgeR{animation:walk linear both;animation-timeline:scroll(root);animation-range:0 100%;opacity:0}
-  .open {animation:fadeOut linear both;animation-timeline:scroll(root);animation-range:0 9%}
-  .cue  {animation:fadeOut linear both;animation-timeline:scroll(root);animation-range:0 6%}
-  #s1{animation:pop linear both;animation-timeline:scroll(root);animation-range:14% 29%}
-  #s2{animation:pop linear both;animation-timeline:scroll(root);animation-range:31% 46%}
-  #s3{animation:pop linear both;animation-timeline:scroll(root);animation-range:48% 63%}
-  #s4{animation:pop linear both;animation-timeline:scroll(root);animation-range:65% 80%}
-  #s5{animation:pop linear both;animation-timeline:scroll(root);animation-range:80% 93%}
-  #end{animation:endIn linear both;animation-timeline:scroll(root);animation-range:93% 100%}
+         animation-timeline:--hhwalk,--hhwalk;
+         animation-range:contain 0% contain 100%, contain 0% contain 13%}
+  .world{animation:zoomIn linear both;animation-timeline:--hhwalk;animation-range:contain 0% contain 13%}
+  .edgeL,.edgeR{animation:walk linear both;animation-timeline:--hhwalk;animation-range:contain 0% contain 100%;opacity:0}
+  .open {animation:fadeOut linear both;animation-timeline:--hhwalk;animation-range:contain 0% contain 9%}
+  .cue  {animation:fadeOut linear both;animation-timeline:--hhwalk;animation-range:contain 0% contain 6%}
+  #s1{animation:pop linear both;animation-timeline:--hhwalk;animation-range:contain 14% contain 29%}
+  #s2{animation:pop linear both;animation-timeline:--hhwalk;animation-range:contain 31% contain 46%}
+  #s3{animation:pop linear both;animation-timeline:--hhwalk;animation-range:contain 48% contain 63%}
+  #s4{animation:pop linear both;animation-timeline:--hhwalk;animation-range:contain 65% contain 80%}
+  #s5{animation:pop linear both;animation-timeline:--hhwalk;animation-range:contain 80% contain 92%}
+  /* the closing panel is fully in by 97% and holds, so it is read on the board
+     before the camera lets go and the reviews come up underneath */
+  #end{animation:endIn linear both;animation-timeline:--hhwalk;animation-range:contain 92% contain 97%}
  }
 }
 @keyframes walk{ from{--walk:-1400px} to{--walk:-11800px} }
@@ -1087,10 +1096,15 @@ document.addEventListener('DOMContentLoaded',function(){
 <script>
 (function(){
   var prog=document.getElementById('prog');
-  function onScroll(){
-    var h=document.documentElement.scrollHeight-window.innerHeight;
-    prog.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+  /* how far along THE WALK (0-100), not the whole page: the reviews section
+     sits under the walk, so page-percent no longer lines up with the board */
+  var walkEl=document.querySelector('.walk');
+  function walkPct(){
+    var h=walkEl?(walkEl.offsetHeight-window.innerHeight):(document.documentElement.scrollHeight-window.innerHeight);
+    var y=window.scrollY-(walkEl?walkEl.offsetTop:0);
+    return h>0?Math.max(0,Math.min(100,y/h*100)):0;
   }
+  function onScroll(){ prog.style.width=walkPct()+'%'; }
   addEventListener('scroll',onScroll,{passive:true}); onScroll();
 
   /* sawdust: falls across the whole browser, brighter where the lamp catches it */
@@ -1119,8 +1133,7 @@ document.addEventListener('DOMContentLoaded',function(){
   if(rail){
     var btns=[].slice.call(rail.querySelectorAll('[data-p]'));
     addEventListener('scroll',function(){
-      var h=document.documentElement.scrollHeight-innerHeight;
-      var pct=h>0?(scrollY/h*100):0, best=null, bd=1e9;
+      var pct=walkPct(), best=null, bd=1e9;
       btns.forEach(function(b){
         var d=Math.abs(parseFloat(b.dataset.p)-pct);
         if(d<bd){bd=d;best=b}
